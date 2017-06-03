@@ -1,0 +1,6 @@
+{
+	"shader": "Shaders/unlit_vcolor.shader",
+	"cull": false,
+	"test_depth": false,
+	"write_depth": false
+}

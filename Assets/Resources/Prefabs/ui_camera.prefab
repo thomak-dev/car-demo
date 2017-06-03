@@ -1,0 +1,14 @@
+{
+	"flags": [ "UI" ],
+	"components":
+	[
+		{
+			"type": "Transform"
+		},
+		{
+			"type": "Camera",
+			"projection": "OrthographicScreen",
+			"clear_color": false
+		}
+	]
+}

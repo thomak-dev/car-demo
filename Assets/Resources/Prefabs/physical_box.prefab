@@ -1,0 +1,19 @@
+{
+	"components": 
+	[
+		{
+			"type": "Transform"
+		},
+		{
+			"type": "MeshInstance",
+			"mesh": "Meshes/cube.dae",
+			"material": "Materials/simple_lambert.mat"
+		},
+		{
+			"type": "RigidBody"
+		},
+		{
+			"type": "RandomColor"
+		}
+	]
+}

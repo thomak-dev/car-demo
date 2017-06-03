@@ -1,0 +1,18 @@
+{
+	"shader": "Shaders/unlit.shader",
+	"properties":
+	[
+		{ "colorMap": "Textures/white.png" },
+		{ "color": [1, 1, 1, 1] }
+	],
+	"cull": false,
+	"test_depth" : true,
+	"write_depth" : false,
+	"blend_op_color": "Add",
+	"blend_op_alpha": "Add",
+	"blend_src_color": "SrcAlpha",
+	"blend_dst_color": "OneMinusSrcAlpha",
+	"blend_src_alpha": "Zero",
+	"blend_dst_alpha": "One",
+	"ordinal": 1000000
+}

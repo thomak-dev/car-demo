@@ -1,0 +1,7 @@
+{
+	"shader": "Shaders/simple_lambert.shader",
+	"properties":
+	[
+		{ "color": [0.5, 0.5, 0.5, 1] }
+	]
+}
