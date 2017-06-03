@@ -72,12 +72,6 @@
     <ClCompile Include="RandomColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EventHub.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Updatable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CamControls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -173,12 +167,6 @@
     <ClInclude Include="RandomColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Updatable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventHub.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CamControls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -213,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsDebugDrawer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,10 +4,16 @@
 #include "Entity.h"
 #include "Text.h"
 #include "Time.h"
+#include "messages.h"
 
 void FpsCounter::Initialize()
 {
 	text = entity->GetComponent<Text>();
+}
+
+void FpsCounter::OnMessageReceived(Entity* origin, Message* message)
+{
+	HandleUpdate(message, *this, &FpsCounter::Update);
 }
 
 void FpsCounter::Update(float deltaTime)

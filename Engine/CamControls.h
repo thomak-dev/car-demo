@@ -1,11 +1,10 @@
 #pragma once
 #include "core.h"
 #include "Component.h"
-#include "Updatable.h"
 
 class Transform;
 
-class CamControls :	public Component, public virtual Updatable
+class CamControls :	public Component
 {
 	DELETE_COPY_MOVE(CamControls)
 public:
@@ -14,10 +13,11 @@ public:
 
 	virtual ~CamControls() = default;
 
-	void Update(float deltaTime) override;
 	void Initialize() override;
+	void OnMessageReceived(Entity* origin, Message* message) override;
 private:
 	Transform* transform{};
 	bool rollUnlocked{};
+	void Update(float deltaTime);
 };
 

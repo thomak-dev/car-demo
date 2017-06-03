@@ -6,10 +6,10 @@
 #include "Renderer.h"
 #include "Time.h"
 #include "ResourceManager.h"
-#include "EventHub.h"
 #include "Entity.h"
 #include "input.h"
 #include "Physics.h"
+#include "messages.h"
 
 int main(int argc, char* argv[])
 {
@@ -20,7 +20,6 @@ int main(int argc, char* argv[])
 	Physics physics;
 
 	Time time{ 150 };
-	EventHub eventHub;
 
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
 	root->Initialize();
@@ -51,7 +50,8 @@ int main(int argc, char* argv[])
 		float deltaTime = time.GetDeltaTime();
 		
 		physics.Step(deltaTime);
-		eventHub.Update(deltaTime);
+		UpdateMessage update{ deltaTime };
+		root->SendMessageDown(&update);
 		renderer.Render();
 		gameWindow.Swap();
 		glPopDebugGroup();

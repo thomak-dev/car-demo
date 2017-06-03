@@ -57,7 +57,7 @@ Entity* Entity::Instantiate(const rapidjson::GenericObject<true, rapidjson::Valu
 	{
 		for (const auto& componentJson : prefab["components"].GetArray())
 		{
-			Component* component = nullptr;
+			Component* component;
 			if ((component = base->GetComponent(componentJson["type"].GetString())))
 				component->Deserialize(componentJson.GetObject());
 			else
@@ -169,7 +169,7 @@ void Entity::ReceiveMessageFromAbove(Entity* origin, Message* message)
 		component->OnMessageReceived(origin, message);
 
 	for (Entity* child : children)
-		ReceiveMessageFromAbove(origin, message);
+		child->ReceiveMessageFromAbove(origin, message);
 }
 
 void Entity::ReceiveMessageFromBelow(Entity* origin, Message* message)

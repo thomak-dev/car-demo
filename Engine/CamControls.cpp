@@ -1,12 +1,22 @@
 #include "CamControls.h"
+#include <iostream>
+#include <iomanip>
 #include <glm/trigonometric.hpp>
 #include "Transform.h"
 #include "input.h"
 #include "math_utility.h"
 #include "Entity.h"
-#include <iostream>
-#include "Time.h"
-#include <iomanip>
+#include "messages.h"
+
+void CamControls::Initialize()
+{
+	transform = entity->GetComponent<Transform>();
+}
+
+void CamControls::OnMessageReceived(Entity* origin, Message* message)
+{
+	HandleUpdate(message, *this, &CamControls::Update);
+}
 
 void CamControls::Update(float deltaTime)
 {
@@ -82,10 +92,4 @@ void CamControls::Update(float deltaTime)
 		syaw = 0;
 		spitch = 0;
 	}
-
-}
-
-void CamControls::Initialize()
-{
-	transform = entity->GetComponent<Transform>();
 }

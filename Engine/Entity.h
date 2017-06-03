@@ -28,11 +28,7 @@ namespace EntityFlags
 	}
 }
 
-class Message
-{
-public:
-	virtual ~Message() = 0;
-};
+class Message;
 
 class Entity
 {

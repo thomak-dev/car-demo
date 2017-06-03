@@ -167,7 +167,6 @@
     <ClCompile Include="core.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EventHub.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="ForwardSpinner.cpp" />
     <ClCompile Include="FpsCounter.cpp" />
@@ -193,7 +192,6 @@
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Updatable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CamControls.h" />
@@ -201,11 +199,11 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="EventHub.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="ForwardSpinner.h" />
     <ClInclude Include="FpsCounter.h" />
     <ClInclude Include="GameWindow.h" />
+    <ClInclude Include="messages.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="json.h" />
@@ -221,7 +219,6 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Texture2D.h" />
-    <ClInclude Include="Updatable.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshInstance.h" />
     <ClInclude Include="Renderer.h" />
