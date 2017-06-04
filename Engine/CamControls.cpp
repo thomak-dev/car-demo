@@ -15,7 +15,7 @@ void CamControls::Initialize()
 
 void CamControls::OnMessageReceived(Entity* origin, Message* message)
 {
-	HandleUpdate(message, *this, &CamControls::Update);
+	HandleUpdate(message, UpdateFunctionDt{ std::bind(&CamControls::Update, this, std::placeholders::_1) });
 }
 
 void CamControls::Update(float deltaTime)

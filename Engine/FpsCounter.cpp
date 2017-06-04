@@ -13,7 +13,7 @@ void FpsCounter::Initialize()
 
 void FpsCounter::OnMessageReceived(Entity* origin, Message* message)
 {
-	HandleUpdate(message, *this, &FpsCounter::Update);
+	HandleUpdate(message, UpdateFunctionDt{ std::bind(&FpsCounter::Update, this, std::placeholders::_1) });
 }
 
 void FpsCounter::Update(float deltaTime)

@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <glm/glm.hpp>
 
 class Transform;
@@ -22,18 +23,18 @@ struct TransformChangeMessage : Message
 	Transform* parent{};
 };
 
-template <typename T>
-void HandleUpdate(Message* message, T& target, void(T::*updateFunction)(float))
+using UpdateFunctionDt = std::function<void(float)>;
+inline void HandleUpdate(Message* message, const UpdateFunctionDt& updateFunction)
 {
 	UpdateMessage* update = dynamic_cast<UpdateMessage*>(message);
 	if (update)
-		(target.*updateFunction)(update->deltaTime);
+		updateFunction(update->deltaTime);
 }
 
-template <typename T>
-void HandleUpdate(Message* message, T& target, void(T::*updateFunction)())
+using UpdateFunction = std::function<void()>;
+inline void HandleUpdate(Message* message, const UpdateFunction& updateFunction)
 {
 	UpdateMessage* update = dynamic_cast<UpdateMessage*>(message);
 	if (update)
-		(target.*updateFunction)();
+		updateFunction();
 }

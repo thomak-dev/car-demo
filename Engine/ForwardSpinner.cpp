@@ -4,6 +4,7 @@
 #include "math_utility.h"
 #include "Entity.h"
 #include "messages.h"
+#include "CamControls.h"
 
 void ForwardSpinner::Initialize()
 {
@@ -12,7 +13,7 @@ void ForwardSpinner::Initialize()
 
 void ForwardSpinner::OnMessageReceived(Entity* origin, Message* message)
 {
-	HandleUpdate(message, *this, &ForwardSpinner::Update);
+	HandleUpdate(message, UpdateFunctionDt{ bind(&ForwardSpinner::Update, this, std::placeholders::_1) });
 }
 
 void ForwardSpinner::Update(float deltaTime)
