@@ -46,4 +46,5 @@ private:
 	void Update();
 	btCollisionShape* GenerateShape(Shape type) const;
 	static std::unordered_map<std::string, Shape> stringToShape;
+	void PostProcessPhysics();
 };

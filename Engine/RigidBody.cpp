@@ -58,7 +58,7 @@ void RigidBody::Initialize()
 
 void RigidBody::OnMessageReceived(Entity* origin, Message* message)
 {
-	HandleUpdate(message, *this, &RigidBody::Update);
+	HandleUpdate(message, UpdateFunction{ std::bind(&RigidBody::Update, this) });
 }
 
 void RigidBody::getWorldTransform(btTransform& worldTrans) const
@@ -77,8 +77,8 @@ void RigidBody::setWorldTransform(const btTransform& worldTrans)
 	BtToGlmQuat(newRotation, worldTrans.getRotation());
 	lastPhysicsPosition = position;
 	lastPhysicsRotation = newRotation;
-	//transform->SetWorldPosition(position);
-	//transform->SetWorldRotation(newRotation);
+	transform->SetWorldPosition(position);
+	transform->SetWorldRotation(newRotation);
 }
 
 void RigidBody::SetShape(Shape shapeType)
@@ -111,7 +111,7 @@ void RigidBody::SetMass(float mass)
 
 void RigidBody::Update()
 {
-	if(mass > 0)
+	if(mass > 0 && bulletRigidBody->getActivationState() == ISLAND_SLEEPING)
 	{
 		transform->SetWorldPosition(lastPhysicsPosition);
 		transform->SetWorldRotation(lastPhysicsRotation);
@@ -132,4 +132,9 @@ btCollisionShape* RigidBody::GenerateShape(Shape type) const
 		SDL_assert(false);
 		return nullptr;
 	}
+}
+
+void RigidBody::PostProcessPhysics()
+{
+
 }

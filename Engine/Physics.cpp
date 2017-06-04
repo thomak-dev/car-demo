@@ -13,6 +13,7 @@ Physics::Physics()
 
 	world->setGravity(btVector3(0, -9.81f, 0));
 	world->setDebugDrawer(Renderer::Instance().GetPhysicsDebugDrawer());
+	world->setInternalTickCallback(PostProcessPhysicsSubtick, this);
 }
 
 
@@ -44,9 +45,18 @@ void Physics::UnregisterRigidBody(RigidBody* rigidBody)
 void Physics::Step(float deltaTime)
 {
 	world->stepSimulation(deltaTime);
+	for(auto rigidBody : rigidBodies)
+	{
+		
+	}
 }
 
 void Physics::DebugDraw()
 {
 	world->debugDrawWorld();
+}
+
+void Physics::PostProcessPhysicsSubtick(btDynamicsWorld* world, btScalar timeStep)
+{
+	Physics* self = static_cast<Physics*>(world->getWorldUserInfo());
 }

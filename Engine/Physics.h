@@ -29,5 +29,6 @@ private:
 	bool visualize{};
 
 	std::vector<RigidBody*> rigidBodies;
+	static void PostProcessPhysicsSubtick(btDynamicsWorld *world, btScalar timeStep);
 };
 
