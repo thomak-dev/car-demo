@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <glm/mat4x4.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "Component.h"
 
@@ -12,8 +12,12 @@ public:
 	Transform() = delete;
 	virtual ~Transform() = default;
 
+	glm::mat4 ParentWorldMatrix() const;
+	glm::mat4 ParentInverseWorldMatrix() const;
 	glm::mat4 WorldMatrix() const;
+	glm::mat4 InverseWorldMatrix() const;
 	glm::mat4 Matrix() const;
+	glm::mat4 InverseMatrix() const;
 	void SetMatrix(const glm::mat4x4 matrix);
 	glm::vec3 WorldPosition() const;
 	glm::vec3 Position() const { return position; }

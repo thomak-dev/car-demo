@@ -1,23 +1,40 @@
 #include "Transform.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include "Entity.h"
 #include "math_utility.h"
 
+glm::mat4 Transform::ParentWorldMatrix() const
+{
+	Entity* parent = entity->Parent();
+	if (parent)
+	{
+		Transform* parentTrans = parent->GetComponentInAncestors<Transform>();
+		if (parentTrans)
+			return parentTrans->WorldMatrix();
+	}
+	return glm::mat4{};
+}
+
+glm::mat4 Transform::ParentInverseWorldMatrix() const
+{
+	Entity* parent = entity->Parent();
+	if (parent)
+	{
+		Transform* parentTrans = parent->GetComponentInAncestors<Transform>();
+		if (parentTrans)
+			return parentTrans->InverseWorldMatrix();
+	}
+	return glm::mat4{};
+}
+
 glm::mat4 Transform::WorldMatrix() const
 {
-	if (entity->Parent() == nullptr)
-		return Matrix();
-	else
-	{
-		Transform* trans = entity->Parent()->GetComponentInAncestors<Transform>();
-		if (trans)
-		{
-			return trans->WorldMatrix() * Matrix();
-		}
-		else
-			return Matrix();
-	}
+	return ParentWorldMatrix() * Matrix();
+}
+
+glm::mat4 Transform::InverseWorldMatrix() const
+{
+	return InverseMatrix() * ParentInverseWorldMatrix();
 }
 
 glm::mat4 Transform::Matrix() const
@@ -32,16 +49,28 @@ glm::mat4 Transform::Matrix() const
 	return glm::scale(trans * glm::mat4_cast(rotation), scale);
 }
 
+glm::mat4 Transform::InverseMatrix() const
+{
+	glm::mat4 scaleMat
+	{
+		1/scale.x,0,0,0,
+		0,1/scale.y,0,0,
+		0,0,1/scale.z,0,
+		0,0,0,1
+	};
+	return glm::translate(scaleMat * glm::mat4_cast(inverse(rotation)), -position);
+}
+
 void Transform::SetMatrix(const glm::mat4x4 matrix)
 {
-	position = matrix[3];
-	SetRotation(glm::quat_cast(matrix));
-	scale = glm::vec3(glm::length(matrix[0]), glm::length(matrix[1]), glm::length(matrix[2]));
+	glm::quat rot{ glm::uninitialize };
+	DecomposeMatrix(matrix, position, scale, rot);
+	SetRotation(rot);
 }
 
 glm::vec3 Transform::WorldPosition() const
 {
-	return WorldMatrix()[3];
+	return ParentWorldMatrix() * glm::vec4(position, 1);
 }
 
 void Transform::SetWorldPosition(float x, float y, float z)
@@ -51,27 +80,24 @@ void Transform::SetWorldPosition(float x, float y, float z)
 
 void Transform::SetWorldPosition(const glm::vec3& position)
 {
-	Transform* parentTransform;
-	if (entity->Parent() && ((parentTransform = entity->Parent()->GetComponentInAncestors<Transform>())))
-		SetPosition(affineInverse(parentTransform->WorldMatrix()) * glm::vec4(position, 1));
-	else
-		SetPosition(position);
+	SetPosition(ParentInverseWorldMatrix() * glm::vec4(position, 1));
 }
 
 void Transform::SetPosition(float x, float y, float z)
 {
-	position = glm::vec3(x, y, z);
+	SetPosition(glm::vec3(x, y, z));
 }
 
 void Transform::SetPosition(const glm::vec3& position)
 {
+
 	this->position = position;
 }
 
 glm::vec3 Transform::WorldScale() const
 {
-	const glm::mat3& worldMatrix{ WorldMatrix() };
-	return glm::vec3(length(worldMatrix[0]), length(worldMatrix[1]), length(worldMatrix[2]));
+	glm::mat4 parent2World = ParentWorldMatrix();
+	return glm::vec3(length(parent2World[0]), length(parent2World[1]), length(parent2World[2])) * scale;
 }
 
 void Transform::SetWorldScale(float x, float y, float z)
@@ -81,22 +107,13 @@ void Transform::SetWorldScale(float x, float y, float z)
 
 void Transform::SetWorldScale(const glm::vec3& scale)
 {
-	Transform* parentTransform;
-	if (entity->Parent() && ((parentTransform = entity->Parent()->GetComponentInAncestors<Transform>())))
-	{
-		const glm::mat3& inverse = affineInverse(parentTransform->WorldMatrix());
-		glm::vec3 invScale{length(inverse[0]), length(inverse[1]), length(inverse[2])};
-		SetScale(invScale * scale);
-	}
-	else
-		SetScale(scale);
+	glm::mat4 world2parent = ParentInverseWorldMatrix();
+	SetScale(glm::vec3(length(world2parent[0]), length(world2parent[1]), length(world2parent[2])) * scale);
 }
 
 void Transform::SetScale(float x, float y, float z)
 {
-	scale.x = x;
-	scale.y = y;
-	scale.z = z;
+	SetScale(glm::vec3(x, y, z));
 }
 
 void Transform::SetScale(const glm::vec3& scale)
@@ -106,7 +123,11 @@ void Transform::SetScale(const glm::vec3& scale)
 
 glm::quat Transform::WorldRotation() const
 {
-	return glm::quat_cast(WorldMatrix());
+	glm::quat parentWorldRot{ glm::uninitialize };
+	glm::vec3 pos{ glm::uninitialize };
+	glm::vec3 scale{ glm::uninitialize };
+	DecomposeMatrix(ParentWorldMatrix(), pos, scale, parentWorldRot);
+	return parentWorldRot * rotation;
 }
 
 void Transform::SetWorldRotation(float pitch, float yaw, float roll)
@@ -116,16 +137,16 @@ void Transform::SetWorldRotation(float pitch, float yaw, float roll)
 
 void Transform::SetWorldRotation(const glm::quat& rotation)
 {
-	Transform* parentTransform;
-	if (entity->Parent() && ((parentTransform = entity->Parent()->GetComponentInAncestors<Transform>())))
-		SetRotation(quat_cast(affineInverse(parentTransform->WorldMatrix())) * rotation);
-	else
-		SetRotation(rotation);
+	glm::quat parentInverseWorldRot{ glm::uninitialize };
+	glm::vec3 pos{ glm::uninitialize };
+	glm::vec3 scale{ glm::uninitialize };
+	DecomposeMatrix(ParentInverseWorldMatrix(), pos, scale, parentInverseWorldRot);
+	SetRotation(parentInverseWorldRot * rotation);
 }
 
 void Transform::SetRotation(float pitch, float yaw, float roll)
 {
-	rotation = glm::quat(glm::vec3(pitch, yaw, roll));
+	SetRotation(glm::quat(glm::vec3(pitch, yaw, roll)));
 }
 
 void Transform::SetRotation(const glm::quat& rotation)

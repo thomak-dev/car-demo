@@ -34,3 +34,4 @@ int CeilLog2(uint64_t x);
 
 // x must be less or equal to 31
 unsigned Pow2(unsigned x);
+void DecomposeMatrix(const glm::mat4& matrix, glm::vec3& position, glm::vec3& scale, glm::quat& rotation);

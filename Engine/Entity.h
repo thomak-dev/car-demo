@@ -28,7 +28,7 @@ namespace EntityFlags
 	}
 }
 
-class Message;
+struct Message;
 
 class Entity
 {

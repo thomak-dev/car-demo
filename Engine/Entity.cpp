@@ -9,6 +9,7 @@
 #include "FpsCounter.h"
 #include "RigidBody.h"
 #include "RandomColor.h"
+#include "messages.h"
 
 Entity::~Entity()
 {
@@ -168,8 +169,9 @@ void Entity::ReceiveMessageFromAbove(Entity* origin, Message* message)
 	for (Component* component : componentsInOrder)
 		component->OnMessageReceived(origin, message);
 
-	for (Entity* child : children)
-		child->ReceiveMessageFromAbove(origin, message);
+	if(!message->suppressed)
+		for (Entity* child : children)
+			child->ReceiveMessageFromAbove(origin, message);
 }
 
 void Entity::ReceiveMessageFromBelow(Entity* origin, Message* message)
@@ -177,7 +179,7 @@ void Entity::ReceiveMessageFromBelow(Entity* origin, Message* message)
 	for (Component* component : componentsInOrder)
 		component->OnMessageReceived(origin, message);
 
-	if (parent)
+	if (!message->suppressed && parent)
 		parent->ReceiveMessageFromBelow(origin, message);
 }
 

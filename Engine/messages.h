@@ -1,17 +1,25 @@
 #pragma once
+#include <glm/glm.hpp>
 
-class Message
+class Transform;
+
+struct Message
 {
-public:
+	bool suppressed{};
 	virtual ~Message() = default;
 };
 
-class UpdateMessage : public Message
+struct UpdateMessage : Message
 {
-public:
 	explicit UpdateMessage(float deltaTime) : deltaTime{deltaTime} {}
 	float deltaTime{};
 	virtual ~UpdateMessage() = default;
+};
+
+struct TransformChangeMessage : Message
+{
+	TransformChangeMessage(Transform* parent) : parent{ parent } {}
+	Transform* parent{};
 };
 
 template <typename T>
@@ -20,4 +28,12 @@ void HandleUpdate(Message* message, T& target, void(T::*updateFunction)(float))
 	UpdateMessage* update = dynamic_cast<UpdateMessage*>(message);
 	if (update)
 		(target.*updateFunction)(update->deltaTime);
+}
+
+template <typename T>
+void HandleUpdate(Message* message, T& target, void(T::*updateFunction)())
+{
+	UpdateMessage* update = dynamic_cast<UpdateMessage*>(message);
+	if (update)
+		(target.*updateFunction)();
 }

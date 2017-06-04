@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "math_utility.h"
 #include "Entity.h"
+#include "messages.h"
 
 std::unordered_map<std::string, RigidBody::Shape> RigidBody::stringToShape
 {
@@ -41,9 +42,10 @@ void RigidBody::Initialize()
 	transform = entity->GetComponent<Transform>();
 	shape = GenerateShape(shapeType);
 	btVector3 inertia{ 0, 0, 0 };
+	shape->setLocalScaling(GlmToBtVec3(transform->WorldScale()));
 	if (shapeType == Shape::Mesh)
 	{
-		dynamic_cast<btBvhTriangleMeshShape*>(shape)->setLocalScaling(GlmToBtVec3(transform->WorldScale()));
+		//dynamic_cast<btBvhTriangleMeshShape*>(shape)->setLocalScaling();
 		SDL_assert(mass == 0);
 	}
 	else if(mass > 0)
@@ -52,6 +54,11 @@ void RigidBody::Initialize()
 	btRigidBody::btRigidBodyConstructionInfo rbCtorInfo{ mass, this, shape, inertia };
 	bulletRigidBody = new btRigidBody(rbCtorInfo);
 	Physics::Instance().RegisterRigidBody(this);
+}
+
+void RigidBody::OnMessageReceived(Entity* origin, Message* message)
+{
+	HandleUpdate(message, *this, &RigidBody::Update);
 }
 
 void RigidBody::getWorldTransform(btTransform& worldTrans) const
@@ -68,8 +75,10 @@ void RigidBody::setWorldTransform(const btTransform& worldTrans)
 	BtToGlmVec3(position, worldTrans.getOrigin());
 	glm::quat newRotation{ glm::uninitialize };
 	BtToGlmQuat(newRotation, worldTrans.getRotation());
-	transform->SetWorldPosition(position);
-	transform->SetWorldRotation(newRotation);
+	lastPhysicsPosition = position;
+	lastPhysicsRotation = newRotation;
+	//transform->SetWorldPosition(position);
+	//transform->SetWorldRotation(newRotation);
 }
 
 void RigidBody::SetShape(Shape shapeType)
@@ -97,6 +106,15 @@ void RigidBody::SetMass(float mass)
 		if(mass > 0)
 			shape->calculateLocalInertia(mass, inertia);
 		bulletRigidBody->setMassProps(mass, inertia);
+	}
+}
+
+void RigidBody::Update()
+{
+	if(mass > 0)
+	{
+		transform->SetWorldPosition(lastPhysicsPosition);
+		transform->SetWorldRotation(lastPhysicsRotation);
 	}
 }
 

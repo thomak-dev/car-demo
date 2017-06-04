@@ -2,7 +2,8 @@
 #include <unordered_map>
 #include <memory>
 #include <btBulletDynamicsCommon.h>
-#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "Component.h"
 #include "core.h"
 #include "Mesh.h"
@@ -25,6 +26,7 @@ public:
 	
 	void Deserialize(const Json& json) override;
 	void Initialize() override;
+	void OnMessageReceived(Entity* origin, Message* message) override;
 	void getWorldTransform(btTransform& worldTrans) const override;
 	void setWorldTransform(const btTransform& worldTrans) override;
 	void SetShape(Shape shape);
@@ -38,8 +40,10 @@ private:
 	glm::vec3 halfSize{0.5f};
 	std::shared_ptr<Mesh> mesh;
 	float mass{ 1 };
+	glm::quat lastPhysicsRotation;
+	glm::vec3 lastPhysicsPosition;
 
+	void Update();
 	btCollisionShape* GenerateShape(Shape type) const;
-
 	static std::unordered_map<std::string, Shape> stringToShape;
 };

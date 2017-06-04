@@ -94,3 +94,23 @@ unsigned Pow2(unsigned x)
 	SDL_assert(x <= 31);
 	return 1u << x;
 }
+
+// works for affine matrices without odd negative scale
+void DecomposeMatrix(const glm::mat4& matrix, glm::vec3& position, glm::vec3& scale, glm::quat& rotation)
+{
+	position = matrix[3];
+	scale = glm::vec3(glm::length(matrix[0]), glm::length(matrix[1]), glm::length(matrix[2]));
+	//if (glm::determinant(matrix) < 0)
+	//	if (scale.x != 0)
+	//		scale.x *= -1;
+	//	else if (scale.y != 0)
+	//		scale.y *= -1;
+	//	else
+	//		scale.z *= -1;
+	glm::mat3 rot{ matrix };
+	rot[0] /= scale.x;
+	rot[1] /= scale.y;
+	rot[2] /= scale.z;
+
+	rotation = glm::quat_cast(rot);
+}

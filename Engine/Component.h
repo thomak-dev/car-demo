@@ -3,7 +3,7 @@
 #include "core.h"
 
 class Entity;
-class Message;
+struct Message;
 
 class Component
 {
