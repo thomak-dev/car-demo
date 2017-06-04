@@ -1,0 +1,3 @@
+[submodule "External/PhysX-3.4"]
+	path = External/PhysX-3.4
+	url = https://github.com/NVIDIAGameWorks/PhysX-3.4.git
