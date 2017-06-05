@@ -175,7 +175,7 @@
 				},
 				{
 					"type": "RigidBody",
-					"mass": 0,
+					"static": true,
 					"mesh": "Meshes/slide.dae",
 					"shape": "Mesh"
 				}

@@ -1,12 +1,16 @@
 #pragma once
 #include <vector>
 #include <PxPhysicsAPI.h>
+#include <memory>
+#include <unordered_map>
 #include "Singleton.h"
 
+class Mesh;
 class RigidBody;
 
 class Physics : public Singleton<Physics>
 {
+	friend class RigidBody;
 public:
 	Physics();
 	~Physics();
@@ -14,6 +18,7 @@ public:
 	void RegisterRigidBody(RigidBody* rigidBody);
 	void UnregisterRigidBody(RigidBody* rigidBody);
 	void Step(float deltaTime);
+	void Await();
 	void DebugDraw();
 
 	bool Visualize() const { return visualize; }
@@ -34,7 +39,14 @@ private:
 	physx::PxDefaultAllocator allocator;
 	PhysxErrorCallback errorCallback;
 	physx::PxPhysics* backend;
+	physx::PxMaterial* defaultMaterial;
+	physx::PxScene* scene;
+	physx::PxCpuDispatcher* cpuDispatcher;
+	physx::PxCooking* cooking;
 
 	std::vector<RigidBody*> rigidBodies;
+	std::unordered_map<std::shared_ptr<Mesh>, physx::PxTriangleMesh*> physicsMeshes;
+
+	physx::PxTriangleMesh* GetMesh(const std::shared_ptr<Mesh>& mesh);
 };
 

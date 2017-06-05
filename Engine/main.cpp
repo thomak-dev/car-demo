@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	Renderer renderer;
 	Physics physics;
 
-	Time time{ 150 };
+	Time time{ 150, 60 };
 
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
 	root->Initialize();
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	bool quit = false;
 	while (!quit)
 	{
-		time.BeginNewFrame();
+		bool isFixedTimeStep = time.BeginNewFrame();
 		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, RenderDebugId::Frame, -1, "Main loop");
 
 		TickInput();
@@ -49,8 +49,17 @@ int main(int argc, char* argv[])
 
 		float deltaTime = time.GetDeltaTime();
 		
-		physics.Step(deltaTime);
-		UpdateMessage update{ deltaTime };
+		if(isFixedTimeStep)
+		{
+			float timeStep = time.GetFixedTimeStep();
+			if (time.GetFrameCount() > 1)
+				physics.Await();
+			physics.Step(timeStep);
+			UpdateMessage fixedUpdate{ timeStep, true };
+			root->SendMessageDown(&fixedUpdate);
+		}
+
+		UpdateMessage update{ deltaTime, false };
 		root->SendMessageDown(&update);
 		renderer.Render();
 		gameWindow.Swap();

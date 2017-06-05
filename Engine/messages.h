@@ -12,8 +12,9 @@ struct Message
 
 struct UpdateMessage : Message
 {
-	explicit UpdateMessage(float deltaTime) : deltaTime{deltaTime} {}
+	explicit UpdateMessage(float deltaTime, bool isFixed) : deltaTime{ deltaTime }, isFixed{isFixed} {}
 	float deltaTime{};
+	bool isFixed{};
 	virtual ~UpdateMessage() = default;
 };
 
@@ -27,7 +28,7 @@ using UpdateFunctionDt = std::function<void(float)>;
 inline void HandleUpdate(Message* message, const UpdateFunctionDt& updateFunction)
 {
 	UpdateMessage* update = dynamic_cast<UpdateMessage*>(message);
-	if (update)
+	if (update && !update->isFixed)
 		updateFunction(update->deltaTime);
 }
 
@@ -35,6 +36,6 @@ using UpdateFunction = std::function<void()>;
 inline void HandleUpdate(Message* message, const UpdateFunction& updateFunction)
 {
 	UpdateMessage* update = dynamic_cast<UpdateMessage*>(message);
-	if (update)
+	if (update && !update->isFixed)
 		updateFunction();
 }

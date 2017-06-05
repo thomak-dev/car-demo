@@ -2,6 +2,8 @@
 #include <iostream>
 #include "RigidBody.h"
 #include "Renderer.h"
+#include "ResourceManager.h"
+#include "Mesh.h"
 
 using namespace physx;
 
@@ -47,31 +49,51 @@ void Physics::PhysxErrorCallback::reportError(PxErrorCode::Enum code, const char
 
 Physics::Physics()
 {	
+	RigidBody::physics = this;
 	foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, allocator, errorCallback);
 	SDL_assert(foundation);
 
-	pvd = PxCreatePvd(*foundation);
 	pvdTransport = PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
+	pvd = PxCreatePvd(*foundation);
 	pvd->connect(*pvdTransport, PxPvdInstrumentationFlag::eALL);
 
-	backend = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
-		PxTolerancesScale{}, false, pvd);
+	PxTolerancesScale tolerance{};
+	tolerance.speed = 9.81f;
+	backend = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, tolerance, false, pvd);
+	cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, PxCookingParams(tolerance));
+
+	SDL_assert(backend && cooking && PxInitExtensions(*backend, pvd));
 	
-	SDL_assert(backend && PxInitExtensions(*backend, pvd));
+	defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.5f);
+	PxSceneDesc scnDesc{ tolerance };
+	cpuDispatcher = PxDefaultCpuDispatcherCreate(4);
+	scnDesc.cpuDispatcher = cpuDispatcher;
+	scnDesc.filterShader = PxDefaultSimulationFilterShader;
+	scnDesc.gravity = PxVec3{ 0, -9.81f, 0 };
+	scene = backend->createScene(scnDesc);	
 }
 
 
 Physics::~Physics()
 {
+	for(auto& pair : physicsMeshes)
+	{
+		pair.second->release();
+	}
+	scene->release();
+	defaultMaterial->release();
 	PxCloseExtensions();
+	cooking->release();
 	backend->release();
-	pvdTransport->release();
 	pvd->release();
+	pvdTransport->release();
+	foundation->release();
 }
 
 void Physics::RegisterRigidBody(RigidBody* rigidBody)
 {
 	rigidBodies.push_back(rigidBody);
+	scene->addActor(*rigidBody->rigidActor);
 }
 
 void Physics::UnregisterRigidBody(RigidBody* rigidBody)
@@ -79,19 +101,63 @@ void Physics::UnregisterRigidBody(RigidBody* rigidBody)
 	auto found = std::find(rigidBodies.begin(), rigidBodies.end(), rigidBody);
 	if(found != rigidBodies.end())
 	{
+		scene->removeActor(*rigidBody->rigidActor);
 		rigidBodies.erase(found);
 	}
 }
 
 void Physics::Step(float deltaTime)
 {
-	for(auto rigidBody : rigidBodies)
-	{
-		
-	}
+	scene->simulate(deltaTime);
+}
+
+void Physics::Await()
+{
+	scene->fetchResults(true);
 }
 
 void Physics::DebugDraw()
 {
 
+}
+
+PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
+{
+	auto found = physicsMeshes.find(mesh);
+	if(found == physicsMeshes.end())
+	{
+		PxCookingParams params{ backend->getTolerancesScale() };
+		//params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_ACTIVE_EDGES_PRECOMPUTE;
+		//params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
+		//params.meshPreprocessParams |= PxMeshPreprocessingFlag::eWELD_VERTICES;
+		//params.meshWeldTolerance = 0.001f;
+		//params.meshCookingHint = PxMeshCookingHint::eCOOKING_PERFORMANCE;
+		cooking->setParams(params);
+
+		PxTriangleMeshDesc meshDesc;
+		meshDesc.points.count = mesh->vertices.size();
+		meshDesc.points.stride = sizeof(decltype(mesh->vertices)::value_type);
+		meshDesc.points.data = mesh->vertices.data();
+		meshDesc.triangles.count = mesh->indices.size() / 3;
+		meshDesc.triangles.stride = 3 * sizeof(decltype(mesh->indices)::value_type);
+		meshDesc.triangles.data = mesh->indices.data();
+
+//#		ifdef _DEBUG
+//		bool valid = cooking->validateTriangleMesh(meshDesc);
+//		SDL_assert(valid);
+//#		endif
+
+		PxDefaultMemoryOutputStream writeBuffer;
+		PxTriangleMeshCookingResult::Enum result;
+		bool status = cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
+		SDL_assert(status);
+
+		PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+
+		PxTriangleMesh* physicsMesh = backend->createTriangleMesh(readBuffer);
+		physicsMeshes.insert(found, make_pair(mesh, physicsMesh));
+		return physicsMesh;
+	}
+
+	return found->second;
 }

@@ -96,7 +96,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>D:\lib\SDL2_ttf-2.0.14\lib\x86;D:\lib\SDL2_image-2.0.1\lib\x86;C:\Program Files\Assimp\lib\x86;D:\lib\glew-2.0.0\lib\Release\Win32;D:\lib\SDL\lib\win32;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(SolutionDir)build.bat $(OutputPath)</Command>
@@ -137,7 +137,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <AdditionalLibraryDirectories>D:\lib\SDL2_ttf-2.0.14\lib\x86;D:\lib\SDL2_image-2.0.1\lib\x86;C:\Program Files\Assimp\lib\x86;D:\lib\glew-2.0.0\lib\Release\Win32;D:\lib\SDL\lib\win32;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>

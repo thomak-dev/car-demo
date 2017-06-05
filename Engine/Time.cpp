@@ -2,17 +2,25 @@
 #include <SDL.h>
 #include <glm\glm.hpp>
 
-Time::Time(int maxFrameRate)
+Time::Time(int maxFrameRate, int fixedRate)
 	:maxFrameRate{ maxFrameRate },
+	smoothFrames{ 15 },
 	minFrameDelta{ static_cast<uint32_t>(glm::ceil(1000.f / maxFrameRate)) },
 	oldTime{ SDL_GetTicks() },
 	newTime{ oldTime },
-	smoothFrames{ 15 }
+	fixedTimeStep{ static_cast<uint32_t>(glm::ceil(1000.f / fixedRate)) }
 {
+	SDL_assert(fixedRate <= maxFrameRate);
 }
 
-
-void Time::BeginNewFrame()
+/**
+ * \brief 
+ * Process time measurement in main loop. Call this once per frame (loop iteration), preferably at the beginning.
+ * 
+ * \return 
+ * true when a fixed time step has been completed, false otherwise.
+ */
+bool Time::BeginNewFrame()
 {
 	++frameCount;
 	newTime = SDL_GetTicks();
@@ -29,31 +37,12 @@ void Time::BeginNewFrame()
 		smoothFps = 1000 / (static_cast<float>(smoothTime) / smoothFrames);
 		smoothTime = 0;
 	}
+	accumulated += dtMs;
 	oldTime = newTime;
-}
-
-float Time::GetFps() const
-{
-	return smoothFps;
-}
-
-float Time::GetDeltaTime() const
-{
-	return dtMs / 1000.f;
-}
-
-float Time::GetTime() const
-{
-	return 1000.f/newTime;
-}
-
-uint32_t Time::GetTimeMs() const
-{
-	return newTime;
-}
-
-
-int Time::GetFrameCount() const
-{
-	return frameCount;
+	if(accumulated >= fixedTimeStep)
+	{
+		accumulated -= fixedTimeStep;
+		return true;
+	}
+	return false;
 }

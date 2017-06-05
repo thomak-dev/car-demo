@@ -29,6 +29,36 @@ void AiToGlmMatrix(glm::mat4& result, const aiMatrix4x4& aiMat)
 	result[3] = glm::vec4(aiMat[0][3], aiMat[1][3], aiMat[2][3], aiMat[3][3]);
 }
 
+physx::PxVec3 ToPxVec3(const glm::vec3& vec)
+{
+	return physx::PxVec3{ vec.x, vec.y, vec.z };
+}
+
+physx::PxVec4 ToPxVec4(const glm::vec4& vec)
+{
+	return physx::PxVec4{ vec.x, vec.y, vec.z, vec.w };
+}
+
+physx::PxMat44 ToPxMat44(const glm::mat4& mat)
+{
+	physx::PxMat44 pMat;
+	pMat[0] = ToPxVec4(mat[0]);
+	pMat[1] = ToPxVec4(mat[1]);
+	pMat[2] = ToPxVec4(mat[2]);
+	pMat[3] = ToPxVec4(mat[3]);
+	return pMat;
+}
+
+glm::vec3 ToGlmVec3(const physx::PxVec3& vec)
+{
+	return glm::vec3{ vec.x, vec.y, vec.z };
+}
+
+glm::quat ToGlmQuat(const physx::PxQuat& quat)
+{
+	return glm::quat{ quat.w, quat.x, quat.y, quat.z };
+}
+
 int CeilLog2(uint64_t x)
 {
 	static const uint64_t t[6] = {
