@@ -90,13 +90,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\lib\bullet3-2.86.1\src;D:\lib\SDL2_ttf-2.0.14\include;D:\lib\SDL2_image-2.0.1\include;D:\lib\glm;C:\Program Files\Assimp\include;D:\lib\SDL2-2.0.5\include;D:\lib\glew-2.0.0\include;D:\lib\rapidjson-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\lib\SDL2_ttf-2.0.14\include;D:\lib\SDL2_image-2.0.1\include;D:\lib\glm;C:\Program Files\Assimp\include;D:\lib\SDL2-2.0.5\include;D:\lib\glew-2.0.0\include;D:\lib\rapidjson-master\include;$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>D:\lib\bullet3-2.86.1\bin;D:\lib\SDL2_ttf-2.0.14\lib\x86;D:\lib\SDL2_image-2.0.1\lib\x86;C:\Program Files\Assimp\lib\x86;D:\lib\glew-2.0.0\lib\Release\Win32;D:\lib\SDL\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;BulletCollision_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;LinearMath_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\lib\SDL2_ttf-2.0.14\lib\x86;D:\lib\SDL2_image-2.0.1\lib\x86;C:\Program Files\Assimp\lib\x86;D:\lib\glew-2.0.0\lib\Release\Win32;D:\lib\SDL\lib\win32;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(SolutionDir)build.bat $(OutputPath)</Command>
@@ -130,14 +130,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\lib\bullet3-2.86.1\src;D:\lib\SDL2_ttf-2.0.14\include;D:\lib\SDL2_image-2.0.1\include;D:\lib\glm;C:\Program Files\Assimp\include;D:\lib\SDL2-2.0.5\include;D:\lib\glew-2.0.0\include;D:\lib\rapidjson-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\lib\SDL2_ttf-2.0.14\include;D:\lib\SDL2_image-2.0.1\include;D:\lib\glm;C:\Program Files\Assimp\include;D:\lib\SDL2-2.0.5\include;D:\lib\glew-2.0.0\include;D:\lib\rapidjson-master\include;$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>D:\lib\bullet3-2.86.1\bin;D:\lib\SDL2_ttf-2.0.14\lib\x86;D:\lib\SDL2_image-2.0.1\lib\x86;C:\Program Files\Assimp\lib\x86;D:\lib\glew-2.0.0\lib\Release\Win32;D:\lib\SDL\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;BulletCollision_vs2010.lib;BulletDynamics_vs2010.lib;LinearMath_vs2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\lib\SDL2_ttf-2.0.14\lib\x86;D:\lib\SDL2_image-2.0.1\lib\x86;C:\Program Files\Assimp\lib\x86;D:\lib\glew-2.0.0\lib\Release\Win32;D:\lib\SDL\lib\win32;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
@@ -180,7 +180,6 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshInstance.cpp" />
     <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="PhysicsDebugDrawer.cpp" />
     <ClCompile Include="RandomColor.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -211,7 +210,6 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="math_utility.h" />
     <ClInclude Include="Physics.h" />
-    <ClInclude Include="PhysicsDebugDrawer.h" />
     <ClInclude Include="RandomColor.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />

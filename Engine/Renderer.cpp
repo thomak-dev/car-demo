@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cctype>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Entity.h"
 #include "Camera.h"
 #include "Drawable.h"
@@ -61,15 +62,6 @@ Renderer::Renderer()
 	glEnable(GL_BLEND);
 	glBlendEquationSeparate(blendOpColor, blendOpAlpha);
 	glBlendFuncSeparate(blendSrcColor, blendDstColor, blendSrcAlpha, blendDstAlpha);
-	physicsDebugDrawer.setDebugMode(
-		PhysicsDebugDrawer::DBG_DrawWireframe |
-		PhysicsDebugDrawer::DBG_DrawAabb |
-		/*PhysicsDebugDrawer::DBG_DrawNormals |*/
-		PhysicsDebugDrawer::DBG_DrawContactPoints |
-		PhysicsDebugDrawer::DBG_DrawConstraints |
-		PhysicsDebugDrawer::DBG_DrawConstraintLimits |
-		PhysicsDebugDrawer::DBG_DrawFrames
-	);
 
 	glCreateBuffers(1, &textVbo);
 	glCreateVertexArrays(1, &textVao);
@@ -79,6 +71,16 @@ Renderer::Renderer()
 	glVertexAttribPointer(VertexAttributeLocation::Position, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
 	glEnableVertexAttribArray(VertexAttributeLocation::UV);
 	glVertexAttribPointer(VertexAttributeLocation::UV, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+
+	glGenBuffers(1, &lineVbo);
+	glGenVertexArrays(1, &lineVao);
+	glBindVertexArray(lineVao);
+	glBindBuffer(GL_ARRAY_BUFFER, lineVbo);
+	glEnableVertexAttribArray(VertexAttributeLocation::Position);
+	glVertexAttribPointer(VertexAttributeLocation::Position, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+	glEnableVertexAttribArray(VertexAttributeLocation::Color);
+	glVertexAttribPointer(VertexAttributeLocation::Color, 4, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, color)));
+	lineMaterial = ResourceManager::Instance().LoadMaterial("Materials/line.mat");
 }
 
 
@@ -87,6 +89,8 @@ Renderer::~Renderer()
 	glDeleteBuffers(2, ubos);
 	glDeleteBuffers(1, &textVbo);
 	glDeleteVertexArrays(1, &textVao);
+	glDeleteBuffers(1, &lineVbo);
+	glDeleteVertexArrays(1, &lineVao);
 }
 
 void Renderer::RegisterCamera(Camera* camera)
@@ -390,6 +394,42 @@ void Renderer::DrawText(const std::string& text, Font& font, int pointSize, int 
 		glBufferData(GL_ARRAY_BUFFER, textVertices.size() * sizeof(TextVertex), textVertices.data(), GL_STREAM_DRAW);
 		glBindVertexArray(textVao);
 		glDrawArrays(GL_TRIANGLES, 0, textVertices.size());
+	}
+}
+
+void Renderer::DrawBillboardText(const glm::vec3& location, const std::string text, Font& font, const std::shared_ptr<Material>& textMaterial)
+{
+	Transform* camTransform = CurrentCamera().GetEntity()->GetComponent<Transform>();
+	SetMaterial(textMaterial);
+	glm::vec3 dir{ camTransform->WorldPosition() - location };
+	glm::vec3 forward{ -camTransform->Forward() };
+	float planeDistance = dot(forward, dir);
+	forward = normalize(forward);
+	glm::vec3 up{ camTransform->Up() };
+	glm::mat4 model{ glm::vec4(cross(up, forward), 0), glm::vec4(up, 0), glm::vec4(forward, 0), glm::vec4(location, 1) };
+	float scale = planeDistance * TextScale / TextPointSize;
+	model = glm::scale(model, glm::vec3(scale, scale, scale));
+	SetModel(model);
+	DrawText(text, font, TextPointSize, -1, 1, -1);
+}
+
+void Renderer::DrawLine(glm::vec3 from, glm::vec3 to, glm::vec4 fromColor, glm::vec4 toColor)
+{
+	buffer.emplace_back(from, fromColor);
+	buffer.emplace_back(to, toColor);
+}
+
+void Renderer::FlushLines()
+{
+	if (buffer.size() > 0)
+	{
+		SetMaterial(lineMaterial);
+		glBindBuffer(GL_ARRAY_BUFFER, lineVbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * buffer.size(), buffer.data(), GL_STREAM_DRAW);
+		glBindVertexArray(lineVao);
+		glDrawArrays(GL_LINES, 0, buffer.size());
+
+		buffer.clear();
 	}
 }
 

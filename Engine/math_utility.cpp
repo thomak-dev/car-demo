@@ -29,42 +29,6 @@ void AiToGlmMatrix(glm::mat4& result, const aiMatrix4x4& aiMat)
 	result[3] = glm::vec4(aiMat[0][3], aiMat[1][3], aiMat[2][3], aiMat[3][3]);
 }
 
-void BtToGlmVec3(glm::vec3& result, const btVector3& btVec)
-{
-	result.x = btVec.x();
-	result.y = btVec.y();
-	result.z = btVec.z();
-}
-
-void GlmToBtVec3(btVector3& result, const glm::vec3& glmVec)
-{
-	result.setX(glmVec.x);
-	result.setY(glmVec.y);
-	result.setZ(glmVec.z);
-}
-
-glm::vec3 BtToGlmVec3(const btVector3& btVec)
-{
-	glm::vec3 result{ glm::uninitialize };
-	BtToGlmVec3(result, btVec);
-	return result;
-}
-
-btVector3 GlmToBtVec3(const glm::vec3& glmVec)
-{
-	btVector3 result;
-	GlmToBtVec3(result, glmVec);
-	return result;
-}
-
-void BtToGlmQuat(glm::quat& result, const btQuaternion& btQuat)
-{
-	result.w = btQuat.w();
-	result.x = btQuat.x();
-	result.y = btQuat.y();
-	result.z = btQuat.z();
-}
-
 int CeilLog2(uint64_t x)
 {
 	static const uint64_t t[6] = {

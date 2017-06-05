@@ -1,8 +1,6 @@
 #pragma once
 #include <glm/fwd.hpp>
 #include <assimp/types.h>
-#include <LinearMath/btVector3.h>
-#include <LinearMath/btQuaternion.h>
 
 namespace Vector3
 {
@@ -23,12 +21,6 @@ unsigned CeilToBoundary(unsigned x, unsigned po2);
 unsigned FloorToBoundary(unsigned x, unsigned po2);
 
 void AiToGlmMatrix(glm::mat4& result, const aiMatrix4x4& aiMat);
-
-void BtToGlmVec3(glm::vec3& result, const btVector3& btVec);
-void GlmToBtVec3(btVector3& result, const glm::vec3& glmVec);
-glm::vec3 BtToGlmVec3(const btVector3& btVec);
-btVector3 GlmToBtVec3(const glm::vec3& glmVec);
-void BtToGlmQuat(glm::quat& result, const btQuaternion& btQuat);
 
 int CeilLog2(uint64_t x);
 

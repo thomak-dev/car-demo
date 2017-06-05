@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <btBulletDynamicsCommon.h>
+#include <PxPhysicsAPI.h>
 #include "Singleton.h"
 
 class RigidBody;
@@ -20,15 +20,21 @@ public:
 	void SetVisualize(bool visualize) { this->visualize = visualize; }
 
 private:
-	
-	btCollisionConfiguration* config;
-	btDispatcher* dispatcher;
-	btBroadphaseInterface* broadphase;
-	btConstraintSolver* constraintSolver;
-	btDynamicsWorld* world;
+	class PhysxErrorCallback : public physx::PxErrorCallback
+	{
+	public:
+		virtual ~PhysxErrorCallback() = default;
+		void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override;
+	};
+
 	bool visualize{};
+	physx::PxFoundation* foundation;
+	physx::PxPvd* pvd;
+	physx::PxPvdTransport* pvdTransport;
+	physx::PxDefaultAllocator allocator;
+	PhysxErrorCallback errorCallback;
+	physx::PxPhysics* backend;
 
 	std::vector<RigidBody*> rigidBodies;
-	static void PostProcessPhysicsSubtick(btDynamicsWorld *world, btScalar timeStep);
 };
 

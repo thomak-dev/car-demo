@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include <btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
 #include "core.h"
 #include "Singleton.h"
-#include "PhysicsDebugDrawer.h"
 
 class Font;
 class Camera;
@@ -102,8 +101,10 @@ public:
 	void SetMaterial(const std::shared_ptr<Material>& material);
 	void SetModel(const glm::mat4& modelMatrix);
 	void DrawText(const std::string& text, Font& font, int pointSize, int horizontalAnchor = 0, int verticalAnchor = 0, int alignment = 0);
+	void DrawBillboardText(const glm::vec3& location, const std::string text, Font& font, const std::shared_ptr<Material>& textMaterial);
+	void DrawLine(glm::vec3 from, glm::vec3 to, glm::vec4 fromColor, glm::vec4 toColor);
+	void FlushLines();
 	const Camera& CurrentCamera() const { return *currentCamera; }
-	btIDebugDraw* GetPhysicsDebugDrawer() { return &physicsDebugDrawer; }
 
 private:
 	struct TextVertex
@@ -126,6 +127,24 @@ private:
 	GLuint textVao{};
 	GLuint textVbo{};
 
+	static constexpr int TextPointSize{ 16 };
+	static constexpr float TextScale{ 0.026f };
+
+	struct Vertex
+	{
+		Vertex(const glm::vec3& position, const glm::vec4& color)
+			:position{ position }, color{ color }
+		{
+		}
+
+		glm::vec3 position;
+		glm::vec4 color;
+	};
+	std::vector<Vertex> buffer;
+	std::shared_ptr<Material> lineMaterial;
+	GLuint lineVbo;
+	GLuint lineVao;
+
 	std::vector<Drawable*> drawables;
 	std::vector<Camera*> cameras;
 	std::vector<Light*> lights;
@@ -140,7 +159,6 @@ private:
 	Blend::Coefficient::Type blendDstColor{ Blend::Coefficient::Zero };
 	Blend::Coefficient::Type blendDstAlpha{ Blend::Coefficient::Zero };
 	std::shared_ptr<Material> currentMaterial;
-	PhysicsDebugDrawer physicsDebugDrawer;
 	Camera* currentCamera{};
 	
 

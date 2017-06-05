@@ -51,7 +51,7 @@
 			"file": "root.prefab",
 			"settings":
 			{
-				"buffer_size": 4291,
+				"buffer_size": 4294,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -221,11 +221,17 @@
 	],
 	"file_history":
 	[
+		"/D/dev/Unity/Projects/ZfVideoPlayer2/.gitignore",
+		"/C/Users/thomak/dev/Engine/.gitattributes",
+		"/D/dev/Unity/Projects/ZfVideoPlayer2/README.md",
+		"/D/dev/pwgen/.gitignore",
+		"/D/dev/pwgen/README.md",
+		"/X/Dropbox/Passwords.txt",
+		"/C/Users/thomak/dev/Engine/.gitmodules",
 		"/D/dev/ogre/.hg/store/data/_ogre_main/src/_ogre_matrix4.cpp.i",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Prefabs/robot.prefab",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Materials/text.mat",
 		"/C/Users/thomak/dev/Engine/.gitignore",
-		"/C/Users/thomak/dev/Engine/.gitattributes",
 		"/C/Users/thomak/dev/Engine/Engine/Engine.vcxproj.user",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Meshes/quad.dae",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Fonts/consola.ttf",
@@ -243,7 +249,6 @@
 		"/D/dev/Engine/Assets/Resources/shader_variable_names.txt",
 		"/D/dev/Engine/Assets/Resources/Prefabs/box_staple_test.prefab",
 		"/D/dev/Engine/Assets/Resources/Prefabs/physical_box.prefab",
-		"/X/Dropbox/Passwords.txt",
 		"/C/Users/thomak/.ssh/id_rsa.pub",
 		"/D/dev/Unity/Projects/ZfVideoPlayer/Assets/StreamingAssets/settings.json",
 		"/D/dev/Engine/Assets/Resources/Materials/cyanish.mat",
@@ -343,12 +348,7 @@
 		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 04 [BD][1080p][e8fa1268].txt",
 		"/R/eula.1028.txt",
 		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 03 [BD][1080p][8236a8b2].txt",
-		"/D/Downloads/[Coalgirls]_Hanasaku_Iroha_(1920x1080_Blu-Ray_FLAC)/[Coalgirls]_Hanasaku_Iroha_19_(1920x1080_Blu-Ray_FLAC)_[6482D993].txt",
-		"/C/Users/Thomas Makiela/Desktop/[Coalgirls]_Hanasaku_Iroha_(1920x1080_Blu-Ray_FLAC).txt",
-		"/C/Users/Thomas Makiela/Desktop/MusicBot/config/autoplaylist.txt",
-		"/C/Users/Thomas Makiela/Desktop/ck2 fertility",
-		"/D/Dropbox/keyseller_journal.txt",
-		"/C/Users/Thomas Makiela/Documents/Paradox Interactive/Stellaris/user_empire_designs.txt"
+		"/D/Downloads/[Coalgirls]_Hanasaku_Iroha_(1920x1080_Blu-Ray_FLAC)/[Coalgirls]_Hanasaku_Iroha_19_(1920x1080_Blu-Ray_FLAC)_[6482D993].txt"
 	],
 	"find":
 	{
@@ -427,15 +427,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4291,
+						"buffer_size": 4294,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								61,
-								61
+								848,
+								848
 							]
 						],
 						"settings":
