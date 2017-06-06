@@ -71,6 +71,8 @@ Physics::Physics()
 	scnDesc.filterShader = PxDefaultSimulationFilterShader;
 	scnDesc.gravity = PxVec3{ 0, -9.81f, 0 };
 	scene = backend->createScene(scnDesc);	
+	scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
+	scene->setFlag(PxSceneFlag::eEXCLUDE_KINEMATICS_FROM_ACTIVE_ACTORS, true);
 }
 
 
@@ -114,6 +116,14 @@ void Physics::Step(float deltaTime)
 void Physics::Await()
 {
 	scene->fetchResults(true);
+	PxU32 activeActorsCount;
+	PxActor** activeActors = scene->getActiveActors(activeActorsCount);
+	for (int i = 0; i < activeActorsCount; ++i)
+	{
+		RigidBody* rigidBody = static_cast<RigidBody*>(activeActors[i]->userData);
+		SDL_assert(rigidBody);
+		rigidBody->UpdateTransform();
+	}
 }
 
 void Physics::DebugDraw()

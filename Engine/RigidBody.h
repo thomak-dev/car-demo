@@ -30,7 +30,7 @@ public:
 	void SetShape(Shape shape);
 	Shape GetShape() const { return shapeType; }
 	void SetDensity(float mass);
-	float Density() const { return density; }
+	float Density() const { return density; }	
 
 private:
 	Transform* transform{};
@@ -50,4 +50,5 @@ private:
 	void PostProcessPhysics();
 	void SetShapeInternal(Shape shape);
 	void SetDensityInternal(float mass);
+	void UpdateTransform();
 };

@@ -58,6 +58,9 @@ void RigidBody::Initialize()
 	}
 	SetShapeInternal(shapeType);
 	SetDensityInternal(density);
+	rigidActor->userData = this;
+	lastPhysicsPosition = transform->WorldPosition();
+	lastPhysicsRotation = transform->WorldRotation();
 
 	physics->RegisterRigidBody(this);
 }
@@ -83,6 +86,15 @@ void RigidBody::SetDensity(float density)
 		SetDensityInternal(density);
 }
 
+void RigidBody::UpdateTransform()
+{
+	auto pTrans = rigidActor->getGlobalPose();
+	lastPhysicsRotation = ToGlmQuat(pTrans.q);
+	lastPhysicsPosition = ToGlmVec3(pTrans.p);
+	transform->SetWorldPosition(lastPhysicsPosition);
+	transform->SetWorldRotation(lastPhysicsRotation);
+}
+
 void RigidBody::Update()
 {
 	transform->SetWorldPosition(lastPhysicsPosition);
@@ -91,11 +103,7 @@ void RigidBody::Update()
 
 void RigidBody::PostProcessPhysics()
 {
-	auto pTrans = rigidActor->getGlobalPose();
-	lastPhysicsRotation = ToGlmQuat(pTrans.q);
-	lastPhysicsPosition = ToGlmVec3(pTrans.p);
-	transform->SetWorldPosition(lastPhysicsPosition);
-	transform->SetWorldRotation(lastPhysicsRotation);
+
 }
 
 void RigidBody::SetShapeInternal(Shape shapeType)
@@ -122,7 +130,7 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 		shape = physics->backend->createShape(PxTriangleMeshGeometry{physics->GetMesh(mesh), PxMeshScale{ToPxVec3(transform->WorldScale())}}, *physics->defaultMaterial, true);
 		rigidActor->attachShape(*shape);
 		break;
-	default: ;
+	default: SDL_assert(false);
 	}
 }
 
