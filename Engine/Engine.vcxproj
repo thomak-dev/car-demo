@@ -99,7 +99,7 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;assimp.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)build.bat $(OutputPath)</Command>
+      <Command>$(SolutionDir)copy_assets.bat $(OutputPath)</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -141,7 +141,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)build.bat $(OutputPath)</Command>
+      <Command>$(SolutionDir)copy_assets.bat $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
