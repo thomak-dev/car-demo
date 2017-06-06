@@ -127,11 +127,9 @@ PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
 	if(found == physicsMeshes.end())
 	{
 		PxCookingParams params{ backend->getTolerancesScale() };
-		//params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_ACTIVE_EDGES_PRECOMPUTE;
-		//params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
-		//params.meshPreprocessParams |= PxMeshPreprocessingFlag::eWELD_VERTICES;
-		//params.meshWeldTolerance = 0.001f;
-		//params.meshCookingHint = PxMeshCookingHint::eCOOKING_PERFORMANCE;
+		params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_ACTIVE_EDGES_PRECOMPUTE;
+		params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
+		params.meshCookingHint = PxMeshCookingHint::eCOOKING_PERFORMANCE;
 		cooking->setParams(params);
 
 		PxTriangleMeshDesc meshDesc;
@@ -142,19 +140,7 @@ PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
 		meshDesc.triangles.stride = 3 * sizeof(decltype(mesh->indices)::value_type);
 		meshDesc.triangles.data = mesh->indices.data();
 
-//#		ifdef _DEBUG
-//		bool valid = cooking->validateTriangleMesh(meshDesc);
-//		SDL_assert(valid);
-//#		endif
-
-		PxDefaultMemoryOutputStream writeBuffer;
-		PxTriangleMeshCookingResult::Enum result;
-		bool status = cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
-		SDL_assert(status);
-
-		PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-
-		PxTriangleMesh* physicsMesh = backend->createTriangleMesh(readBuffer);
+		PxTriangleMesh* physicsMesh = cooking->createTriangleMesh(meshDesc, backend->getPhysicsInsertionCallback());
 		physicsMeshes.insert(found, make_pair(mesh, physicsMesh));
 		return physicsMesh;
 	}

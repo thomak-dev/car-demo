@@ -51,7 +51,7 @@
 			"file": "root.prefab",
 			"settings":
 			{
-				"buffer_size": 4294,
+				"buffer_size": 4299,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -60,7 +60,7 @@
 			"file": "Prefabs/box_staple_test.prefab",
 			"settings":
 			{
-				"buffer_size": 834,
+				"buffer_size": 869,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -70,6 +70,15 @@
 			"settings":
 			{
 				"buffer_size": 234,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Prefabs/physical_sphere.prefab",
+			"settings":
+			{
+				"buffer_size": 236,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -217,10 +226,12 @@
 	"expanded_folders":
 	[
 		"/C/Users/thomak/dev/Engine/Assets/Resources",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Meshes",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Prefabs"
 	],
 	"file_history":
 	[
+		"/D/lib/steamaudio_api_2.0-beta.5/include/phonon.h",
 		"/D/dev/Unity/Projects/ZfVideoPlayer2/.gitignore",
 		"/C/Users/thomak/dev/Engine/.gitattributes",
 		"/D/dev/Unity/Projects/ZfVideoPlayer2/README.md",
@@ -347,8 +358,7 @@
 		"/D/gamedev/ddl/workspace/depot/CPP/DentistVR/reade_me.txt",
 		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 04 [BD][1080p][e8fa1268].txt",
 		"/R/eula.1028.txt",
-		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 03 [BD][1080p][8236a8b2].txt",
-		"/D/Downloads/[Coalgirls]_Hanasaku_Iroha_(1920x1080_Blu-Ray_FLAC)/[Coalgirls]_Hanasaku_Iroha_19_(1920x1080_Blu-Ray_FLAC)_[6482D993].txt"
+		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 03 [BD][1080p][8236a8b2].txt"
 	],
 	"find":
 	{
@@ -368,6 +378,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"density",
+			"mass",
 			"slide",
 			"\"Light\"",
 			"\"type\"",
@@ -427,15 +439,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4294,
+						"buffer_size": 4299,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								848,
-								848
+								2950,
+								2950
 							]
 						],
 						"settings":
@@ -444,7 +456,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2134.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -456,44 +468,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 834,
+						"buffer_size": 869,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								328,
-								328
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "Prefabs/physical_box.prefab",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 234,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
+								695,
+								695
 							]
 						],
 						"settings":
@@ -509,7 +492,65 @@
 					"type": "text"
 				},
 				{
+					"buffer": 2,
+					"file": "Prefabs/physical_box.prefab",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 234,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								234
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
 					"buffer": 3,
+					"file": "Prefabs/physical_sphere.prefab",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 236,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								109,
+								109
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "Prefabs/robot.prefab",
 					"semi_transient": false,
 					"settings":
@@ -534,7 +575,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
