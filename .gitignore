@@ -37,7 +37,7 @@
 /Release/
 /Engine/Debug/
 /Engine/Release/
-/.vs/
+.vs/
 *.vcxproj.user
 
 .hg/

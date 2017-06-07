@@ -1,0 +1,42 @@
+﻿  Copying libjpeg-9.dll
+          1 Datei(en) kopiert.
+  Copying libpng16-16.dll
+          1 Datei(en) kopiert.
+  Copying libtiff-5.dll
+          1 Datei(en) kopiert.
+  Copying libwebp-4.dll
+          1 Datei(en) kopiert.
+  Copying LICENSE.jpeg.txt
+          1 Datei(en) kopiert.
+  Copying LICENSE.png.txt
+          1 Datei(en) kopiert.
+  Copying LICENSE.tiff.txt
+          1 Datei(en) kopiert.
+  Copying LICENSE.webp.txt
+          1 Datei(en) kopiert.
+  Copying LICENSE.zlib.txt
+          1 Datei(en) kopiert.
+  Copying zlib1.dll
+          1 Datei(en) kopiert.
+  IMG.c
+  IMG_bmp.c
+  IMG_gif.c
+  IMG_jpg.c
+  IMG_lbm.c
+  IMG_pcx.c
+  IMG_png.c
+  IMG_pnm.c
+  IMG_tga.c
+  IMG_tif.c
+..\IMG_tif.c(211): warning C4101: 'y': unreferenced local variable
+..\IMG_tif.c(211): warning C4101: 'x': unreferenced local variable
+..\IMG_tif.c(212): warning C4101: 'half': unreferenced local variable
+  IMG_webp.c
+  IMG_xcf.c
+  IMG_xpm.c
+  IMG_xv.c
+  IMG_xxx.c
+  Generating Code...
+     Creating library C:\Users\thomak\dev\Engine\External\SDL_image\VisualC\\Win32\Debug\SDL2_image.lib and object C:\Users\thomak\dev\Engine\External\SDL_image\VisualC\\Win32\Debug\SDL2_image.exp
+  SDL_image.vcxproj -> C:\Users\thomak\dev\Engine\External\SDL_image\VisualC\\Win32\Debug\SDL2_image.dll
+  SDL_image.vcxproj -> C:\Users\thomak\dev\Engine\External\SDL_image\VisualC\\Win32\Debug\SDL2_image.pdb (Full PDB)
