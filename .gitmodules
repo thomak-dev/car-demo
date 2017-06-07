@@ -1,3 +1,12 @@
 [submodule "External/PhysX-3.4"]
 	path = External/PhysX-3.4
 	url = https://github.com/NVIDIAGameWorks/PhysX-3.4.git
+[submodule "External/assimp"]
+	path = External/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "External/glm"]
+	path = External/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "External/rapidjson"]
+	path = External/rapidjson
+	url = https://github.com/miloyip/rapidjson.git

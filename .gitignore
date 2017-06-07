@@ -1,4 +1,4 @@
-## GitHub C++ template
+## Based on GitHub C++ template
 
 # Prerequisites
 *.d
@@ -17,10 +17,6 @@
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
@@ -43,3 +39,5 @@
 /Engine/Release/
 /.vs/
 *.vcxproj.user
+
+.hg/

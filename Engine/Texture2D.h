@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <SDL.h>
-#include <GL/glew.h>
+#include "static_glew.h"
 
 class Texture2D
 {

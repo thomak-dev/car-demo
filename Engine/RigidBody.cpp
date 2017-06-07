@@ -138,7 +138,6 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 			const Physics::Terrain& terrain = *physics->GetTerrain(mesh);
 			shape = physics->backend->createShape(PxHeightFieldGeometry(terrain.heightField, PxMeshGeometryFlags{}, terrain.height / (1 << 16), 1, 1), *physics->defaultMaterial, true);
 			PxTransform pose{PxVec3{terrain.minX, terrain.minHeight + terrain.height / 2, terrain.minZ}};
-			//pose.q = PxQuat{ -Float::Pi/2, PxVec3{0, 1, 0} };
 			shape->setLocalPose(pose);
 			rigidActor->attachShape(*shape);
 			break;

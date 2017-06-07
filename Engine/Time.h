@@ -2,28 +2,42 @@
 #include <cstdint>
 #include "Singleton.h"
 
+/**
+ * \brief 
+ * Simple helper class to deal with time and framerate in main loops
+ * Supports fixed and variable time step, as well as framerate limiting
+ */
 class Time : public Singleton<Time>
 {
 public:
-	Time(int maxFrameRate, int fixedRate);
+	explicit Time(int maxFrameRate = 144, int fixedRate = 60);
 	bool BeginNewFrame();
-	float GetFps() const { return smoothFps; }
+	float GetSmoothFps() const { return smoothFps; }
+	void SetSmoothCount(int count) { smoothFrames = count; }
+	void SetStrict(bool value) { strictLimiting = value; }
+	bool IsStrict() const { return strictLimiting; }
+	int GetSmoothCount() const { return smoothFrames; }
 	float GetDeltaTime() const { return dtMs / 1000.f; }
+	int GetDeltaTimeMs() const { return dtMs; }
 	float GetTime() const { return 1000.f / newTime; }
 	uint32_t GetTimeMs() const { return newTime; }
-	int GetFrameCount() const { return frameCount; }
+	uint32_t GetFrameCount() const { return frameCount; }
 	float GetFixedTimeStep() const { return fixedTimeStep / 1000.0f; }
+	int GetFixedTimeStepMs() const { return fixedTimeStep / 1000.0f; }
+
 private:
-	int frameCount{};
+	bool strictLimiting{};
+	uint32_t frameCount{};
 	int maxFrameRate{};
-	const int smoothFrames{};
-	uint32_t minFrameDelta{};
+	int smoothFrames{};
+	int minFrameDelta{};
 	uint32_t oldTime{};
 	uint32_t newTime{};
-	uint32_t smoothTime{};
-	uint32_t dtMs{};
-	uint32_t accumulated{};
-	uint32_t fixedTimeStep{};
+	int smoothTime{};
+	int dtMs{};
+	int accumFixedStep{};
+	int accumDelay{};
+	int fixedTimeStep{};
 	float smoothFps{};
 };
 

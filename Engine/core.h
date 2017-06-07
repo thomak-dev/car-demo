@@ -2,9 +2,9 @@
 #include <string>
 #include <cmath>
 #include <functional>
-#include <GL/glew.h>
 #include <glm/fwd.hpp>
 #include <SDL.h>
+#include "static_glew.h"
 
 #ifdef WIN32
 #define PATH_SEPARATOR_CHAR '\\'

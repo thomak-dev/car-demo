@@ -19,7 +19,8 @@ int main(int argc, char* argv[])
 	Renderer renderer;
 	Physics physics;
 
-	Time time{ 150, 60 };
+	Time time{ 144, 60 };
+	//time.SetStrict(true);
 
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
 	root->Initialize();

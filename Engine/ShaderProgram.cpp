@@ -33,7 +33,7 @@ ShaderProgram::ShaderProgram(const ShaderProgram& other)
 	Link();
 }
 
-ShaderProgram::ShaderProgram(ShaderProgram&& other)
+ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
 	:ShaderProgram()
 {
 	swap(*this, other);
@@ -44,7 +44,7 @@ ShaderProgram::~ShaderProgram()
 	glDeleteProgram(program);
 }
 
-ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other)
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept
 {
 	swap(*this, other);
 	return *this;
@@ -92,7 +92,7 @@ void ShaderProgram::Link()
 	std::cout << "Log:\n" << log << std::endl;
 }
 
-void swap(ShaderProgram& first, ShaderProgram& second)
+void swap(ShaderProgram& first, ShaderProgram& second) noexcept
 {
 	using std::swap;
 	swap(first.program, second.program);

@@ -51,7 +51,26 @@
 			"file": "root.prefab",
 			"settings":
 			{
+				"buffer_size": 2249,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "{"
+			}
+		},
+		{
+			"file": "root_old.prefab",
+			"settings":
+			{
 				"buffer_size": 4299,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Prefabs/camera.prefab",
+			"settings":
+			{
+				"buffer_size": 449,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -69,7 +88,8 @@
 			"file": "Prefabs/physical_box.prefab",
 			"settings":
 			{
-				"buffer_size": 234,
+				"buffer_size": 253,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -77,7 +97,7 @@
 			"file": "Prefabs/physical_sphere.prefab",
 			"settings":
 			{
-				"buffer_size": 236,
+				"buffer_size": 258,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -231,6 +251,16 @@
 	],
 	"file_history":
 	[
+		"/C/Users/thomak/OneDrive/Öffentlich/test.txt",
+		"/C/Users/thomak/dev/Engine/copy_libs_debug.bat",
+		"/C/Users/thomak/dev/Engine/copy_libs_release.bat",
+		"/C/Users/thomak/dev/Engine/copy_assets.bat",
+		"/C/Users/thomak/dev/Engine/.gitmodules",
+		"/C/Users/thomak/dev/Engine/.gitignore",
+		"/C/Users/thomak/dev/Engine/copy_assets_release.bat",
+		"/C/Users/thomak/dev/Engine/copy_assets_debug.bat",
+		"/C/Users/thomak/dev/Engine/copy_libs.bat",
+		"/C/Users/thomak/dev/Engine/build.bat",
 		"/D/lib/steamaudio_api_2.0-beta.5/include/phonon.h",
 		"/D/dev/Unity/Projects/ZfVideoPlayer2/.gitignore",
 		"/C/Users/thomak/dev/Engine/.gitattributes",
@@ -238,11 +268,9 @@
 		"/D/dev/pwgen/.gitignore",
 		"/D/dev/pwgen/README.md",
 		"/X/Dropbox/Passwords.txt",
-		"/C/Users/thomak/dev/Engine/.gitmodules",
 		"/D/dev/ogre/.hg/store/data/_ogre_main/src/_ogre_matrix4.cpp.i",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Prefabs/robot.prefab",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Materials/text.mat",
-		"/C/Users/thomak/dev/Engine/.gitignore",
 		"/C/Users/thomak/dev/Engine/Engine/Engine.vcxproj.user",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Meshes/quad.dae",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Fonts/consola.ttf",
@@ -350,15 +378,7 @@
 		"/C/Users/Thomas Makiela/Desktop/mS2WaPKQAspyhp3J.txt",
 		"/D/Downloads/[Mori] Fate／kaleid liner Prisma Illya 2wei Herz! Specials - 04 [BD 1080p][8C5A9D5F].txt",
 		"/C/Users/Thomas Makiela/Desktop/dsldata FRITZ.Box 3272 126.06.50_26.01.17_0015.dsl",
-		"/C/Users/Thomas Makiela/Desktop/ENABLE BITS (BACKGROUND INTELLIGENT TRANSFER SERVICE).txt",
-		"/C/Users/Thomas Makiela/Downloads/Sims modding/Animations/WW_Leksana_Animations.rar",
-		"/R/Downloads Archive/[Coalgirls]_Toradora_(1280x720_Blu-ray_FLAC)/Readme.txt",
-		"/D/Downloads/Die Sims 4 Digital Deluxe Edition ReRelease Incl. Update 15 MULTi2 - x.X.RIDDICK.X.x-share-online.biz/Die Sims 4 Digital Deluxe Edition ReRelease Incl. Update 15 MULTi2/LESEN.txt",
-		"/D/gamedev/ddl/workspace/depot/CPP/DentistVR/read_me.txt",
-		"/D/gamedev/ddl/workspace/depot/CPP/DentistVR/reade_me.txt",
-		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 04 [BD][1080p][e8fa1268].txt",
-		"/R/eula.1028.txt",
-		"/D/Downloads/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. [BD][1080p-FLAC]/[Doutei] Saikin, Imouto no Yousu ga Chotto Okashiinda ga. - 03 [BD][1080p][8236a8b2].txt"
+		"/C/Users/Thomas Makiela/Desktop/ENABLE BITS (BACKGROUND INTELLIGENT TRANSFER SERVICE).txt"
 	],
 	"find":
 	{
@@ -369,6 +389,7 @@
 		"height": 90.0,
 		"where_history":
 		[
+			"<current file>",
 			"<open folders>",
 			""
 		]
@@ -378,6 +399,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"/E /I",
+			"ui",
+			"light",
 			"density",
 			"mass",
 			"slide",
@@ -416,6 +440,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"",
 			"texCoords",
 			"Viktor",
 			"viktor",
@@ -439,6 +464,35 @@
 					"semi_transient": false,
 					"settings":
 					{
+						"buffer_size": 2249,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1145,
+								1145
+							]
+						],
+						"settings":
+						{
+							"auto_name": "{",
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1337.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "root_old.prefab",
+					"semi_transient": false,
+					"settings":
+					{
 						"buffer_size": 4299,
 						"regions":
 						{
@@ -446,8 +500,8 @@
 						"selection":
 						[
 							[
-								2950,
-								2950
+								1239,
+								934
 							]
 						],
 						"settings":
@@ -456,14 +510,43 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2134.0,
+						"translation.y": 709.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 2,
+					"file": "Prefabs/camera.prefab",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 449,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								151,
+								151
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
 					"file": "Prefabs/box_staple_test.prefab",
 					"semi_transient": false,
 					"settings":
@@ -488,53 +571,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 4,
 					"file": "Prefabs/physical_box.prefab",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 234,
+						"buffer_size": 253,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								234
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "Prefabs/physical_sphere.prefab",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 236,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								109,
-								109
+								210,
+								210
 							]
 						],
 						"settings":
@@ -550,7 +604,36 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 5,
+					"file": "Prefabs/physical_sphere.prefab",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 258,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								215,
+								215
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
 					"file": "Prefabs/robot.prefab",
 					"semi_transient": false,
 					"settings":
@@ -575,7 +658,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include <GL/glew.h>
 #include <glm/fwd.hpp>
+#include "static_glew.h"
 
 class Mesh
 {

@@ -71,6 +71,23 @@
 			]
 		},
 		{
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [0, 15, 5],
+					"rotation": [0, 25, 0],
+					"scale": [1, 1.4144271570014144271570014144272, 1]
+				},
+				{
+					"type": "MeshInstance",
+					"mesh": "Meshes/quad.dae",
+					"material": "Materials/miia.mat"
+				}
+			]
+				
+		},
+		{
 			"base": "Prefabs/physical_sphere.prefab",
 			"components":
 			[
