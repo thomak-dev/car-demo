@@ -21,6 +21,7 @@ MeshInstance::MeshInstance(Entity* entity)
 
 void MeshInstance::Initialize()
 {
+	Component::Initialize();
 	transform = entity->GetComponent<Transform>();
 }
 

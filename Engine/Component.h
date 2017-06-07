@@ -15,11 +15,12 @@ public:
 	Component(Entity* entity);
 	Entity* GetEntity() const { return entity; }
 	virtual void Deserialize(const Json& json) {}
-	virtual void Initialize() {}
+	virtual void Initialize() { SDL_assert(++initCount <= 1); };
 	virtual void OnMessageReceived(Entity* origin, Message* message) {}
 
 	virtual ~Component() = default;
 protected:
 	Entity* entity;
+	int initCount{};
 };
 

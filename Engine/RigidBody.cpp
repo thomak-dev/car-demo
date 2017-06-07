@@ -13,7 +13,8 @@ std::unordered_map<std::string, RigidBody::Shape> RigidBody::stringToShape
 {
 	{"Box", Shape::Box},
 	{"Sphere", Shape::Sphere},
-	{"Mesh", Shape::Mesh}
+	{"Mesh", Shape::Mesh},
+	{"Terrain", Shape::Terrain}
 };
 
 RigidBody::RigidBody(Entity* entity)
@@ -47,6 +48,7 @@ void RigidBody::Deserialize(const Json& json)
 
 void RigidBody::Initialize()
 {
+	Component::Initialize();
 	transform = entity->GetComponent<Transform>();
 	PxTransform pTransform{ToPxMat44(transform->WorldMatrix())};
 	if (isStatic)
@@ -130,6 +132,17 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 		shape = physics->backend->createShape(PxTriangleMeshGeometry{physics->GetMesh(mesh), PxMeshScale{ToPxVec3(transform->WorldScale())}}, *physics->defaultMaterial, true);
 		rigidActor->attachShape(*shape);
 		break;
+	case Shape::Terrain:
+		{
+			SDL_assert(isStatic);
+			const Physics::Terrain& terrain = *physics->GetTerrain(mesh);
+			shape = physics->backend->createShape(PxHeightFieldGeometry(terrain.heightField, PxMeshGeometryFlags{}, terrain.height / (1 << 16), 1, 1), *physics->defaultMaterial, true);
+			PxTransform pose{PxVec3{terrain.minX, terrain.minHeight + terrain.height / 2, terrain.minZ}};
+			//pose.q = PxQuat{ -Float::Pi/2, PxVec3{0, 1, 0} };
+			shape->setLocalPose(pose);
+			rigidActor->attachShape(*shape);
+			break;
+		}
 	default: SDL_assert(false);
 	}
 }

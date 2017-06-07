@@ -13,123 +13,8 @@
 				},
 				{
 					"type": "Light",
-					"color": [0.9, 0.8, 0.7, 0.8],
+					"color": [1, 1, 1, 1],
 					"light_type": "Directional"
-				}
-			]
-		},
-		{
-			"base": "Prefabs/yard.prefab"
-		},
-		{
-			"base": "Prefabs/yard.prefab",
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [15, 0, 0]
-				}
-			]
-		},
-		{
-			"base": "Prefabs/spinning_suz.prefab",
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [0, 1, 0]
-				}
-			],
-			"children":
-			[
-				{
-					"base": "Prefabs/robot.prefab",
-					"components":
-					[
-						{
-							"type": "Transform",
-							"position": [-1, -1 , 3],
-							"scale": [0.2, 0.2, 0.2],
-							"rotation": [0, 150, 0]
-						}
-					],
-					"children":
-					[
-						{
-							"base": "Prefabs/physical_box.prefab"
-						}
-					]
-				}
-
-			]
-		},
-		{
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [-3, 2, -1],
-					"rotation": [0, 25, 0],
-					"scale": [1, 1.4144271570014144271570014144272, 1]
-				},
-				{
-					"type": "MeshInstance",
-					"mesh": "Meshes/quad.dae",
-					"material": "Materials/miia.mat"
-				}
-			]
-				
-		},
-		{
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [5, 2, 2],
-					"scale": [0.01, 0.01, 0.01]
-				},												
-				{
-					"type": "Text",
-					"point_size": 27,
-					"material": "Materials/text.mat",
-					"content": "Welcome to this world!\nBTW u r here forever."
-				},
-				{
-					"type": "MeshInstance",
-					"mesh": "Meshes/cube.dae",
-					"material": "Materials/simple_lambert.mat"
-				}
-			]
-		},
-		{
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [-2, 2, 2.5],
-					"scale": [0.01, 0.01, 0.01]
-				},				
-				{
-					"type": "Text",
-					"point_size": 21,
-					"material": "Materials/text.mat",
-					"content": "Hello world!"
-				}
-			]
-		},
-		{
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [-2, 2, 3],
-					"scale": [0.01, 0.01, 0.01]
-				},				
-				{
-					"type": "Text",
-					"point_size": 15,
-					"material": "Materials/text.mat",
-					"content": "Hello world!"
 				}
 			]
 		},
@@ -158,111 +43,90 @@
 			]
 		},
 		{
-			"base": "Prefabs/robot.prefab"
-		},
-		{
 			"components":
 			[
 				{
-					"type": "Transform",
-					"position": [-15, -1, -5],
-					"scale": [10, 10, 10]
+					"type": "Transform"
 				},
 				{
 					"type": "MeshInstance",
-					"mesh": "Meshes/slide.dae",
-					"material": "Materials/cyanish.mat"
+					"mesh": "Meshes/test_terrain.dae"
 				},
 				{
 					"type": "RigidBody",
+					"mesh": "Meshes/test_terrain.dae",
 					"static": true,
-					"mesh": "Meshes/slide.dae",
-					"shape": "Mesh"
+					"shape": "Terrain"
 				}
 			]
 		},
 		{
+			"base": "Prefabs/physical_box.prefab",
 			"components":
 			[
 				{
 					"type": "Transform",
-					"position": [-13.1273, 43.826, -35.843]
-				}
-			],
-			"children":
-			[
-				{
-					"base": "Prefabs/physical_box.prefab",
-					"components":
-					[
-						{
-							"type": "Transform",
-							"position": [0, 0, 0]
-						}
-					]
-				},
-				{
-					"base": "Prefabs/physical_box.prefab",
-					"components":
-					[
-						{
-							"type": "Transform",
-							"position": [2, 0, 0]
-						}
-					]
-				},
-				{
-					"base": "Prefabs/physical_box.prefab",
-					"components":
-					[
-						{
-							"type": "Transform",
-							"position": [-2, 0, 0]
-						}
-					]
-				},
-				{
-					"base": "Prefabs/physical_box.prefab",
-					"components":
-					[
-						{
-							"type": "Transform",
-							"position": [0, 0, 2]
-						}
-					]
-				},
-				{
-					"base": "Prefabs/physical_box.prefab",
-					"components":
-					[
-						{
-							"type": "Transform",
-							"position": [0, 0, -2]
-						}
-					]
-				}				
-			]
-		},
-		{
-			"base": "Prefabs/box_staple_test.prefab"
-		},
-		{
-			"base": "Prefabs/box_staple_test.prefab",
-			"components": 
-			[
-				{
-					"type": "Transform",
-					"position": [0, -30, 0]
+					"position": [0, 50, 0]
 				}
 			]
 		},
 		{
-			"base": "Meshes/hierarchy_test.dae",
+			"base": "Prefabs/physical_sphere.prefab",
 			"components":
 			[
 				{
 					"type": "Transform",
-					"position": [5, 0, 0]
+					"position": [5, 50, 0]
+				}
+			]
+		},
+		{
+			"base": "Prefabs/physical_box.prefab",
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [-5, 50, 0]
+				}
+			]
+		},
+		{
+			"base": "Prefabs/physical_sphere.prefab",
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [10, 50, 0]
+				}
+			]
+		},
+		{
+			"base": "Prefabs/physical_box.prefab",
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [-10, 50, 0]
+				}
+			]
+		},
+		{
+			"base": "Prefabs/physical_sphere.prefab",
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [-15, 50, 0]
+				}
+			]
+		},
+		{
+			"base": "Prefabs/physical_box.prefab",
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [15, 50, 0]
 				}
 			]
 		}

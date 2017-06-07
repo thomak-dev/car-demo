@@ -55,6 +55,7 @@ glm::mat4 Camera::ProjMatrix() const
 
 void Camera::Initialize()
 {
+	Component::Initialize();
 	transform = entity->GetComponent<Transform>();
 }
 

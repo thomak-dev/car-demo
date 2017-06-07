@@ -10,7 +10,8 @@
 			"material": "Materials/simple_lambert.mat"
 		},
 		{
-			"type": "RigidBody"
+			"type": "RigidBody",
+			"shape": "Box"
 		},
 		{
 			"type": "RandomColor"

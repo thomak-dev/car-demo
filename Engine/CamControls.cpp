@@ -10,6 +10,7 @@
 
 void CamControls::Initialize()
 {
+	Component::Initialize();
 	transform = entity->GetComponent<Transform>();
 }
 
@@ -22,7 +23,7 @@ void CamControls::Update(float deltaTime)
 {
 	float speedMulti = 1;
 	if (KeyIsDown(KMOD_LSHIFT))
-		speedMulti = 4;
+		speedMulti = 16;
 
 	if (KeyIsDown(SDLK_SPACE))
 		transform->TranslateLocally(Vector3::Up * deltaTime * speedMulti);

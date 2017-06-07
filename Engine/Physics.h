@@ -12,6 +12,15 @@ class Physics : public Singleton<Physics>
 {
 	friend class RigidBody;
 public:
+	struct Terrain
+	{
+		float height;
+		float minX;
+		float minZ;
+		float minHeight;
+		physx::PxHeightField* heightField;
+	};
+
 	Physics();
 	~Physics();
 
@@ -46,7 +55,9 @@ private:
 
 	std::vector<RigidBody*> rigidBodies;
 	std::unordered_map<std::shared_ptr<Mesh>, physx::PxTriangleMesh*> physicsMeshes;
+	std::unordered_map<std::shared_ptr<Mesh>, Terrain*> terrains;
 
 	physx::PxTriangleMesh* GetMesh(const std::shared_ptr<Mesh>& mesh);
+	const Terrain* GetTerrain(const std::shared_ptr<Mesh>& mesh);
 };
 

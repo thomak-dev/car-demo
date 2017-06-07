@@ -8,6 +8,7 @@
 
 void ForwardSpinner::Initialize()
 {
+	Component::Initialize();
 	transform = entity->GetComponent<Transform>();
 }
 

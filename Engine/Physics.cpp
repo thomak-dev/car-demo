@@ -48,7 +48,7 @@ void Physics::PhysxErrorCallback::reportError(PxErrorCode::Enum code, const char
 }
 
 Physics::Physics()
-{	
+{
 	RigidBody::physics = this;
 	foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, allocator, errorCallback);
 	SDL_assert(foundation);
@@ -63,14 +63,14 @@ Physics::Physics()
 	cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, PxCookingParams(tolerance));
 
 	SDL_assert(backend && cooking && PxInitExtensions(*backend, pvd));
-	
-	defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.5f);
-	PxSceneDesc scnDesc{ tolerance };
+
+	defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.1f);
+	PxSceneDesc scnDesc{tolerance};
 	cpuDispatcher = PxDefaultCpuDispatcherCreate(4);
 	scnDesc.cpuDispatcher = cpuDispatcher;
 	scnDesc.filterShader = PxDefaultSimulationFilterShader;
-	scnDesc.gravity = PxVec3{ 0, -9.81f, 0 };
-	scene = backend->createScene(scnDesc);	
+	scnDesc.gravity = PxVec3{0, -9.81f, 0};
+	scene = backend->createScene(scnDesc);
 	scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 	scene->setFlag(PxSceneFlag::eEXCLUDE_KINEMATICS_FROM_ACTIVE_ACTORS, true);
 }
@@ -78,9 +78,15 @@ Physics::Physics()
 
 Physics::~Physics()
 {
-	for(auto& pair : physicsMeshes)
+	for (auto& pair : physicsMeshes)
 	{
 		pair.second->release();
+	}
+	for (auto& pair : terrains)
+	{
+		pair.second->heightField->release();
+		delete pair.second;
+		pair.second = nullptr;
 	}
 	scene->release();
 	defaultMaterial->release();
@@ -101,7 +107,7 @@ void Physics::RegisterRigidBody(RigidBody* rigidBody)
 void Physics::UnregisterRigidBody(RigidBody* rigidBody)
 {
 	auto found = std::find(rigidBodies.begin(), rigidBodies.end(), rigidBody);
-	if(found != rigidBodies.end())
+	if (found != rigidBodies.end())
 	{
 		scene->removeActor(*rigidBody->rigidActor);
 		rigidBodies.erase(found);
@@ -128,15 +134,14 @@ void Physics::Await()
 
 void Physics::DebugDraw()
 {
-
 }
 
 PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
 {
 	auto found = physicsMeshes.find(mesh);
-	if(found == physicsMeshes.end())
+	if (found == physicsMeshes.end())
 	{
-		PxCookingParams params{ backend->getTolerancesScale() };
+		PxCookingParams params{backend->getTolerancesScale()};
 		params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_ACTIVE_EDGES_PRECOMPUTE;
 		params.meshPreprocessParams |= PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
 		params.meshCookingHint = PxMeshCookingHint::eCOOKING_PERFORMANCE;
@@ -153,6 +158,84 @@ PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
 		PxTriangleMesh* physicsMesh = cooking->createTriangleMesh(meshDesc, backend->getPhysicsInsertionCallback());
 		physicsMeshes.insert(found, make_pair(mesh, physicsMesh));
 		return physicsMesh;
+	}
+
+	return found->second;
+}
+
+const Physics::Terrain* Physics::GetTerrain(const std::shared_ptr<Mesh>& mesh)
+{
+	auto found = terrains.find(mesh);
+	if (found == terrains.end())
+	{
+		int minX = std::numeric_limits<int>::max();
+		int minZ = std::numeric_limits<int>::max();
+		int maxX = std::numeric_limits<int>::lowest();
+		int maxZ = std::numeric_limits<int>::lowest();
+		float minY = std::numeric_limits<float>::infinity();
+		float maxY = std::numeric_limits<float>::lowest();
+		for (int i = 0; i < mesh->vertices.size(); ++i)
+		{
+			int x = std::round(mesh->vertices[i].x);
+			int z = std::round(mesh->vertices[i].z);
+			float y = mesh->vertices[i].y;
+			if (x < minX)
+				minX = x;
+			if (x > maxX)
+				maxX = x;
+			if (y < minY)
+				minY = y;
+			if (y > maxY)
+				maxY = y;
+			if (z < minZ)
+				minZ = z;
+			if (z > maxZ)
+				maxZ = z;
+		}
+
+		int rows = maxX - minX + 1;
+		int columns = maxZ - minZ + 1;
+		float height = maxY - minY;
+		SDL_assert(rows * columns && rows * columns == mesh->vertices.size());
+
+		int8_t* valueAssigned = new int8_t[rows * columns]{};
+		PxHeightFieldSample* heightFieldSamples = new PxHeightFieldSample[rows * columns];
+		for (int i = 0; i < mesh->vertices.size(); ++i)
+		{
+			int row = -minX + std::round(mesh->vertices[i].x);
+			int column = -minZ + std::round(mesh->vertices[i].z);
+			int index = row * columns + column;
+			SDL_assert(!valueAssigned[index]);
+			int16_t quantizedHeight = static_cast<int16_t>((mesh->vertices[i].y - minY) / height * ((1 << 16) - 1) + std::numeric_limits<int16_t>::lowest());
+			auto& data = heightFieldSamples[index];
+			data.height = quantizedHeight;
+			data.materialIndex0 = 0;
+			data.materialIndex1 = 0;
+			data.clearTessFlag();
+			valueAssigned[index] = 1;
+		}
+
+		PxHeightFieldDesc desc{};
+		desc.format = PxHeightFieldFormat::eS16_TM;
+		desc.nbRows = rows;
+		desc.nbColumns = columns;
+		desc.samples.data = heightFieldSamples;
+		desc.samples.stride = sizeof(PxHeightFieldSample);
+
+		PxHeightField* heightField = cooking->createHeightField(desc, backend->getPhysicsInsertionCallback());
+
+		delete[] heightFieldSamples;
+		delete[] valueAssigned;
+
+		Terrain* terrain = new Terrain;
+		terrain->height = height;
+		terrain->heightField = heightField;
+		terrain->minX = minX;
+		terrain->minZ = minZ;
+		terrain->minHeight = minY;
+
+		terrains.insert(found, make_pair(mesh, terrain));
+		return terrain;
 	}
 
 	return found->second;

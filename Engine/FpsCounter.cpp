@@ -8,6 +8,7 @@
 
 void FpsCounter::Initialize()
 {
+	Component::Initialize();
 	text = entity->GetComponent<Text>();
 }
 
