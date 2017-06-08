@@ -5,7 +5,7 @@
 static std::unordered_set<SDL_Keycode> keysWhichWentDown;
 static std::unordered_set<SDL_Keycode> keysWhichWentUp;
 
-void TickInput()
+void PrepareInput()
 {
 	keysWhichWentDown.clear();
 	keysWhichWentUp.clear();

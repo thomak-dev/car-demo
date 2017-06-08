@@ -37,7 +37,9 @@
 /Release/
 /Engine/Debug/
 /Engine/Release/
-.vs/
 *.vcxproj.user
-
+*.ncb
+*.suo
+*.sdf
+.vs/
 .hg/

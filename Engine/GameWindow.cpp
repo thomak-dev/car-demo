@@ -1,6 +1,10 @@
 #include "GameWindow.h"
 #include <iostream>
+#ifdef _WIN32
 #include <Windows.h>
+#elif
+#define APIENTRY
+#endif
 #include "static_glew.h"
 
 void APIENTRY OnGLError(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)

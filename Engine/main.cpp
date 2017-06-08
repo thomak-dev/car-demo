@@ -10,6 +10,7 @@
 #include "input.h"
 #include "Physics.h"
 #include "messages.h"
+#include <chrono>
 
 int main(int argc, char* argv[])
 {
@@ -20,10 +21,12 @@ int main(int argc, char* argv[])
 	Physics physics;
 
 	Time time{ 144, 60 };
-	//time.SetStrict(true);
-
+	
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
 	root->Initialize();
+
+	std::cout << "Max framerate: " << time.GetMaxFrameRate() << '\n';
+	std::cout << "Physics rate: " << time.GetFixedRate() << std::endl;
 
 	SDL_Event event;
 	SDL_GetRelativeMouseState(nullptr, nullptr);
@@ -31,10 +34,11 @@ int main(int argc, char* argv[])
 	bool quit = false;
 	while (!quit)
 	{
-		bool isFixedTimeStep = time.BeginNewFrame();
-		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, RenderDebugId::Frame, -1, "Main loop");
+		bool isFixedTimeStep;
+		bool isVariable;
+		time.BusyTick(isVariable, isFixedTimeStep);
 
-		TickInput();
+		PrepareInput();
 
 		while (SDL_PollEvent(&event))
 		{
@@ -48,9 +52,8 @@ int main(int argc, char* argv[])
 		if (KeyWentDown(SDLK_F1))
 			physics.SetVisualize(!physics.Visualize());
 
-		float deltaTime = time.GetDeltaTime();
-		
-		if(isFixedTimeStep)
+
+		if (isFixedTimeStep)
 		{
 			float timeStep = time.GetFixedTimeStep();
 			if (time.GetFrameCount() > 1)
@@ -60,11 +63,16 @@ int main(int argc, char* argv[])
 			root->SendMessageDown(&fixedUpdate);
 		}
 
-		UpdateMessage update{ deltaTime, false };
-		root->SendMessageDown(&update);
-		renderer.Render();
-		gameWindow.Swap();
-		glPopDebugGroup();
+		if (isVariable)
+		{
+			float deltaTime = time.GetDeltaTime();
+			UpdateMessage update{ deltaTime, false };
+			root->SendMessageDown(&update);
+			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, RenderDebugId::Frame, -1, "New Frame");
+			renderer.Render();
+			gameWindow.Swap();
+			glPopDebugGroup();
+		}
 	}
 
 	return 0;
