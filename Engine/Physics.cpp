@@ -1,9 +1,11 @@
 #include "Physics.h"
 #include <iostream>
+#include <vehicle/PxVehicleSDK.h>
 #include "RigidBody.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Mesh.h"
+#include "Vehicle.h";
 
 using namespace physx;
 
@@ -47,7 +49,72 @@ void Physics::PhysxErrorCallback::reportError(PxErrorCode::Enum code, const char
 	std::cout << ": " << message << "\nFile: " << file << '(' << line << ')' << std::endl;
 }
 
-Physics::Physics()
+
+namespace CollisionOptions
+{
+
+	/**
+	 * \brief 
+	 * Options for contact reporting. Corresponding to PxFilterData.word2.
+	 */
+	enum Type : PxU32
+	{
+		NotifyWhenFound = 1u << 0,
+		NotifyWhenLost = 1u << 1,
+		NotifyWhenPersists = 1u << 2
+	};
+}
+
+// word0: EntityFlags of the object
+// word1: EntityFlags the object wants to collide with
+// word2: CollisionOptions
+PxFilterFlags FilterShader(
+	PxFilterObjectAttributes attributes0,
+	PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, 
+	PxFilterData filterData1, 
+	PxPairFlags& pairFlags,
+	const void* constantBlock, 
+	PxU32 constantBlockSize)
+{
+	if (filterData0.word1 & filterData1.word0 || filterData1.word1 & filterData0.word0)
+	{
+		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+			return PxFilterFlag::eDEFAULT;
+		}
+		
+		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+		if (filterData0.word2 & CollisionOptions::NotifyWhenFound || filterData1.word2 & CollisionOptions::NotifyWhenFound)
+			pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		if (filterData0.word2 & CollisionOptions::NotifyWhenLost || filterData1.word2 & CollisionOptions::NotifyWhenLost)
+			pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+		if (filterData0.word2 & CollisionOptions::NotifyWhenPersists || filterData1.word2 & CollisionOptions::NotifyWhenPersists)
+			pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+
+		return PxFilterFlag::eDEFAULT;
+	}
+	else
+		return PxFilterFlag::eSUPPRESS;
+}
+
+PxQueryHitType::Enum VehicleRaycastFilterShader(
+	PxFilterData queryFilterData,
+	PxFilterData objectFilterData,
+	const void* constantBlock,
+	PxU32 constantBlockSize,
+	PxHitFlags& hitFlags)
+{
+	if (queryFilterData.word1 & objectFilterData.word0)
+		return PxQueryHitType::eBLOCK;
+	else
+		return PxQueryHitType::eNONE;
+}
+
+Physics::Physics(int maxVehicles)
+	:MaxVehicles{maxVehicles}, MaxWheels{MaxVehicles * PX_MAX_NB_WHEELS}
 {
 	RigidBody::physics = this;
 	foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, allocator, errorCallback);
@@ -62,17 +129,42 @@ Physics::Physics()
 	backend = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, tolerance, false, pvd);
 	cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, PxCookingParams(tolerance));
 
-	SDL_assert(backend && cooking && PxInitExtensions(*backend, pvd));
+	bool success = PxInitExtensions(*backend, pvd);
+	SDL_assert(backend && cooking && success);
+	success = PxInitVehicleSDK(*backend);
+	SDL_assert(success);
 
 	defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.1f);
 	PxSceneDesc scnDesc{tolerance};
 	cpuDispatcher = PxDefaultCpuDispatcherCreate(4);
 	scnDesc.cpuDispatcher = cpuDispatcher;
-	scnDesc.filterShader = PxDefaultSimulationFilterShader;
+	scnDesc.filterShader = FilterShader;
 	scnDesc.gravity = PxVec3{0, -9.81f, 0};
 	scene = backend->createScene(scnDesc);
 	scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 	scene->setFlag(PxSceneFlag::eEXCLUDE_KINEMATICS_FROM_ACTIVE_ACTORS, true);
+
+	PxVehicleSetBasisVectors(PxVec3{ 0, 1, 0 }, PxVec3{ 0, 0, 1 });
+	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+
+	vehQueryResults = new PxRaycastQueryResult[MaxWheels];
+	vehQueryHitBuffer = new PxRaycastHit[MaxWheels];
+	PxBatchQueryDesc queryDesc(MaxWheels, 0, 0);
+	queryDesc.queryMemory.userRaycastResultBuffer = vehQueryResults;
+	queryDesc.queryMemory.userRaycastTouchBuffer = vehQueryHitBuffer;
+	queryDesc.queryMemory.raycastTouchBufferSize = MaxWheels;
+	queryDesc.preFilterShader = VehicleRaycastFilterShader;
+	vehicleQuery = scene->createBatchQuery(queryDesc);
+
+	wantedCollisionsOf[EntityFlags::DefaultPos] = EntityFlags::Default;
+
+	surfaceToFriction = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Tire::Highest, 1);
+	PxMaterial* surfaceMaterials[1];
+	surfaceMaterials[0] = defaultMaterial;
+	PxVehicleDrivableSurfaceType surfaceTypes[1];
+	surfaceTypes[0].mType = 0;
+	surfaceToFriction->setup(Tire::Highest, 1, const_cast<const PxMaterial**>(surfaceMaterials), surfaceTypes);
+	surfaceToFriction->setTypePairFriction(0, 0, 0.5f);
 }
 
 
@@ -88,8 +180,13 @@ Physics::~Physics()
 		delete pair.second;
 		pair.second = nullptr;
 	}
+	surfaceToFriction->release();
+	vehicleQuery->release();
+	delete[] vehQueryHitBuffer;
+	delete[] vehQueryResults;
 	scene->release();
 	defaultMaterial->release();
+	PxCloseVehicleSDK();
 	PxCloseExtensions();
 	cooking->release();
 	backend->release();
@@ -102,6 +199,9 @@ void Physics::RegisterRigidBody(RigidBody* rigidBody)
 {
 	rigidBodies.push_back(rigidBody);
 	scene->addActor(*rigidBody->rigidActor);
+	Vehicle* vehicle = dynamic_cast<Vehicle*>(rigidBody);
+	if (vehicle)
+		wheels.push_back(vehicle->wheels);
 }
 
 void Physics::UnregisterRigidBody(RigidBody* rigidBody)
@@ -116,6 +216,10 @@ void Physics::UnregisterRigidBody(RigidBody* rigidBody)
 
 void Physics::Step(float deltaTime)
 {
+	PxVehicleSuspensionRaycasts(vehicleQuery, wheels.size(), wheels.data(), wheels.size() * PX_MAX_NB_WHEELS, vehQueryResults);
+
+	PxVehicleUpdates(deltaTime, scene->getGravity(), *surfaceToFriction, wheels.size(), wheels.data(), nullptr );
+
 	scene->simulate(deltaTime);
 }
 
@@ -130,6 +234,8 @@ void Physics::Await()
 		SDL_assert(rigidBody);
 		rigidBody->UpdateTransform();
 	}
+	for (RigidBody* body : rigidBodies)
+		body->PostProcessPhysics();
 }
 
 void Physics::DebugDraw()

@@ -20,6 +20,12 @@ std::unordered_map<std::string, RigidBody::Shape> RigidBody::stringToShape
 RigidBody::RigidBody(Entity* entity)
 	: Component{entity}
 {
+	filterData.word0 = entity->flags;
+	for (int i = 0; i <= EntityFlags::HighestPos; ++i)
+	{
+		if(entity->flags & 1u << i)
+			filterData.word1 |= physics->wantedCollisionsOf[i];
+	}
 }
 
 
@@ -58,12 +64,8 @@ void RigidBody::Initialize()
 		PxRigidDynamic* dyn = physics->backend->createRigidDynamic(pTransform.getNormalized());
 		rigidActor = dyn;
 	}
-	SetShapeInternal(shapeType);
-	SetDensityInternal(density);
-	rigidActor->userData = this;
-	lastPhysicsPosition = transform->WorldPosition();
-	lastPhysicsRotation = transform->WorldRotation();
-
+	
+	InitCommonProps();
 	physics->RegisterRigidBody(this);
 }
 
@@ -101,6 +103,15 @@ void RigidBody::Update()
 {
 	transform->SetWorldPosition(lastPhysicsPosition);
 	transform->SetWorldRotation(lastPhysicsRotation);
+}
+
+void RigidBody::InitCommonProps()
+{
+	SetShapeInternal(shapeType);
+	SetDensityInternal(density);
+	rigidActor->userData = this;
+	lastPhysicsPosition = transform->WorldPosition();
+	lastPhysicsRotation = transform->WorldRotation();
 }
 
 void RigidBody::PostProcessPhysics()
@@ -144,6 +155,8 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 		}
 	default: SDL_assert(false);
 	}
+	shape->setQueryFilterData(filterData);
+	shape->setSimulationFilterData(filterData);
 }
 
 void RigidBody::SetDensityInternal(float density)

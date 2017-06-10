@@ -32,7 +32,7 @@ public:
 	void SetDensity(float mass);
 	float Density() const { return density; }	
 
-private:
+protected:
 	Transform* transform{};
 	Shape shapeType{};
 	glm::vec3 halfSize{0.5f};
@@ -44,11 +44,13 @@ private:
 	physx::PxShape* shape{};
 	physx::PxRigidActor* rigidActor{};
 	bool isStatic{};
+	physx::PxFilterData filterData;
 
 	void Update();
 	static std::unordered_map<std::string, Shape> stringToShape;
-	void PostProcessPhysics();
+	virtual void PostProcessPhysics();
 	void SetShapeInternal(Shape shape);
-	void SetDensityInternal(float mass);
+	void SetDensityInternal(float density);
 	void UpdateTransform();
+	void InitCommonProps();
 };

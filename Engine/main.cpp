@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
 	root->Initialize();
 
-	std::cout << "Max framerate: " << time.GetMaxFrameRate() << '\n';
+	std::cout << "Max framerate: " << time.GetMaxRate() << '\n';
 	std::cout << "Physics rate: " << time.GetFixedRate() << std::endl;
 
 	SDL_Event event;
@@ -56,13 +56,12 @@ int main(int argc, char* argv[])
 		if (isFixedTimeStep)
 		{
 			float timeStep = time.GetFixedTimeStep();
-			if (time.GetFrameCount() > 1)
+			if (time.GetFixedFrameCount() > 1)
 				physics.Await();
 			physics.Step(timeStep);
 			UpdateMessage fixedUpdate{ timeStep, true };
 			root->SendMessageDown(&fixedUpdate);
 		}
-
 		if (isVariable)
 		{
 			float deltaTime = time.GetDeltaTime();

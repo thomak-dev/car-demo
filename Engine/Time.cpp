@@ -1,108 +1,113 @@
 #include "Time.h"
-#include <SDL.h>
 #include <algorithm>
+#include <thread>
 
-Time::Time(int maxFrameRate, int fixedRate)
-	:minFrameDelta{ static_cast<int>(ceil(1000.f / maxFrameRate)) },
-	internalOldTime{ SDL_GetTicks() },
-	newTime{ internalOldTime },
-	fixedTimeStep{ static_cast<int>(floor(1000.f / fixedRate)) }
+Time::Time(double maxRate, double fixedRate)
+	:
+	startTime{ clock.now() },
+	minTimeStep( static_cast<Duration::rep>(Period::den / maxRate) ),
+	fixedTimeStep{ static_cast<Duration::rep>(Period::den / fixedRate) },
+	oldInternalTime{ startTime },
+	oldCappedTime{ startTime }
 {
-	if (minFrameDelta <= 0)
-		minFrameDelta = 1;
-	if (fixedTimeStep < minFrameDelta)
-		fixedTimeStep = minFrameDelta;
+	if (minTimeStep.count() <= 0)
+		minTimeStep = Duration{ 1 };
+	if (fixedTimeStep < minTimeStep)
+		fixedTimeStep = minTimeStep;
 
-	smoothFrames = ceil(GetMaxFrameRate() / 6);
+	smoothFrames = static_cast<int>(ceil(GetMaxRate() / 6));
 }
 
 void Time::BusyTick(bool& variable, bool& fixed)
 {
-	newTime = SDL_GetTicks();
-	internalDtMs = newTime - internalOldTime;
+	++internalFrameCount;
+	TimePoint newTime = clock.now();
+	internalDt = newTime - oldInternalTime;
 	
-	int ahead = std::max(0, minFrameDelta - internalDtMs);
-	if (ahead - delayedTime <= 0)
+	Duration ahead = std::max(Duration::zero(), minTimeStep - internalDt);
+	if (ahead - delayedTime <= Duration::zero())
 	{
-		++frameCount;
+		++cappedFrameCount;
 		variable = true;
 		delayedTime = ahead - delayedTime;
-		cappedDtMs = newTime - oldLimitedTime;
+		cappedDt = newTime - oldCappedTime;
 
-		smoothTime += cappedDtMs;
-		if (frameCount % smoothFrames == 0)
+		smoothTime += cappedDt;
+		if (cappedFrameCount % smoothFrames == 0)
 		{
-			smoothFps = 1000 / (static_cast<float>(smoothTime) / smoothFrames);
-			smoothTime = 0;
+			smoothFps = SecondsFactor / (static_cast<float>(smoothTime.count()) / smoothFrames);
+			smoothTime = Duration::zero();
 		}
-		oldLimitedTime = newTime;
+		oldCappedTime = newTime;
 	}
 	else
 	{
 		variable = false;
-		delayedTime += internalDtMs;
+		delayedTime += internalDt;
 	}
 
-	accumFixedStep += internalDtMs;
+	accumFixedStep += internalDt;
 	if (accumFixedStep >= fixedTimeStep)
 	{
+		++fixedFrameCount;
 		accumFixedStep -= fixedTimeStep;
 		fixed = true;
 	}
 	else
 		fixed = false;
 
-	internalOldTime = newTime;
+	oldInternalTime = newTime;
 }
 
 void Time::EcoTick(bool& variable, bool& fixed)
 {
-	
-	newTime = SDL_GetTicks();
-	internalDtMs = newTime - internalOldTime;
+	++internalFrameCount;
+	TimePoint newTime = clock.now();
+	internalDt = newTime - oldInternalTime;
 
-	int aheadOfCap = std::max(0, minFrameDelta - (internalDtMs + variableOvershoot));
-	int aheadOfFixed = std::max(0, fixedTimeStep - (internalDtMs + accumFixedStep));
+	Duration aheadOfCap = std::max(Duration::zero(), minTimeStep - (internalDt + variableOvershoot));
+	Duration aheadOfFixed = std::max(Duration::zero(), fixedTimeStep - (internalDt + accumFixedStep));
 
-	int delay = std::min(aheadOfCap, aheadOfFixed);
-	if(delay)
+	Duration delay = std::min(aheadOfCap, aheadOfFixed);
+	if(delay.count() > 0)
 	{
-		SDL_Delay(delay);
-		newTime = SDL_GetTicks();
-		internalDtMs = newTime - internalOldTime;
+		std::this_thread::sleep_for(delay);
+		newTime = clock.now();
+		internalDt = newTime - oldInternalTime;
 	}
 
-	variableOvershoot = internalDtMs - aheadOfCap;
-
-	if (variableOvershoot < 0)
+	if (aheadOfCap <= aheadOfFixed)
 	{
-		variableOvershoot = 0;
-		variable = false;
+		++cappedFrameCount;
+		variable = true;
+		cappedDt = newTime - oldCappedTime;
+
+		smoothTime += cappedDt;
+		if (cappedFrameCount % smoothFrames == 0)
+		{
+			smoothFps = SecondsFactor / (static_cast<float>(smoothTime.count()) / smoothFrames);
+			smoothTime = Duration::zero();
+		}
+
+		variableOvershoot = Duration::zero();
+		oldCappedTime = newTime;
 	}
 	else
 	{
-		++frameCount;
-		variable = true;
-		cappedDtMs = newTime - oldLimitedTime;
-
-		smoothTime += cappedDtMs;
-		if (frameCount % smoothFrames == 0)
-		{
-			smoothFps = 1000 / (static_cast<float>(smoothTime) / smoothFrames);
-			smoothTime = 0;
-		}
-
-		oldLimitedTime = newTime;
+		variableOvershoot += internalDt;
+		variable = false;
 	}
 
-	accumFixedStep += internalDtMs;
+
+	accumFixedStep += internalDt;
 	if (accumFixedStep >= fixedTimeStep)
 	{
+		++fixedFrameCount;
 		accumFixedStep -= fixedTimeStep;
 		fixed = true;
 	}
 	else
 		fixed = false;
 
-	internalOldTime = newTime;
+	oldInternalTime = newTime;
 }

@@ -21,6 +21,6 @@ void FpsCounter::Update(float deltaTime)
 {
 	std::stringstream sstrm{};
 	sstrm << "FPS: ";
-	sstrm << std::setw(4) << std::round(Time::Instance().GetSmoothFps());
+	sstrm << std::fixed << std::setprecision(1) << std::setw(5) << Time::Instance().GetSmoothFps();
 	text->content = sstrm.str();
 }

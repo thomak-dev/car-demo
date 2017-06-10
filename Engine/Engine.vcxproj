@@ -90,13 +90,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Samples\PxToolkit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\code\Debug;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;$(SolutionDir)External\SDL\VisualC\Win32\Debug;$(SolutionDir)External\SDL_image\VisualC\Win32\Debug;$(SolutionDir)External\SDL_ttf\VisualC\Win32\Debug;$(SolutionDir)External\glew\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x86.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\code\Debug;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;$(SolutionDir)External\SDL\VisualC\Win32\Debug;$(SolutionDir)External\SDL_image\VisualC\Win32\Debug;$(SolutionDir)External\SDL_ttf\VisualC\Win32\Debug;$(SolutionDir)External\glew\lib\Debug\Win32;%(AdditionalLibraryDirectories);C:\Users\thomak\dev\Engine\External\PhysX-3.4\PhysX_3.4\Samples\PxToolkit\lib\vc14win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x86.lib;glew32sd.lib;%(AdditionalDependencies);PhysX3VehicleDEBUG.lib;PxToolkitDEBUG.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(SolutionDir)copy_assets.bat $(OutputPath) $(ConfigurationName)</Command>
@@ -130,14 +130,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Samples\PxToolkit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\code\Release;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;$(SolutionDir)External\SDL\VisualC\Win32\Release;$(SolutionDir)External\SDL_image\VisualC\Win32\Debug;$(SolutionDir)External\SDL_ttf\VisualC\Win32\Debug;$(SolutionDir)External\glew\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3_x86.lib;PhysX3Common_x86.lib;PxFoundation_x86.lib;PxPvdSDK_x86.lib;PhysX3Extensions.lib;PhysX3Cooking_x86.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\code\Release;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;$(SolutionDir)External\SDL\VisualC\Win32\Release;$(SolutionDir)External\SDL_image\VisualC\Win32\Debug;$(SolutionDir)External\SDL_ttf\VisualC\Win32\Debug;$(SolutionDir)External\glew\lib\Release\Win32;%(AdditionalLibraryDirectories);C:\Users\thomak\dev\Engine\External\PhysX-3.4\PhysX_3.4\Samples\PxToolkit\lib\vc14win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3_x86.lib;PhysX3Common_x86.lib;PxFoundation_x86.lib;PxPvdSDK_x86.lib;PhysX3Extensions.lib;PhysX3Cooking_x86.lib;glew32s.lib;%(AdditionalDependencies);PhysX3Vehicle.lib;PxToolkit.lib</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
@@ -191,6 +191,7 @@
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Vehicle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CamControls.h" />
@@ -225,6 +226,7 @@
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Vehicle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

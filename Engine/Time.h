@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <chrono>
 #include "Singleton.h"
 
 /**
@@ -10,7 +11,12 @@
 class Time : public Singleton<Time>
 {
 public:
-	explicit Time(int maxFrameRate = 144, int fixedRate = 60);
+	using Clock = std::chrono::high_resolution_clock;
+	using Duration = Clock::duration;
+	using TimePoint = Clock::time_point;
+	using Period = Clock::period;
+	explicit Time(double maxRate = 144, double fixedRate = 60);
+
 	/**
 	 * \brief 
 	 * Iterate time
@@ -28,33 +34,45 @@ public:
 	 * Set to true when it's time for a fixed time step, to false otherwise
 	 */
 	void EcoTick(bool& variable, bool& fixed);
+
 	float GetSmoothFps() const { return smoothFps; }
 	void SetSmoothCount(int count) { smoothFrames = count; }
 	int GetSmoothCount() const { return smoothFrames; }
-	float GetDeltaTime() const { return cappedDtMs / 1000.f; }
-	int GetDeltaTimeMs() const { return cappedDtMs; }
-	float GetTime() const { return 1000.f / newTime; }
-	uint32_t GetTimeMs() const { return newTime; }
-	uint32_t GetFrameCount() const { return frameCount; }
-	float GetFixedTimeStep() const { return fixedTimeStep / 1000.0f; }
-	int GetFixedTimeStepMs() const { return fixedTimeStep; }
-	float GetMaxFrameRate() const { return 1000.f / minFrameDelta; }
-	float GetFixedRate() const { return 1000.f / fixedTimeStep; }
+	float GetDeltaTime() const { return cappedDt.count() / SecondsFactor; }
+	float GetDeltaTimeMs() const { return GetDeltaTime() / 1000; }
+	float GetTime() const { return SecondsFactor / (oldInternalTime - startTime).count(); }
+	float GetTimeMs() const { return GetTime() / 1000; }
+	uint64_t GetCappedFrameCount() const { return cappedFrameCount; }
+	uint64_t GetFixedFrameCount() const { return fixedFrameCount; }
+	float GetFixedTimeStep() const { return fixedTimeStep.count() / SecondsFactor; }
+	float GetFixedTimeStepMs() const { return GetFixedTimeStep() / 1000; }
+	float GetMaxRate() const { return SecondsFactor / minTimeStep.count(); }
+	float GetFixedRate() const { return SecondsFactor / fixedTimeStep.count(); }
 
 private:
-	uint32_t frameCount{};
-	int minFrameDelta{};
-	uint32_t internalOldTime{};
-	uint32_t oldLimitedTime{};
-	uint32_t newTime{};
-	int smoothTime{};
-	int internalDtMs{};
-	int cappedDtMs{};
-	int accumFixedStep{};
-	int fixedTimeStep{};
+	static constexpr float SecondsFactor{ static_cast<float>(Period::den) };
+	Clock clock;
+	const TimePoint startTime;
+	Duration minTimeStep{};
+	Duration fixedTimeStep{};
+	
+	TimePoint oldInternalTime{};
+	TimePoint oldCappedTime{};
+
+	Duration smoothTime{};
+	Duration internalDt{};
+	Duration cappedDt{};
+	Duration accumFixedStep{};
+	
 	float smoothFps{};
-	int delayedTime{};
-	int variableOvershoot{};
 	int smoothFrames{};
+
+	uint64_t internalFrameCount{};
+	uint64_t cappedFrameCount{};
+	uint64_t fixedFrameCount{};
+
+	Duration delayedTime{};
+	Duration variableOvershoot{};
+	
 };
 

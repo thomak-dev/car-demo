@@ -11,12 +11,23 @@
 
 namespace EntityFlags
 {
+	enum Pos : uint32_t
+	{
+		DefaultPos = 0,
+		UIPos,
+		ChassisPos,
+		WheelPos,
+		HighestPos = 31
+	};
 	enum Type : uint32_t
 	{
 		None = 0,
-		Default = 1,
-		UI = 2,
-		Highest = 1u << 31u
+		Default = 1u << DefaultPos,
+		UI = 1u << UIPos,
+		Chassis = 1u << ChassisPos,
+		Wheel = 1u << WheelPos,
+		Highest = 1u << HighestPos,
+		All = 0xFFFFFFFFu
 	};
 
 	Type FromString(const std::string& str);

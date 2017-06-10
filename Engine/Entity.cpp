@@ -188,6 +188,8 @@ static std::unordered_map<std::string, EntityFlags::Type> stringToFlags
 	{"None", EntityFlags::Type::None},
 	{"Default", EntityFlags::Type::Default},
 	{"UI", EntityFlags::Type::UI},
+	{ "Chassis", EntityFlags::Type::Chassis },
+	{ "Wheel", EntityFlags::Type::Wheel },
 	{"Highest", EntityFlags::Type::Highest}
 };
 
