@@ -10,10 +10,12 @@
 #include "RigidBody.h"
 #include "RandomColor.h"
 #include "messages.h"
+#include "Vehicle.h"
+#include "Wheel.h"
 
 Entity::~Entity()
 {
-	for (auto it = componentsInOrder.rbegin(); it != componentsInOrder.rend(); ++it)
+	for (auto it = components.rbegin(); it != components.rend(); ++it)
 	{
 		delete *it;
 	}
@@ -21,6 +23,48 @@ Entity::~Entity()
 	for (auto it = children.rbegin(); it != children.rend(); ++it)
 	{
 		delete *it;
+	}
+}
+
+void Entity::DeserializeComponents(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target)
+{
+	if (json.HasMember("components"))
+	{
+		for (const auto& componentJson : json["components"].GetArray())
+		{
+			Component* component;
+			if ((component = target->GetComponent(componentJson["type"].GetString())))
+				component->Deserialize(componentJson.GetObject());
+			else
+			{
+				component = target->AddComponent(componentJson["type"].GetString());
+				component->Deserialize(componentJson.GetObject());
+			}
+		}
+	}
+}
+
+void Entity::DeserializeChildren(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target)
+{
+	if (json.HasMember("children"))
+	{
+		for (const auto& child : json["children"].GetArray())
+		{
+			Instantiate(child.GetObject(), target);
+		}
+	}
+}
+
+void Entity::SetFlags(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target)
+{
+	if (json.HasMember("flags"))
+	{
+		EntityFlags::Type flags{ EntityFlags::None };
+		for (const auto& elem : json["flags"].GetArray())
+		{
+			flags |= EntityFlags::FromString(elem.GetString());
+		}
+		target->flags = flags;
 	}
 }
 
@@ -37,44 +81,27 @@ Entity* Entity::Instantiate(const rapidjson::GenericObject<true, rapidjson::Valu
 	if (prefab.HasMember("base"))
 	{
 		std::string basePath{prefab["base"].GetString()};
-		std::string ending{basePath.substr(basePath.find_last_of('.'))};
-		if (ending == ".prefab")
-			base = Instantiate(ResourceManager::Instance().LoadPrefab(basePath), parent);
+		auto dotPos = basePath.find_last_of('.');
+		if (dotPos != std::string::npos)
+		{
+			std::string ending{ basePath.substr(dotPos) };
+			if (ending == ".prefab")
+				base = Instantiate(ResourceManager::Instance().LoadPrefab(basePath), parent);
+			else
+				base = ResourceManager::Instance().LoadEntity(basePath, parent);
+		}
 		else
-			base = ResourceManager::Instance().LoadEntity(basePath, parent);
+			base = parent->GetChild(basePath);
 	}
 	if (!base)
 		base = new Entity;
-	if(prefab.HasMember("flags"))
-	{
-		EntityFlags::Type flags{ EntityFlags::None };
-		for (const auto& elem : prefab["flags"].GetArray())
-		{
-			flags |= EntityFlags::FromString(elem.GetString());
-		}
-		base->flags = flags;
-	}
-	if (prefab.HasMember("components"))
-	{
-		for (const auto& componentJson : prefab["components"].GetArray())
-		{
-			Component* component;
-			if ((component = base->GetComponent(componentJson["type"].GetString())))
-				component->Deserialize(componentJson.GetObject());
-			else
-			{
-				component = base->AddComponent(componentJson["type"].GetString());
-				component->Deserialize(componentJson.GetObject());
-			}
-		}
-	}
-	if (prefab.HasMember("children"))
-	{
-		for (const auto& child : prefab["children"].GetArray())
-		{
-			Instantiate(child.GetObject(), base);
-		}
-	}
+
+	if (prefab.HasMember("name"))
+		base->name = prefab["name"].GetString();
+
+	SetFlags(prefab, base);
+	DeserializeComponents(prefab, base);
+	DeserializeChildren(prefab, base);
 
 	base->SetParent(parent);
 	return base;
@@ -95,10 +122,12 @@ Component* Entity::AddComponent(const std::string& type)
 	ELSE_COMPONENT(FpsCounter, Add);
 	ELSE_COMPONENT(RigidBody, Add);
 	ELSE_COMPONENT(RandomColor, Add);
+	ELSE_COMPONENT(Vehicle, Add);
+	ELSE_COMPONENT(Wheel, Add);
 	return nullptr;
 }
 
-Component* Entity::GetComponent(const std::string& type)
+Component* Entity::GetComponent(const std::string& type) const
 {
 	if (type == "Transform")
 		return GetComponent<Transform>();
@@ -111,7 +140,14 @@ Component* Entity::GetComponent(const std::string& type)
 	ELSE_COMPONENT(FpsCounter, Get);
 	ELSE_COMPONENT(RigidBody, Get);
 	ELSE_COMPONENT(RandomColor, Get);
+	ELSE_COMPONENT(Vehicle, Get);
+	ELSE_COMPONENT(Wheel, Get);
 	return nullptr;
+}
+
+void Entity::SetName(const std::string& name)
+{
+	this->name = name;
 }
 
 void Entity::SetParent(Entity* parent)
@@ -123,16 +159,70 @@ void Entity::SetParent(Entity* parent)
 		parent->AddChild(this);
 }
 
+Entity* Entity::GetChild(const std::string& name)
+{
+	const auto& found = childrenByName.find(name);
+	if (found != childrenByName.end())
+		return found->second;
+	else
+		return nullptr;
+}
+
 void Entity::AddChild(Entity* child)
 {
 	SDL_assert(child);
-	children.push_back(child);
+	auto found = childrenByName.find(child->name);
+	if(found == childrenByName.end())
+	{
+		childrenByName.insert(found, std::make_pair(child->name, child));
+		children.push_back(child);
+	}
+	else
+	{
+		std::string newName = child->name;
+		auto underscore = newName.find_last_of('_');
+		int number;
+		if(underscore != std::string::npos && underscore < newName.size() - 1 /*&& underscore > 0*/)
+		{
+			std::string prefix{ newName.substr(0, underscore) };
+			if (TryParseInt(newName.substr(underscore + 1), number))
+			{
+				int highestExisting = std::max(0, number);
+				for (const auto& pair : childrenByName)
+				{
+					const auto& name = pair.first;
+					if (name.find(prefix) == 0 && name.find_last_of('_') == prefix.size())
+					{
+						int existingNumber;
+						if (TryParseInt(name.substr(prefix.size() + 1), existingNumber))
+							highestExisting = std::max(highestExisting, existingNumber);
+					}
+				}
+				number = highestExisting + 1;
+			}
+			else
+				number = 1;
+			newName.replace(underscore + 1, newName.size() - underscore - 1, std::to_string(number));
+		}
+		else
+		{
+			number = 1;
+			if (newName.size() != 0 && newName[newName.size() - 1] != '_' || newName.size() == 0)
+				newName += '_';
+			newName += std::to_string(number);
+		}
+		child->name = newName;
+		AddChild(child);
+	}
 }
 
 void Entity::RemoveChild(Entity* child)
 {
 	if (child)
+	{
 		children.erase(find(children.begin(), children.end(), child));
+		childrenByName.erase(child->name);
+	}
 }
 
 void Entity::Initialize() const
@@ -142,7 +232,7 @@ void Entity::Initialize() const
 		child->Initialize();
 	}
 
-	for (auto& component : componentsInOrder)
+	for (auto& component : components)
 		component->Initialize();
 }
 
@@ -160,13 +250,13 @@ void Entity::SendMessageUp(Message* message)
 
 void Entity::SendMessageToSelf(Message* message)
 {
-	for (Component* component : componentsInOrder)
+	for (Component* component : components)
 		component->OnMessageReceived(this, message);
 }
 
 void Entity::ReceiveMessageFromAbove(Entity* origin, Message* message)
 {
-	for (Component* component : componentsInOrder)
+	for (Component* component : components)
 		component->OnMessageReceived(origin, message);
 
 	if(!message->suppressed)
@@ -176,7 +266,7 @@ void Entity::ReceiveMessageFromAbove(Entity* origin, Message* message)
 
 void Entity::ReceiveMessageFromBelow(Entity* origin, Message* message)
 {
-	for (Component* component : componentsInOrder)
+	for (Component* component : components)
 		component->OnMessageReceived(origin, message);
 
 	if (!message->suppressed && parent)
@@ -185,12 +275,12 @@ void Entity::ReceiveMessageFromBelow(Entity* origin, Message* message)
 
 static std::unordered_map<std::string, EntityFlags::Type> stringToFlags
 {
-	{"None", EntityFlags::Type::None},
-	{"Default", EntityFlags::Type::Default},
-	{"UI", EntityFlags::Type::UI},
+	{ "None", EntityFlags::Type::None },
+	{ "Default", EntityFlags::Type::Default },
+	{ "UI", EntityFlags::Type::UI },
 	{ "Chassis", EntityFlags::Type::Chassis },
 	{ "Wheel", EntityFlags::Type::Wheel },
-	{"Highest", EntityFlags::Type::Highest}
+	{ "Highest", EntityFlags::Type::Highest }
 };
 
 EntityFlags::Type EntityFlags::FromString(const std::string& str)

@@ -122,3 +122,21 @@ std::string MakeNativePath(const std::string& shortPath)
 	return nativePath;
 }
 
+bool TryParseInt(const std::string& str, int& parsedInt)
+{
+	try
+	{
+		size_t parsedChars;
+		parsedInt = std::stoi(str, &parsedChars, 10);
+		return parsedChars == str.size();
+	}
+	catch (std::invalid_argument&)
+	{
+		return false;
+	}
+	catch (std::out_of_range&)
+	{
+		return false;
+	}
+}
+

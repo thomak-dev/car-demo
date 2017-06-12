@@ -5,7 +5,7 @@
 Time::Time(double maxRate, double fixedRate)
 	:
 	startTime{ clock.now() },
-	minTimeStep( static_cast<Duration::rep>(Period::den / maxRate) ),
+	minTimeStep( static_cast<Duration::rep>(ceil(Period::den / maxRate)) ),
 	fixedTimeStep{ static_cast<Duration::rep>(Period::den / fixedRate) },
 	oldInternalTime{ startTime },
 	oldCappedTime{ startTime }
@@ -94,7 +94,7 @@ void Time::EcoTick(bool& variable, bool& fixed)
 	}
 	else
 	{
-		variableOvershoot += internalDt;
+		variableOvershoot = minTimeStep - aheadOfCap;
 		variable = false;
 	}
 

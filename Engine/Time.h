@@ -15,7 +15,7 @@ public:
 	using Duration = Clock::duration;
 	using TimePoint = Clock::time_point;
 	using Period = Clock::period;
-	explicit Time(double maxRate = 144, double fixedRate = 60);
+	explicit Time(double maxRate = 120, double fixedRate = 60);
 
 	/**
 	 * \brief 

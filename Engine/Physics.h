@@ -60,9 +60,11 @@ private:
 	physx::PxRaycastQueryResult* vehQueryResults;
 	physx::PxRaycastHit* vehQueryHitBuffer;
 	physx::PxBatchQuery* vehicleQuery;
+	physx::PxVehicleWheelQueryResult* vehWheelQueryResultBuffer;
 
 	std::vector<RigidBody*> rigidBodies;
 	std::vector<physx::PxVehicleWheels*> wheels;
+	std::vector<Vehicle*> vehicles;
 	physx::PxVehicleDrivableSurfaceToTireFrictionPairs* surfaceToFriction;
 	
 	std::unordered_map<std::shared_ptr<Mesh>, physx::PxTriangleMesh*> physicsMeshes;

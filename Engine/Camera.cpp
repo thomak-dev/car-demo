@@ -74,7 +74,7 @@ void Camera::Deserialize(const Json& json)
 	if (json.HasMember("clear_color"))
 		clearColor = json["clear_color"].GetBool();
 	if (json.HasMember("background"))
-		background = Vec4FromJson(json["background"]);
+		background = ToVec4(json["background"]);
 	if (json.HasMember("main"))
 		isMain = json["main"].GetBool();
 }

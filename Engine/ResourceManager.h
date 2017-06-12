@@ -43,7 +43,15 @@ private:
 
 	template<typename T, typename... Targs>
 	std::shared_ptr<T> ExistingOrLoad(const std::string& shortPath, T*loadFunction(const std::string&, Targs...), Targs... args);
-	Entity* ProcessNode(aiNode* node, Entity* parent, const aiScene* scene, std::vector<bool>& loadedMeshes, std::vector<std::string>& loadedMeshNames, const std::vector<std::shared_ptr<Material>>& materials, const std::string& shortPath);
+	Entity* ProcessNode(
+		aiNode* node, 
+		Entity* parent,
+		const aiScene* scene, 
+		std::vector<bool>& loadedMeshes,
+		std::vector<std::string>& loadedMeshNames, 
+		const std::vector<std::shared_ptr<Material>>& materials,
+		const std::string& shortPath,
+		bool bakeTransform = false);
 };
 
 template<typename T, typename... Targs>

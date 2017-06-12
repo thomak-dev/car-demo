@@ -37,7 +37,7 @@ protected:
 	Shape shapeType{};
 	glm::vec3 halfSize{0.5f};
 	std::shared_ptr<Mesh> mesh;
-	float density{ 0.01f };
+	float density{ 500 };
 	glm::quat lastPhysicsRotation;
 	glm::vec3 lastPhysicsPosition;
 	static Physics* physics;
@@ -45,12 +45,13 @@ protected:
 	physx::PxRigidActor* rigidActor{};
 	bool isStatic{};
 	physx::PxFilterData filterData;
+	glm::vec3 offset;
 
-	void Update();
+	virtual void Update();
 	static std::unordered_map<std::string, Shape> stringToShape;
 	virtual void PostProcessPhysics();
 	void SetShapeInternal(Shape shape);
 	void SetDensityInternal(float density);
-	void UpdateTransform();
+	virtual void UpdateTransform();
 	void InitCommonProps();
 };

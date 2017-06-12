@@ -2,9 +2,6 @@
 	"children":
 	[
 		{
-			"base": "Prefabs/camera.prefab"
-		},
-		{
 			"components":
 			[
 				{
@@ -18,9 +15,7 @@
 				}
 			]
 		},
-		{
-			"base": "Prefabs/ui_camera.prefab"
-		},
+
 		{
 			"flags": [ "UI" ],
 			"components":
@@ -50,13 +45,13 @@
 				},
 				{
 					"type": "MeshInstance",
-					"mesh": "Meshes/test_terrain.dae"
+					"mesh": "Meshes/ramps.dae"
 				},
 				{
 					"type": "RigidBody",
-					"mesh": "Meshes/test_terrain.dae",
+					"mesh": "Meshes/ramps.dae",
 					"static": true,
-					"shape": "Terrain"
+					"shape": "Mesh"
 				}
 			]
 		},
@@ -66,7 +61,7 @@
 			[
 				{
 					"type": "Transform",
-					"position": [0, 50, 0]
+					"position": [0, 50, -5]
 				}
 			]
 		},
@@ -146,6 +141,95 @@
 					"position": [15, 50, 0]
 				}
 			]
+		},
+		{
+			"base": "Meshes/car.dae",
+			"flags": ["Chassis"],
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [0, 10, 0]
+				},
+				{
+					"type": "Vehicle",
+					"shape": "Box",
+					"half_size": [0.75, 0.42, 1.4],
+					"offset": [0, 0.7161, 0],
+					"density": 200,
+					"wheel_radius": 0.306,
+					"wheel_width": 0.297,
+					"wheel_mass": 20
+				}
+			],
+			"children":
+			[
+				{
+					"base": "Wheel_RF",
+					"flags": ["Wheel"],
+					"components":
+					[
+						{
+							"type": "Wheel",
+							"index": 1
+						}
+					]
+				},
+				{
+					"base": "Wheel_RB",
+					"flags": ["Wheel"],
+					"components":
+					[
+						{
+							"type": "Wheel",
+							"index": 3
+						}
+					]
+				},
+				{
+					"base": "Wheel_LF",
+					"flags": ["Wheel"],
+					"components":
+					[
+						{
+							"type": "Wheel",
+							"index": 0
+						}
+					]
+				},
+				{
+					"base": "Wheel_LB",
+					"flags": ["Wheel"],
+					"components":
+					[
+						{
+							"type": "Wheel",
+							"index": 2
+						}
+					]
+				},
+				{
+					"flags": [ "Default", "Chassis", "Wheel" ],
+					"components":
+					[
+						{
+							"type": "Transform",
+							"position": [0, 3, -6],
+							"rotation": [30, 0, 0]
+						},
+						{
+							"type": "Camera",
+							"vertical_param": 60,
+							"projection": "PerspectiveAspect",
+							"background": [0.72, 0.78, 0.99, 1],
+							"main": true
+						}
+					]
+				}
+			]
+		},
+		{
+			"base": "Prefabs/ui_camera.prefab"
 		}
 	]
 }

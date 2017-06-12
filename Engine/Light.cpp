@@ -50,7 +50,7 @@ void Light::Deserialize(const Json& json)
 	if (json.HasMember("cutoff"))
 		SetCutoff(json["cutoff"].GetFloat());
 	if (json.HasMember("color"))
-		color = Vec4FromJson(json["color"]);
+		color = ToVec4(json["color"]);
 	if (json.HasMember("light_type"))
 		type = stringToType[json["light_type"].GetString()];
 }

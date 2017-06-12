@@ -3,5 +3,5 @@
 #include <rapidjson/document.h>
 #include <glm/fwd.hpp>
 
-glm::vec3 Vec3FromJson(const rapidjson::Value& json);
-glm::vec4 Vec4FromJson(const rapidjson::Value& json);
+glm::vec3 ToVec3(const rapidjson::Value& json);
+glm::vec4 ToVec4(const rapidjson::Value& json);

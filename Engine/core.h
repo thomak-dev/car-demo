@@ -47,3 +47,4 @@ Predicate<T> MemberToPredicate(bool (T::*member)() const)
 	return [=](const T& arg) { return (arg.*member)(); };
 }
 
+bool TryParseInt(const std::string& str, int& parsedInt);

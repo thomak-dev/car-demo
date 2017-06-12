@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	Renderer renderer;
 	Physics physics;
 
-	Time time{ 144, 60 };
+	Time time{ 200, 60 };
 	
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
 	root->Initialize();
@@ -38,20 +38,22 @@ int main(int argc, char* argv[])
 		bool isVariable;
 		time.BusyTick(isVariable, isFixedTimeStep);
 
-		PrepareInput();
-
-		while (SDL_PollEvent(&event))
+		if(isVariable)
 		{
-			if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-				UpdateInput(event);
-			if (event.type == SDL_QUIT)
-				quit = true;
-		}
-		if (KeyWentDown(SDLK_ESCAPE))
-			quit = true;
-		if (KeyWentDown(SDLK_F1))
-			physics.SetVisualize(!physics.Visualize());
+			PrepareInput();
 
+			while (SDL_PollEvent(&event))
+			{
+				if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+					UpdateInput(event);
+				if (event.type == SDL_QUIT)
+					quit = true;
+			}
+			if (KeyWentDown(SDLK_ESCAPE))
+				quit = true;
+			if (KeyWentDown(SDLK_F1))
+				physics.SetVisualize(!physics.Visualize());
+		}
 
 		if (isFixedTimeStep)
 		{

@@ -25,9 +25,10 @@ void AiToGlmMatrix(glm::mat4& result, const aiMatrix4x4& aiMat);
 
 physx::PxVec3 ToPxVec3(const glm::vec3& vec);
 physx::PxVec4 ToPxVec4(const glm::vec4& vec);
+physx::PxQuat ToPxQuat(const glm::quat& quat);
 physx::PxMat44 ToPxMat44(const glm::mat4& mat);
-glm::vec3 ToGlmVec3(const physx::PxVec3& vec);
-glm::quat ToGlmQuat(const physx::PxQuat& quat);
+glm::vec3 ToVec3(const physx::PxVec3& vec);
+glm::quat ToQuat(const physx::PxQuat& quat);
 
 int CeilLog2(uint64_t x);
 

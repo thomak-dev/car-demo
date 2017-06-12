@@ -39,6 +39,11 @@ physx::PxVec4 ToPxVec4(const glm::vec4& vec)
 	return physx::PxVec4{ vec.x, vec.y, vec.z, vec.w };
 }
 
+physx::PxQuat ToPxQuat(const glm::quat& quat)
+{
+	return physx::PxQuat(quat.x, quat.y, quat.z, quat.w);
+}
+
 physx::PxMat44 ToPxMat44(const glm::mat4& mat)
 {
 	physx::PxMat44 pMat;
@@ -49,12 +54,12 @@ physx::PxMat44 ToPxMat44(const glm::mat4& mat)
 	return pMat;
 }
 
-glm::vec3 ToGlmVec3(const physx::PxVec3& vec)
+glm::vec3 ToVec3(const physx::PxVec3& vec)
 {
 	return glm::vec3{ vec.x, vec.y, vec.z };
 }
 
-glm::quat ToGlmQuat(const physx::PxQuat& quat)
+glm::quat ToQuat(const physx::PxQuat& quat)
 {
 	return glm::quat{ quat.w, quat.x, quat.y, quat.z };
 }

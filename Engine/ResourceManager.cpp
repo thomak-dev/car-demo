@@ -111,14 +111,15 @@ std::shared_ptr<Mesh> ResourceManager::LoadMesh(const std::string& shortPath, bo
 	return ExistingOrLoad(shortPath, LoadMeshFromFile, ignoreRootTransform);
 }
 
-Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene* scene, std::vector<bool>& loadedMeshes, std::vector<std::string>& loadedMeshNames, const std::vector<std::shared_ptr<Material>>& materials, const std::string& shortPath)
+Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene* scene, std::vector<bool>& loadedMeshes, std::vector<std::string>& loadedMeshNames, const std::vector<std::shared_ptr<Material>>& materials, const std::string& shortPath, bool bakeTransform)
 {
 	Entity* entity = new Entity;
 	
 	Transform* transform = entity->AddComponent<Transform>();
 	glm::mat4 matrix;
 	AiToGlmMatrix(matrix, node->mTransformation);
-	transform->SetMatrix(matrix);
+	if(!bakeTransform)
+		transform->SetMatrix(matrix);
 	std::stringstream sstream;
 	sstream << shortPath << '/' << node->mName.C_Str();
 	std::string newPath{ sstream.str() };
@@ -131,7 +132,7 @@ Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene
 		std::string name{ sstream.str() };
 		if (!loadedMeshes[node->mMeshes[i]])
 		{
-			Mesh* newMesh = CreateMesh(scene->mMeshes[node->mMeshes[i]]);
+			Mesh* newMesh = CreateMesh(scene->mMeshes[node->mMeshes[i]], bakeTransform? matrix : glm::mat4{});
 			mesh = std::shared_ptr<Mesh>{ newMesh };
 			resources[name] = mesh;
 			loadedMeshes[node->mMeshes[i]] = true;
@@ -148,6 +149,7 @@ Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene
 		else
 		{
 			Entity* child = new Entity;
+			child->SetName("submesh_" + std::to_string(i));
 			child->AddComponent<Transform>();
 			MeshInstance* meshInstance = child->AddComponent<MeshInstance>();
 			meshInstance->SetMeshAndMaterial(mesh, materials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex]);
@@ -157,8 +159,13 @@ Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene
 	}
 
 	for (unsigned i = 0; i < node->mNumChildren; ++i)
-		ProcessNode(node->mChildren[i], entity, scene, loadedMeshes, loadedMeshNames, materials, newPath);
-
+	{
+		if (bakeTransform)
+			node->mChildren[i]->mTransformation = node->mTransformation * node->mChildren[i]->mTransformation;
+		Entity* child = ProcessNode(node->mChildren[i], entity, scene, loadedMeshes, loadedMeshNames, materials, newPath);
+	}
+		
+	entity->SetName(node->mName.C_Str());
 	entity->SetParent(parent);
 	return entity;
 }
@@ -205,15 +212,16 @@ Entity* ResourceManager::LoadEntity(const std::string& shortPath, Entity* parent
 		scene->mMaterials[i]->Get(AI_MATKEY_NAME, matName);
 		materials.push_back(LoadMaterial(materialMap[matName.C_Str()]));
 	}
-	Entity* entity{ ProcessNode(scene->mRootNode, parent, scene, loadedMeshes, loadedMeshNames, materials, shortPath) };
-	Transform* transform = entity->GetComponent<Transform>();
-	glm::mat4 matrix = transform->Matrix();
-	for (auto& child : entity->Children())
-	{
-		Transform* childTransform = child->GetComponent<Transform>();
-		childTransform->SetMatrix(matrix * childTransform->Matrix());
-	}
-	transform->SetMatrix(glm::mat4{});
+	scene->mRootNode->mChildren[0]->mTransformation = scene->mRootNode->mTransformation * scene->mRootNode->mChildren[0]->mTransformation;
+	Entity* entity{ ProcessNode(scene->mRootNode->mChildren[0], parent, scene, loadedMeshes, loadedMeshNames, materials, shortPath, true) };
+	//Transform* transform = entity->GetComponent<Transform>();
+	//glm::mat4 matrix = transform->Matrix();
+	//for (auto& child : entity->Children())
+	//{
+	//	Transform* childTransform = child->GetComponent<Transform>();
+	//	childTransform->SetMatrix(matrix * childTransform->Matrix());
+	//}
+	//transform->SetMatrix(glm::mat4{});
 	return entity;
 }
 

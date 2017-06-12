@@ -41,7 +41,7 @@ RigidBody::~RigidBody()
 void RigidBody::Deserialize(const Json& json)
 {
 	if (json.HasMember("half_size"))
-		halfSize = Vec3FromJson(json["half_size"]);
+		halfSize = ToVec3(json["half_size"]);
 	if (json.HasMember("mesh"))
 		mesh = ResourceManager::Instance().LoadMesh(json["mesh"].GetString());
 	if (json.HasMember("shape"))
@@ -50,6 +50,8 @@ void RigidBody::Deserialize(const Json& json)
 		density = json["density"].GetFloat();
 	if (json.HasMember("static"))
 		isStatic = json["static"].GetBool();
+	if (json.HasMember("offset"))
+		offset = ToVec3(json["offset"]);
 }
 
 void RigidBody::Initialize()
@@ -93,8 +95,8 @@ void RigidBody::SetDensity(float density)
 void RigidBody::UpdateTransform()
 {
 	auto pTrans = rigidActor->getGlobalPose();
-	lastPhysicsRotation = ToGlmQuat(pTrans.q);
-	lastPhysicsPosition = ToGlmVec3(pTrans.p);
+	lastPhysicsRotation = ToQuat(pTrans.q);
+	lastPhysicsPosition = ToVec3(pTrans.p);
 	transform->SetWorldPosition(lastPhysicsPosition);
 	transform->SetWorldRotation(lastPhysicsRotation);
 }
@@ -132,15 +134,18 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 	{
 	case Shape::Box:
 		shape = physics->backend->createShape(PxBoxGeometry{ToPxVec3(halfSize * transform->WorldScale())}, *physics->defaultMaterial, true);
+		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Sphere:
 		shape = physics->backend->createShape(PxSphereGeometry{halfSize.x * transform->WorldScale().x}, *physics->defaultMaterial, true);
+		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Mesh:
 		SDL_assert(isStatic);
 		shape = physics->backend->createShape(PxTriangleMeshGeometry{physics->GetMesh(mesh), PxMeshScale{ToPxVec3(transform->WorldScale())}}, *physics->defaultMaterial, true);
+		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Terrain:
@@ -148,13 +153,14 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 			SDL_assert(isStatic);
 			const Physics::Terrain& terrain = *physics->GetTerrain(mesh);
 			shape = physics->backend->createShape(PxHeightFieldGeometry(terrain.heightField, PxMeshGeometryFlags{}, terrain.height / (1 << 16), 1, 1), *physics->defaultMaterial, true);
-			PxTransform pose{PxVec3{terrain.minX, terrain.minHeight + terrain.height / 2, terrain.minZ}};
+			PxTransform pose{PxVec3{terrain.minX, terrain.minHeight + terrain.height / 2, terrain.minZ} + ToPxVec3(offset * transform->WorldScale()) };
 			shape->setLocalPose(pose);
 			rigidActor->attachShape(*shape);
 			break;
 		}
 	default: SDL_assert(false);
 	}
+
 	shape->setQueryFilterData(filterData);
 	shape->setSimulationFilterData(filterData);
 }

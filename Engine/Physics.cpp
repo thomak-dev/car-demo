@@ -141,6 +141,7 @@ Physics::Physics(int maxVehicles)
 	scnDesc.filterShader = FilterShader;
 	scnDesc.gravity = PxVec3{0, -9.81f, 0};
 	scene = backend->createScene(scnDesc);
+	scene->getScenePvdClient()->setScenePvdFlags(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS | PxPvdSceneFlag::eTRANSMIT_CONTACTS | PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES);
 	scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 	scene->setFlag(PxSceneFlag::eEXCLUDE_KINEMATICS_FROM_ACTIVE_ACTORS, true);
 
@@ -157,6 +158,7 @@ Physics::Physics(int maxVehicles)
 	vehicleQuery = scene->createBatchQuery(queryDesc);
 
 	wantedCollisionsOf[EntityFlags::DefaultPos] = EntityFlags::Default;
+	wantedCollisionsOf[EntityFlags::ChassisPos] = EntityFlags::Default;
 
 	surfaceToFriction = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Tire::Highest, 1);
 	PxMaterial* surfaceMaterials[1];
@@ -165,6 +167,13 @@ Physics::Physics(int maxVehicles)
 	surfaceTypes[0].mType = 0;
 	surfaceToFriction->setup(Tire::Highest, 1, const_cast<const PxMaterial**>(surfaceMaterials), surfaceTypes);
 	surfaceToFriction->setTypePairFriction(0, 0, 0.5f);
+
+	vehWheelQueryResultBuffer = new PxVehicleWheelQueryResult[MaxVehicles];
+	for (int i = 0; i < MaxVehicles; ++i)
+	{
+		vehWheelQueryResultBuffer[i].wheelQueryResults = new PxWheelQueryResult[PX_MAX_NB_WHEELS];
+		vehWheelQueryResultBuffer[i].nbWheelQueryResults = PX_MAX_NB_WHEELS;
+	}
 }
 
 
@@ -180,6 +189,11 @@ Physics::~Physics()
 		delete pair.second;
 		pair.second = nullptr;
 	}
+	for (int i = 0; i < MaxVehicles; ++i)
+	{
+		delete[] vehWheelQueryResultBuffer[i].wheelQueryResults;
+	}
+	delete[] vehWheelQueryResultBuffer;
 	surfaceToFriction->release();
 	vehicleQuery->release();
 	delete[] vehQueryHitBuffer;
@@ -201,7 +215,10 @@ void Physics::RegisterRigidBody(RigidBody* rigidBody)
 	scene->addActor(*rigidBody->rigidActor);
 	Vehicle* vehicle = dynamic_cast<Vehicle*>(rigidBody);
 	if (vehicle)
+	{
 		wheels.push_back(vehicle->wheels);
+		vehicles.push_back(vehicle);
+	}
 }
 
 void Physics::UnregisterRigidBody(RigidBody* rigidBody)
@@ -211,14 +228,31 @@ void Physics::UnregisterRigidBody(RigidBody* rigidBody)
 	{
 		scene->removeActor(*rigidBody->rigidActor);
 		rigidBodies.erase(found);
+		Vehicle* vehicle = dynamic_cast<Vehicle*>(rigidBody);
+		if(vehicle)
+		{
+			auto foundVeh = find(vehicles.begin(), vehicles.end(), vehicle);
+			auto dist = std::distance(vehicles.begin(), foundVeh);
+			vehicles.erase(foundVeh);
+			auto wheelsIt = wheels.begin();
+			advance(wheelsIt, dist);
+			wheels.erase(wheelsIt);
+		}
 	}
 }
 
 void Physics::Step(float deltaTime)
 {
 	PxVehicleSuspensionRaycasts(vehicleQuery, wheels.size(), wheels.data(), wheels.size() * PX_MAX_NB_WHEELS, vehQueryResults);
-
-	PxVehicleUpdates(deltaTime, scene->getGravity(), *surfaceToFriction, wheels.size(), wheels.data(), nullptr );
+	for (int i = 0; i < vehicles.size(); ++i)
+	{
+		vehicles[i]->BeforeVehicleUpdate(deltaTime);
+	}
+	PxVehicleUpdates(deltaTime, scene->getGravity(), *surfaceToFriction, wheels.size(), wheels.data(), vehWheelQueryResultBuffer);
+	for (int i = 0; i < vehicles.size(); ++i)
+	{
+		vehicles[i]->AfterVehicleUpdate(vehWheelQueryResultBuffer[i]);
+	}
 
 	scene->simulate(deltaTime);
 }

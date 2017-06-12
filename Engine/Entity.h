@@ -56,12 +56,17 @@ public:
 	Component* AddComponent(const std::string& type);
 
 	template <typename T>
-	T* GetComponent();
+	T* GetComponent() const;
 	template<typename T>
 	T* GetComponentInAncestors();
-	Component* GetComponent(const std::string& type);
+	template<typename T, typename OutputIt>
+	OutputIt GetComponentsInDescendants(OutputIt) const;
+	Component* GetComponent(const std::string& type) const;
+	std::string Name() const { return name; }
+	void SetName(const std::string& name);
 	Entity* Parent() const { return parent; }
 	void SetParent(Entity* parent);
+	Entity* GetChild(const std::string& name);
 	
 	const std::vector<Entity*>& Children() const { return children; };
 
@@ -73,15 +78,20 @@ public:
 	EntityFlags::Type flags{EntityFlags::Default};
 
 private:
-	std::unordered_map<std::type_index, Component*> components;
-	std::vector<Component*> componentsInOrder;
+	std::unordered_map<std::type_index, Component*> componentsByType;
+	std::vector<Component*> components;
 	Entity* parent{};
 	std::vector<Entity*> children;
+	std::unordered_map<std::string, Entity*> childrenByName;
+	std::string name;
 
 	void AddChild(Entity* child);
 	void RemoveChild(Entity* child);
 	void ReceiveMessageFromAbove(Entity* origin, Message* message);
 	void ReceiveMessageFromBelow(Entity* origin, Message* message);
+	static void DeserializeComponents(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target);
+	static void DeserializeChildren(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target);
+	static void SetFlags(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target);
 };
 
 template<typename T>
@@ -89,17 +99,17 @@ inline T* Entity::AddComponent()
 {
 	T* newComp = new T(this);
 	std::type_index type{typeid(T)};
-	SDL_assert(components.find(type) == components.end());
-	components[type] = newComp;
-	componentsInOrder.push_back(newComp);
+	SDL_assert(componentsByType.find(type) == componentsByType.end());
+	componentsByType[type] = newComp;
+	components.push_back(newComp);
 	return newComp;
 }
 
 template<typename T>
-inline T* Entity::GetComponent()
+inline T* Entity::GetComponent() const
 {
-	auto result = components.find(std::type_index{ typeid(T) });
-	if (result != components.end())
+	auto result = componentsByType.find(std::type_index{ typeid(T) });
+	if (result != componentsByType.end())
 		return dynamic_cast<T*>(result->second);
 	else
 		return nullptr;
@@ -114,5 +124,16 @@ T* Entity::GetComponentInAncestors()
 	else if (parent)
 		return parent->GetComponentInAncestors<T>();
 	return here;
+}
+
+template <typename T, typename OutputIt>
+OutputIt Entity::GetComponentsInDescendants(OutputIt iter) const
+{
+	T* comp = GetComponent<T>();
+	if (comp)
+		*iter++ = comp;
+	for (const auto& child : children)
+		iter = child->GetComponentsInDescendants<T>(iter);
+	return iter;
 }
 
