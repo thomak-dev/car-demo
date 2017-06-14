@@ -1,0 +1,8 @@
+{
+	"shader": "Shaders/normal_lambert.shader",
+	"properties":
+	[
+		{ "colorMap": "Textures/Concrete/slabs-diffuse.png" },
+		{ "normalMap": "Textures/Concrete/slabs-normal.png" }
+	]
+}

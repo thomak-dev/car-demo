@@ -127,12 +127,13 @@ void Vehicle::Initialize()
 		wheelsData[i].mRadius = wheelRadius;
 
 		tires[i].mType = type;
-
-		suspensions[i].mMaxCompression = 0.14f;
-		suspensions[i].mMaxDroop = 0.1962f;
-		suspensions[i].mSpringStrength = 9000;
-		suspensions[i].mSpringDamperRate = 2800;
+		const float natFreq = 5; // 5 - 10 maybe
+		const float dampingRatio = 1.1f; // 0.8 underdamped .. 1.2 overdamped
+		suspensions[i].mMaxCompression = 0.22f;
+		suspensions[i].mSpringStrength = natFreq * natFreq * suspSprungMasses[i];
+		suspensions[i].mSpringDamperRate = dampingRatio * 2 * sqrt(suspensions[i].mSpringStrength * suspSprungMasses[i]);
 		suspensions[i].mSprungMass = suspSprungMasses[i];
+		suspensions[i].mMaxDroop = suspSprungMasses[i] * 9.81f / suspensions[i].mSpringStrength;
 
 		const PxF32 camberAngleAtRest = 0.0;
 		const PxF32 camberAngleAtMaxDroop = -0.05f;
@@ -169,8 +170,8 @@ void Vehicle::Initialize()
 	driveSimData.setDiffData(diff);
 
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 1000.0f;
-	engine.mMaxOmega = 600.0f; //approx 6000 rpm
+	engine.mPeakTorque = 1200.0f;
+	engine.mMaxOmega = 300.0f; //approx 6000 rpm
 	driveSimData.setEngineData(engine);
 
 	PxVehicleGearsData gears;

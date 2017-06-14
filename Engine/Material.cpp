@@ -35,6 +35,13 @@ void Material::SetShader(ShaderProgram&& shader)
 	UpdateUniformLocations();
 }
 
+void Material::Use()
+{
+	if (dirty)
+		UpdateUniformLocations();
+	program.Use();
+}
+
 const ShaderProgram& Material::GetShaderProgram() const
 {
 	return program;
@@ -76,6 +83,7 @@ void Material::UpdateUniformLocations()
 		}
 		property.dirty = false;
 	}
+	dirty = false;
 }
 
 Material::Property::Property(const std::string& name, float value)
@@ -162,7 +170,7 @@ glm::vec4 Material::Property::GetVector4() const
 	return vector4Value;
 }
 
-void swap(Material& first, Material& second)
+void swap(Material& first, Material& second) noexcept
 {
 	using std::swap;
 	swap(first.program, second.program);

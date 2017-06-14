@@ -166,7 +166,10 @@ Physics::Physics(int maxVehicles)
 	PxVehicleDrivableSurfaceType surfaceTypes[1];
 	surfaceTypes[0].mType = 0;
 	surfaceToFriction->setup(Tire::Highest, 1, const_cast<const PxMaterial**>(surfaceMaterials), surfaceTypes);
-	surfaceToFriction->setTypePairFriction(0, 0, 0.5f);
+	surfaceToFriction->setTypePairFriction(0, 0, 0.9f);
+	surfaceToFriction->setTypePairFriction(0, 1, 0.9f);
+	surfaceToFriction->setTypePairFriction(0, 2, 0.9f);
+	surfaceToFriction->setTypePairFriction(0, 3, 0.9f);
 
 	vehWheelQueryResultBuffer = new PxVehicleWheelQueryResult[MaxVehicles];
 	for (int i = 0; i < MaxVehicles; ++i)

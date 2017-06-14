@@ -11,7 +11,8 @@
 		},
 		{
 			"type": "RigidBody",
-			"shape": "Box"
+			"shape": "Box",
+			"density": 50
 		},
 		{
 			"type": "RandomColor"

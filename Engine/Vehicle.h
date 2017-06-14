@@ -29,7 +29,7 @@ private:
 	float wheelMass{ 10 };
 	float wheelRadius{ .5f };
 	float wheelWidth{ .3f };
-	float steer{ Float::Pi / 8 };
+	float steer{ Float::Pi / 4 };
 	Tire::Type type{ Tire::Normal };
 	std::vector<Transform*> wheelTransforms;
 	std::vector<physx::PxTransform> lastKnownWheelTransforms;

@@ -30,6 +30,8 @@ public:
 	 * \brief 
 	 * Iterate time economically, meaning the thread will be put to sleep until the next time step.
 	 * This is less accurate and smooth than BusyTick because of OS scheduling.
+	 * \param variable
+	 * Set to true when it's time for a variable, capped time step, to false otherwise
 	 * \param fixed
 	 * Set to true when it's time for a fixed time step, to false otherwise
 	 */

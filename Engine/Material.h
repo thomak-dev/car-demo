@@ -76,16 +76,18 @@ public:
 	int ordinal{};
 
 	void SetShader(ShaderProgram&& shader);
+	void Use();
 	const ShaderProgram& GetShaderProgram() const;
 	std::vector<Property>& GetProperties() { return properties; };
 
 	template <typename T>
 	void SetProperty(const std::string& name, T value);
-	friend void swap(Material& first, Material& second);
+	friend void swap(Material& first, Material& second) noexcept;
 private:
 	ShaderProgram program;
 	std::vector<Property> properties;
 
+	bool dirty{ true };
 	void UpdateUniformLocations();
 };
 
@@ -97,4 +99,5 @@ void Material::SetProperty(const std::string& name, T value)
 		properties.emplace_back(name, value);
 	else
 		property->SetValue(value);
+	dirty = true;
 }

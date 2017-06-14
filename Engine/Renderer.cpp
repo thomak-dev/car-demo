@@ -273,7 +273,7 @@ void Renderer::SetMaterial(const std::shared_ptr<Material>& material)
 		SetBlendOperators(material->blendOpColor, material->blendOpAlpha);
 		SetBlendCoefficients(material->blendSrcColor, material->blendSrcAlpha, material->blendDstColor, material->blendDstAlpha);
 
-		material->GetShaderProgram().Use();
+		material->Use();
 
 		int textureUnitOffset = 0;
 		int textureUnitStart = GL_TEXTURE0;

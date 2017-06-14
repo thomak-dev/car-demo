@@ -21,7 +21,7 @@ out mat3 tangentSpace;
 void main()
 {
 	vec3 worldNormal = normalize((inverse(transpose(model)) * vec4(normal, 0)).xyz);
-	vec3 worldTangent = normalize(model * vec4(tangent, 0));
+	vec3 worldTangent = normalize((model * vec4(tangent, 0)).xyz);
 	tangentSpace = mat3(
 		worldTangent,
 		cross(worldNormal, worldTangent),

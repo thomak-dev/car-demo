@@ -6,7 +6,7 @@
 			[
 				{
 					"type": "Transform",
-					"rotation": [45, 190, 0]
+					"rotation": [50, 10, 0]
 				},
 				{
 					"type": "Light",
@@ -45,7 +45,8 @@
 				},
 				{
 					"type": "MeshInstance",
-					"mesh": "Meshes/ramps.dae"
+					"mesh": "Meshes/ramps.dae",
+					"material": "Materials/concrete_slabs.mat"
 				},
 				{
 					"type": "RigidBody",
@@ -64,23 +65,6 @@
 					"position": [0, 50, -5]
 				}
 			]
-		},
-		{
-			"components":
-			[
-				{
-					"type": "Transform",
-					"position": [0, 15, 5],
-					"rotation": [0, 25, 0],
-					"scale": [1, 1.4144271570014144271570014144272, 1]
-				},
-				{
-					"type": "MeshInstance",
-					"mesh": "Meshes/quad.dae",
-					"material": "Materials/miia.mat"
-				}
-			]
-				
 		},
 		{
 			"base": "Prefabs/physical_sphere.prefab",
@@ -156,10 +140,10 @@
 					"shape": "Box",
 					"half_size": [0.75, 0.42, 1.4],
 					"offset": [0, 0.7161, 0],
-					"density": 200,
+					"density": 400,
 					"wheel_radius": 0.306,
 					"wheel_width": 0.297,
-					"wheel_mass": 20
+					"wheel_mass": 100
 				}
 			],
 			"children":
