@@ -9,7 +9,7 @@
 void ForwardSpinner::Initialize()
 {
 	Component::Initialize();
-	transform = entity->GetComponent<Transform>();
+	transform = entity.GetComponent<Transform>();
 }
 
 void ForwardSpinner::OnMessageReceived(Entity* origin, Message* message)

@@ -12,6 +12,7 @@
 #include "messages.h"
 #include "Vehicle.h"
 #include "Wheel.h"
+#include "OrbitingCam.h"
 
 Entity::~Entity()
 {
@@ -99,7 +100,7 @@ std::shared_ptr<Entity> Entity::Instantiate(const rapidjson::GenericObject<true,
 		base = std::make_shared<Entity>();
 
 	if (prefab.HasMember("name"))
-		base->name = prefab["name"].GetString();
+		base->SetName(prefab["name"].GetString());
 
 	if (!base->Parent())
 	{
@@ -136,6 +137,7 @@ Component* Entity::AddComponent(const std::string& type)
 	ELSE_COMPONENT(RandomColor, Add);
 	ELSE_COMPONENT(Vehicle, Add);
 	ELSE_COMPONENT(Wheel, Add);
+	ELSE_COMPONENT(OrbitingCam, Add);
 	return nullptr;
 }
 
@@ -154,6 +156,7 @@ Component* Entity::GetComponent(const std::string& type) const
 	ELSE_COMPONENT(RandomColor, Get);
 	ELSE_COMPONENT(Vehicle, Get);
 	ELSE_COMPONENT(Wheel, Get);
+	ELSE_COMPONENT(OrbitingCam, Get);
 	return nullptr;
 }
 
@@ -161,9 +164,21 @@ void Entity::SetName(const std::string& name)
 {
 	auto parentPtr = parent.lock();
 	if (parentPtr)
-		this->name = parentPtr->GetValidChildName(name);
+		parentPtr->RenameChild(this->name, name);
 	else
 		this->name = name;
+}
+
+void Entity::RenameChild(const std::string& childName, const std::string& newName)
+{
+	auto found = childrenByName.find(childName);
+	if (found != childrenByName.end())
+	{
+		std::shared_ptr<Entity> child = found->second;
+		child->name = GetValidChildName(newName);
+		found = childrenByName.erase(found);
+		childrenByName.insert(found, std::make_pair(child->name, child));
+	}
 }
 
 std::shared_ptr<Entity> Entity::Find(const std::string& path) const

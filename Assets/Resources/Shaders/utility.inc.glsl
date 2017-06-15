@@ -15,6 +15,7 @@ struct Light
 layout(std140) uniform Lights
 {
 	Light lights[LIGHT_COUNT];
+	vec4 ambient;
 };
 
 vec3 UnpackNormal(vec3 mapNormal)
@@ -37,6 +38,7 @@ vec3 ComputeLambert(vec3 pos, vec3 normal, vec3 albedo)
 	{
 		vec3 lightDir = (lights[i].dirPos.w == 1? 1 : -1) * lights[i].dirPos.xyz - pos * lights[i].dirPos.w;
 		col += (lights[i].dirPos.w == 1 ? Attenuation(length(lightDir), lights[i].linearAtten, lights[i].squareAtten, lights[i].cutoff) : 1) * albedo * clamp(dot(normal, normalize(lightDir)), 0, 1) * lights[i].color.rgb * lights[i].color.a;
+		col += albedo * ambient.rgb * ambient.a;
 	}
 	return col;
 }

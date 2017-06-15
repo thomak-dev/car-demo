@@ -1,7 +1,7 @@
 #include "Drawable.h"
 #include "Renderer.h"
 
-Drawable::Drawable(Entity* entity)
+Drawable::Drawable(Entity& entity)
 	: Component{entity}
 {
 	Renderer::Instance().RegisterDrawable(this);

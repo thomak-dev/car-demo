@@ -39,7 +39,7 @@ Renderer::Renderer()
 	glBindBuffer(GL_UNIFORM_BUFFER, ubos[UniformBufferIndex::ViewProjection]);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewProjection), nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, ubos[UniformBufferIndex::Lights]);
-	glBufferData(GL_UNIFORM_BUFFER, LightCount * CeilToBoundary(sizeof(LightData), 16), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, LightCount * CeilToBoundary(sizeof(LightData), 16) + sizeof(glm::vec4), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, UniformBufferIndex::ViewProjection, ubos[UniformBufferIndex::ViewProjection]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, UniformBufferIndex::Lights, ubos[UniformBufferIndex::Lights]);
 
@@ -207,7 +207,7 @@ void Renderer::Render()
 			glClear(clearFlags);
 		vp.view = camera->ViewMatrix();
 		vp.proj = camera->ProjMatrix();
-		vp.viewPos = camera->GetEntity()->GetComponent<Transform>()->WorldPosition();
+		vp.viewPos = camera->GetEntity().GetComponent<Transform>()->WorldPosition();
 		glBindBuffer(GL_UNIFORM_BUFFER, ubos[UniformBufferIndex::ViewProjection]);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ViewProjection), &vp);
 		std::sort(lights.begin(), lights.end(), [&](const Light* a, const Light* b) {
@@ -215,12 +215,12 @@ void Renderer::Render()
 				return a->type == Light::Type::Directional;
 			if (a->type == Light::Type::Directional)
 				return 
-					glm::dot(a->GetEntity()->GetComponent<Transform>()->Forward(), camera->GetEntity()->GetComponent<Transform>()->Forward()) >
-					glm::dot(b->GetEntity()->GetComponent<Transform>()->Forward(), camera->GetEntity()->GetComponent<Transform>()->Forward());
+					glm::dot(a->GetEntity().GetComponent<Transform>()->Forward(), camera->GetEntity().GetComponent<Transform>()->Forward()) >
+					glm::dot(b->GetEntity().GetComponent<Transform>()->Forward(), camera->GetEntity().GetComponent<Transform>()->Forward());
 
 			return 
-				glm::distance(a->GetEntity()->GetComponent<Transform>()->WorldPosition(), vp.viewPos) <
-				glm::distance(b->GetEntity()->GetComponent<Transform>()->WorldPosition(), vp.viewPos);
+				glm::distance(a->GetEntity().GetComponent<Transform>()->WorldPosition(), vp.viewPos) <
+				glm::distance(b->GetEntity().GetComponent<Transform>()->WorldPosition(), vp.viewPos);
 				
 
 		});
@@ -231,9 +231,9 @@ void Renderer::Render()
 			if (i < lights.size())
 			{
 				if(lights[i]->type == Light::Type::Point)
-					lightData.dirPos = glm::vec4(lights[i]->GetEntity()->GetComponent<Transform>()->WorldPosition(), 1);
+					lightData.dirPos = glm::vec4(lights[i]->GetEntity().GetComponent<Transform>()->WorldPosition(), 1);
 				else
-					lightData.dirPos = glm::vec4(lights[i]->GetEntity()->GetComponent<Transform>()->Forward(), 0);
+					lightData.dirPos = glm::vec4(lights[i]->GetEntity().GetComponent<Transform>()->Forward(), 0);
 				lightData.cutoff = lights[i]->Cutoff();
 				lightData.color = glm::max(lights[i]->color, 0.f);
 				lightData.linearAtten = lights[i]->LinearAttenuation();
@@ -241,10 +241,11 @@ void Renderer::Render()
 			}
 			glBufferSubData(GL_UNIFORM_BUFFER, i * CeilToBoundary(sizeof(LightData), 16), sizeof(LightData), &lightData);
 		}
+		glBufferSubData(GL_UNIFORM_BUFFER, LightCount * CeilToBoundary(sizeof(LightData), 16), sizeof(glm::vec4), glm::value_ptr(ambient));
 
 		for (auto drawable : drawables)
 		{
-			if(drawable->GetEntity()->flags & camera->GetEntity()->flags)
+			if(drawable->GetEntity().flags & camera->GetEntity().flags)
 			{
 				SetMaterial(drawable->GetMaterial());
 				drawable->Draw();
@@ -399,7 +400,7 @@ void Renderer::DrawText(const std::string& text, Font& font, int pointSize, int 
 
 void Renderer::DrawBillboardText(const glm::vec3& location, const std::string text, Font& font, const std::shared_ptr<Material>& textMaterial)
 {
-	Transform* camTransform = CurrentCamera().GetEntity()->GetComponent<Transform>();
+	Transform* camTransform = CurrentCamera().GetEntity().GetComponent<Transform>();
 	SetMaterial(textMaterial);
 	glm::vec3 dir{ camTransform->WorldPosition() - location };
 	glm::vec3 forward{ -camTransform->Forward() };

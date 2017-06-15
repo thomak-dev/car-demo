@@ -9,7 +9,7 @@
 void FpsCounter::Initialize()
 {
 	Component::Initialize();
-	text = entity->GetComponent<Text>();
+	text = entity.GetComponent<Text>();
 }
 
 void FpsCounter::OnMessageReceived(Entity* origin, Message* message)

@@ -17,13 +17,13 @@ std::unordered_map<std::string, RigidBody::Shape> RigidBody::stringToShape
 	{"Terrain", Shape::Terrain}
 };
 
-RigidBody::RigidBody(Entity* entity)
+RigidBody::RigidBody(Entity& entity)
 	: Component{entity}
 {
-	filterData.word0 = entity->flags;
+	filterData.word0 = entity.flags;
 	for (int i = 0; i <= EntityFlags::HighestPos; ++i)
 	{
-		if(entity->flags & 1u << i)
+		if(entity.flags & 1u << i)
 			filterData.word1 |= physics->wantedCollisionsOf[i];
 	}
 }
@@ -57,7 +57,7 @@ void RigidBody::Deserialize(const Json& json)
 void RigidBody::Initialize()
 {
 	Component::Initialize();
-	transform = entity->GetComponent<Transform>();
+	transform = entity.GetComponent<Transform>();
 	PxTransform pTransform{ToPxMat44(transform->WorldMatrix())};
 	if (isStatic)
 		rigidActor = physics->backend->createRigidStatic(pTransform.getNormalized());

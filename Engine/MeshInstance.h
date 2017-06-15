@@ -12,7 +12,7 @@ class MeshInstance : public Drawable
 	DELETE_COPY_MOVE(MeshInstance)
 public:
 	MeshInstance() = delete;
-	explicit MeshInstance(Entity*);
+	explicit MeshInstance(Entity&);
 	
 	virtual ~MeshInstance();
 

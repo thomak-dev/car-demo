@@ -64,6 +64,7 @@ public:
 	Component* GetComponent(const std::string& type) const;
 	std::string Name() const { return name; }
 	void SetName(const std::string& name);
+	void RenameChild(const std::string& child, const std::string& newName);
 	std::shared_ptr<Entity> Parent() const { return parent.lock(); }
 	std::shared_ptr<Entity> Find(const std::string& path) const;
 	std::shared_ptr<Entity> GetChild(const std::string& name) const;
@@ -105,7 +106,7 @@ private:
 template<typename T>
 inline T* Entity::AddComponent()
 {
-	T* newComp = new T(this);
+	T* newComp = new T(*this);
 	std::type_index type{typeid(T)};
 	SDL_assert(componentsByType.find(type) == componentsByType.end());
 	componentsByType[type] = newComp;

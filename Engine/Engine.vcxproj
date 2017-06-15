@@ -179,6 +179,7 @@
     <ClCompile Include="math_utility.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshInstance.cpp" />
+    <ClCompile Include="OrbitingCam.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="RandomColor.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="math_utility.h" />
+    <ClInclude Include="OrbitingCam.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="RandomColor.h" />
     <ClInclude Include="ResourceManager.h" />

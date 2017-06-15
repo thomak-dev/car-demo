@@ -21,7 +21,7 @@ public:
 		Box, Sphere, Mesh, Terrain
 	};
 
-	explicit RigidBody(Entity* entity);
+	explicit RigidBody(Entity& entity);
 	virtual ~RigidBody();
 	
 	void Deserialize(const Json& json) override;

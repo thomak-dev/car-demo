@@ -12,7 +12,7 @@
 #include "ResourceManager.h"
 #include "Entity.h"
 
-MeshInstance::MeshInstance(Entity* entity)
+MeshInstance::MeshInstance(Entity& entity)
 	: Drawable{ entity }
 {
 	glGenVertexArrays(1, &vao);
@@ -22,7 +22,7 @@ MeshInstance::MeshInstance(Entity* entity)
 void MeshInstance::Initialize()
 {
 	Component::Initialize();
-	transform = entity->GetComponent<Transform>();
+	transform = entity.GetComponent<Transform>();
 }
 
 void MeshInstance::Deserialize(const Json& json)

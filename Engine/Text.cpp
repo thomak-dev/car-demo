@@ -11,7 +11,7 @@ void Text::Initialize()
 	Component::Initialize();
 	material = std::make_shared<Material>(*material);
 	material->SetProperty("colorMap", font->GetTexture(pointSize));
-	transform = entity->GetComponent<Transform>();
+	transform = entity.GetComponent<Transform>();
 }
 
 void Text::Deserialize(const Json& json)

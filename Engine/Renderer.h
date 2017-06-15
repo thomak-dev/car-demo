@@ -148,6 +148,7 @@ private:
 	std::vector<Drawable*> drawables;
 	std::vector<Camera*> cameras;
 	std::vector<Light*> lights;
+	glm::vec4 ambient{ 0.72f, 0.78f, 0.99f, 0.08f };
 	GLuint ubos[UniformBufferIndex::Count]{};
 	bool cull{true};
 	bool testDepth{true};

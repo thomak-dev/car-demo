@@ -9,7 +9,7 @@ std::unordered_map<std::string, Light::Type> Light::stringToType
 	{ "Point", Type::Point }
 };
 
-Light::Light(Entity* entity)
+Light::Light(Entity& entity)
 	:Component{entity}
 {
 	RecomputeAttenuation();

@@ -13,7 +13,7 @@ public:
 		Point
 	};
 
-	explicit Light(Entity* entity);
+	explicit Light(Entity& entity);
 	virtual ~Light();
 
 	float Range() const { return range; }

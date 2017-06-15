@@ -20,7 +20,7 @@ public:
 	};
 
 	Camera() = delete;
-	explicit Camera(Entity*);
+	explicit Camera(Entity&);
 	virtual ~Camera();
 
 	glm::mat4 ViewMatrix() const;

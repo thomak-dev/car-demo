@@ -151,19 +151,19 @@ void Vehicle::Initialize()
 	Component::Initialize();
 	const PxU32 numWheels = 4;
 
-	transform = entity->GetComponent<Transform>();
+	transform = entity.GetComponent<Transform>();
 	PxTransform pTrans{ ToPxMat44(transform->WorldMatrix()) };
 	PxRigidDynamic* dynamicActor = physics->backend->createRigidDynamic(pTrans.getNormalized());
 	rigidActor = dynamicActor;
 
 	PxVec3 wheelOffsets[numWheels];
 	std::vector<Wheel*> wheelComponents;
-	entity->GetComponentsInDescendants<Wheel>(std::back_inserter(wheelComponents));
+	entity.GetComponentsInDescendants<Wheel>(std::back_inserter(wheelComponents));
 	SDL_assert(wheelComponents.size() >= 4);
 	std::sort(wheelComponents.begin(), wheelComponents.end(), [](Wheel* a, Wheel* b) { return a->GetIndex() < b->GetIndex(); });
 	for (int i = 0; i < numWheels; ++i)
 	{
-		wheelTransforms.push_back(wheelComponents[i]->GetEntity()->GetComponent<Transform>());
+		wheelTransforms.push_back(wheelComponents[i]->GetEntity().GetComponent<Transform>());
 		PxTransform globalPose{ ToPxMat44(wheelTransforms[i]->WorldMatrix()) };
 		lastKnownWheelTransforms.push_back(globalPose.getNormalized());
 		wheelOffsets[i] = ToPxVec3(wheelTransforms[i]->Position());
@@ -286,8 +286,9 @@ void Vehicle::Initialize()
 	PxVehicleAckermannGeometryData ackermann;
 	ackermann.mAccuracy = 1.0f;
 	ackermann.mAxleSeparation = wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).z - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).z;
-	ackermann.mFrontWidth =	wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).x - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_RIGHT).x;
-	ackermann.mRearWidth = wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).x - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_RIGHT).x;
+	ackermann.mFrontWidth =	wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_RIGHT).x - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).x;
+	ackermann.mRearWidth = wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_RIGHT).x - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).x;
+
 	driveSimData.setAckermannGeometryData(ackermann);
 
 

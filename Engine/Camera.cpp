@@ -15,7 +15,7 @@ std::unordered_map<std::string, Camera::Projection> Camera::stringToProjection
 	{"OrthographicNormalized", Camera::Projection::OrthographicNormalized}
 };
 
-Camera::Camera(Entity* entity)
+Camera::Camera(Entity& entity)
 	: Component{entity}
 {
 	Renderer::Instance().RegisterCamera(this);
@@ -56,7 +56,7 @@ glm::mat4 Camera::ProjMatrix() const
 void Camera::Initialize()
 {
 	Component::Initialize();
-	transform = entity->GetComponent<Transform>();
+	transform = entity.GetComponent<Transform>();
 }
 
 void Camera::Deserialize(const Json& json)
