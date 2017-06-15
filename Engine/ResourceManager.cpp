@@ -111,9 +111,9 @@ std::shared_ptr<Mesh> ResourceManager::LoadMesh(const std::string& shortPath, bo
 	return ExistingOrLoad(shortPath, LoadMeshFromFile, ignoreRootTransform);
 }
 
-Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene* scene, std::vector<bool>& loadedMeshes, std::vector<std::string>& loadedMeshNames, const std::vector<std::shared_ptr<Material>>& materials, const std::string& shortPath, bool bakeTransform)
+std::shared_ptr<Entity> ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene* scene, std::vector<bool>& loadedMeshes, std::vector<std::string>& loadedMeshNames, const std::vector<std::shared_ptr<Material>>& materials, const std::string& shortPath, bool bakeTransform)
 {
-	Entity* entity = new Entity;
+	auto entity = parent->CreateChild(node->mName.C_Str());
 	
 	Transform* transform = entity->AddComponent<Transform>();
 	glm::mat4 matrix;
@@ -148,13 +148,10 @@ Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene
 		}
 		else
 		{
-			Entity* child = new Entity;
-			child->SetName("submesh_" + std::to_string(i));
+			auto child = entity->CreateChild("submesh_" + std::to_string(i));
 			child->AddComponent<Transform>();
 			MeshInstance* meshInstance = child->AddComponent<MeshInstance>();
 			meshInstance->SetMeshAndMaterial(mesh, materials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex]);
-			child->SetParent(entity);
-			child->Initialize();
 		}
 	}
 
@@ -162,11 +159,10 @@ Entity* ResourceManager::ProcessNode(aiNode* node, Entity* parent, const aiScene
 	{
 		if (bakeTransform)
 			node->mChildren[i]->mTransformation = node->mTransformation * node->mChildren[i]->mTransformation;
-		Entity* child = ProcessNode(node->mChildren[i], entity, scene, loadedMeshes, loadedMeshNames, materials, newPath);
+		ProcessNode(node->mChildren[i], entity.get(), scene, loadedMeshes, loadedMeshNames, materials, newPath);
 	}
 		
-	entity->SetName(node->mName.C_Str());
-	entity->SetParent(parent);
+
 	return entity;
 }
 
@@ -182,7 +178,7 @@ std::shared_ptr<Prefab> ResourceManager::LoadPrefab(const std::string& shortPath
 	return ExistingOrLoad(shortPath, LoadJson);
 }
 
-Entity* ResourceManager::LoadEntity(const std::string& shortPath, Entity* parent)
+std::shared_ptr<Entity> ResourceManager::LoadEntity(const std::string& shortPath, Entity* parent)
 {
 	Assimp::Importer importer{};
 	std::string nativePath{ MakeNativePath(shortPath) };
@@ -213,15 +209,8 @@ Entity* ResourceManager::LoadEntity(const std::string& shortPath, Entity* parent
 		materials.push_back(LoadMaterial(materialMap[matName.C_Str()]));
 	}
 	scene->mRootNode->mChildren[0]->mTransformation = scene->mRootNode->mTransformation * scene->mRootNode->mChildren[0]->mTransformation;
-	Entity* entity{ ProcessNode(scene->mRootNode->mChildren[0], parent, scene, loadedMeshes, loadedMeshNames, materials, shortPath, true) };
-	//Transform* transform = entity->GetComponent<Transform>();
-	//glm::mat4 matrix = transform->Matrix();
-	//for (auto& child : entity->Children())
-	//{
-	//	Transform* childTransform = child->GetComponent<Transform>();
-	//	childTransform->SetMatrix(matrix * childTransform->Matrix());
-	//}
-	//transform->SetMatrix(glm::mat4{});
+	std::shared_ptr<Entity> entity{ ProcessNode(scene->mRootNode->mChildren[0], parent, scene, loadedMeshes, loadedMeshNames, materials, shortPath, true) };
+
 	return entity;
 }
 

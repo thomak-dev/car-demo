@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	{
 		bool isFixedTimeStep;
 		bool isVariable;
-		time.EcoTick(isVariable, isFixedTimeStep);
+		time.BusyTick(isVariable, isFixedTimeStep);
 
 		if(isVariable)
 		{

@@ -1,6 +1,5 @@
 #include "Vehicle.h"
 #include <vehicle/PxVehicleSDK.h>
-#include <PxTkStream.h>
 #include <vehicle/PxVehicleUtil.h>
 #include "input.h"
 #include "Entity.h"
@@ -27,6 +26,126 @@ void Vehicle::Deserialize(const Json& json)
 		wheelMass = json["wheel_mass"].GetFloat();
 }
 
+PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
+{
+	const int VertexCount = 64;
+	PxVec3 verts[VertexCount];
+	const int PolyCount = 34; // 32 circle points + lids
+	PxHullPolygon polys[PolyCount];
+	const int IndexCount = 192; // 4 verts * 32 faces + 32 verts * 2 faces (lids)
+	uint32_t indices[IndexCount];
+
+	const int NumCirclePoints = 32;
+	const float xLeft = width / 2; // x coord of left lid
+	const float xRight = -xLeft; // x coord of right lid
+
+	float angle = 0;
+	for (int i = 0; i < NumCirclePoints; ++i)
+	{
+		float z = cos(angle) * radius;
+		float y = sin(angle) * radius;
+
+		PxVec3 normal{ 0, sin(angle + Float::Pi / NumCirclePoints), cos(angle + Float::Pi / NumCirclePoints) };
+		polys[i].mPlane[0] = normal.x;
+		polys[i].mPlane[1] = normal.y;
+		polys[i].mPlane[2] = normal.z;
+		polys[i].mPlane[3] = normal.y * y + normal.z * z;
+		polys[i].mNbVerts = 4;
+		polys[i].mIndexBase = i * 4;
+		verts[i * 2].x = xLeft;
+		verts[i * 2].y = y;
+		verts[i * 2].z = z;
+		verts[i * 2 + 1].x = xRight;
+		verts[i * 2 + 1].y = y;
+		verts[i * 2 + 1].z = z;
+		uint32_t index = i * 2;
+		indices[i * 4] = index;
+		indices[i * 4 + 1] = index + 1;
+		indices[i * 4 + 2] = (index + 3) % (NumCirclePoints * 2);
+		indices[i * 4 + 3] = (index + 2) % (NumCirclePoints * 2);
+
+		angle += 2 * Float::Pi / NumCirclePoints;
+	}
+	for (int i = 0; i < NumCirclePoints; ++i)
+		indices[NumCirclePoints * 4 + i] = i * 2;
+	for (int i = 0; i < NumCirclePoints; ++i)
+		indices[NumCirclePoints * 5 + i] = (NumCirclePoints - i - 1) * 2 + 1;
+
+	polys[NumCirclePoints].mPlane[0] = 1;
+	polys[NumCirclePoints].mPlane[1] = 0;
+	polys[NumCirclePoints].mPlane[2] = 0;
+	polys[NumCirclePoints].mPlane[3] = xLeft;
+	polys[NumCirclePoints].mNbVerts = 32;
+	polys[NumCirclePoints].mIndexBase = IndexCount - 2 * NumCirclePoints;
+
+	polys[NumCirclePoints + 1].mPlane[0] = -1;
+	polys[NumCirclePoints + 1].mPlane[1] = 0;
+	polys[NumCirclePoints + 1].mPlane[2] = 0;
+	polys[NumCirclePoints + 1].mPlane[3] = -xRight;
+	polys[NumCirclePoints + 1].mNbVerts = 32;
+	polys[NumCirclePoints + 1].mIndexBase = IndexCount - NumCirclePoints;
+
+	PxConvexMeshDesc convexMeshDesc;
+	convexMeshDesc.points.count = VertexCount;
+	convexMeshDesc.points.data = verts;
+	convexMeshDesc.points.stride = sizeof(PxVec3);
+	convexMeshDesc.polygons.count = PolyCount;
+	convexMeshDesc.polygons.data = polys;
+	convexMeshDesc.polygons.stride = sizeof(PxHullPolygon);
+	convexMeshDesc.indices.count = IndexCount;
+	convexMeshDesc.indices.data = indices;
+	convexMeshDesc.indices.stride = sizeof(uint32_t);
+
+#ifdef _DEBUG
+	// mesh should be validated before cooking without the mesh cleaning
+	bool res = physics->cooking->validateConvexMesh(convexMeshDesc);
+	SDL_assert(res);
+#endif
+
+	return physics->cooking->createConvexMesh(convexMeshDesc, physics->backend->getPhysicsInsertionCallback());
+}
+
+PxConvexMesh* Vehicle::CreateWheelMesh2(float radius, float width)
+{
+	const int VertexCount = 64;
+	PxVec3 verts[VertexCount];
+
+	const int NumCirclePoints = 32;
+	const float xLeft = width / 2; // x coord of left lid
+	const float xRight = -xLeft; // x coord of right lid
+
+	float angle = 0;
+	for (int i = 0; i < NumCirclePoints; ++i)
+	{
+		float z = cos(angle) * radius;
+		float y = sin(angle) * radius;
+
+		verts[i * 2].x = xLeft;
+		verts[i * 2].y = y;
+		verts[i * 2].z = z;
+		verts[i * 2 + 1].x = xRight;
+		verts[i * 2 + 1].y = y;
+		verts[i * 2 + 1].z = z;
+
+		angle += 2 * Float::Pi / NumCirclePoints;
+	}
+
+	PxConvexMeshDesc convexMeshDesc;
+	convexMeshDesc.vertexLimit = 64;
+	convexMeshDesc.points.count = VertexCount;
+	convexMeshDesc.points.data = verts;
+	convexMeshDesc.points.stride = sizeof(PxVec3);
+	convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eDISABLE_MESH_VALIDATION | PxConvexFlag::eFAST_INERTIA_COMPUTATION;
+
+	//PxDefaultMemoryOutputStream outStream;
+	//PxConvexMeshCookingResult::Enum result;
+	//bool success = physics->cooking->cookConvexMesh(convexMeshDesc, outStream, &result);
+	//PxDefaultMemoryInputData inStream{ outStream.getData(), outStream.getSize() };
+	//return physics->backend->createConvexMesh(inStream);
+
+	return physics->cooking->createConvexMesh(convexMeshDesc, physics->backend->getPhysicsInsertionCallback());
+}
+
 void Vehicle::Initialize()
 {
 	Component::Initialize();
@@ -38,12 +157,6 @@ void Vehicle::Initialize()
 	rigidActor = dynamicActor;
 
 	PxVec3 wheelOffsets[numWheels];
-	//const auto& children = entity->Children();
-	//for (int i = 0; i < children.size(); ++i)
-	//{
-	//	if (children[i]->flags & EntityFlags::Wheel)
-	//		wheelOffsets[wheelsFound++] = ToPxVec3(children[i]->GetComponent<Transform>()->Position());		
-	//}
 	std::vector<Wheel*> wheelComponents;
 	entity->GetComponentsInDescendants<Wheel>(std::back_inserter(wheelComponents));
 	SDL_assert(wheelComponents.size() >= 4);
@@ -59,21 +172,8 @@ void Vehicle::Initialize()
 	PxFilterData wheelFilterData;
 	wheelFilterData.word0 = EntityFlags::Wheel;
 
-	std::vector<PxVec3> wheelVerts;
-	float angle = 0;
-	const int circlePoints = 32;
-	for (int i = 0; i < circlePoints; ++i)
-	{
-		float x = cos(angle) * wheelRadius;
-		float y = sin(angle) * wheelRadius;
-		wheelVerts.emplace_back(wheelWidth / 2, y, x);
-		wheelVerts.emplace_back(-wheelWidth / 2, y, x);
-		angle += 2 * Float::Pi / circlePoints;
-	}
+	PxConvexMesh* convexMesh = CreateWheelMesh2(wheelRadius, wheelWidth);
 
-	PxConvexMesh* convexMesh = PxToolkit::createConvexMeshSafe(*physics->backend, *physics->cooking, wheelVerts.data(), 2 * circlePoints, PxConvexFlag::eCOMPUTE_CONVEX, 64);
-
-	//Add all the wheel shapes to the actor.
 	for (PxU32 i = 0; i < numWheels; i++)
 	{
 		PxConvexMeshGeometry geom{ convexMesh };
@@ -171,7 +271,7 @@ void Vehicle::Initialize()
 
 	PxVehicleEngineData engine;
 	engine.mPeakTorque = 1200.0f;
-	engine.mMaxOmega = 300.0f; //approx 6000 rpm
+	engine.mMaxOmega = 300.0f;
 	driveSimData.setEngineData(engine);
 
 	PxVehicleGearsData gears;

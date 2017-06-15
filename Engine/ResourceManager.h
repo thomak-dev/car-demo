@@ -27,7 +27,7 @@ public:
 	virtual ~ResourceManager();
 	
 	std::shared_ptr<Prefab> LoadPrefab(const std::string& shortPath);
-	Entity* LoadEntity(const std::string& shortPath, Entity* parent);
+	std::shared_ptr<Entity> LoadEntity(const std::string& shortPath, Entity* parent);
 	std::shared_ptr<std::string> LoadText(const std::string& shortPath);
 	std::shared_ptr<Mesh> LoadMesh(const std::string& shortPath, bool ignoreRootTransform = false);
 	std::shared_ptr<Texture2D> LoadTexture2D(const std::string& shortPath);
@@ -43,7 +43,7 @@ private:
 
 	template<typename T, typename... Targs>
 	std::shared_ptr<T> ExistingOrLoad(const std::string& shortPath, T*loadFunction(const std::string&, Targs...), Targs... args);
-	Entity* ProcessNode(
+	std::shared_ptr<Entity> ProcessNode(
 		aiNode* node, 
 		Entity* parent,
 		const aiScene* scene, 

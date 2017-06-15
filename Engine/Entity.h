@@ -48,8 +48,8 @@ public:
 	Entity() = default;
 	~Entity();
 
-	static Entity* Instantiate(const std::shared_ptr<Prefab>& prefab, Entity* parent);
-	static Entity* Instantiate(const rapidjson::GenericObject<true, rapidjson::Value>& prefab, Entity* parent);
+	static std::shared_ptr<Entity> Instantiate(const std::shared_ptr<Prefab>& prefab, Entity* parent);
+	static std::shared_ptr<Entity> Instantiate(const rapidjson::GenericObject<true, rapidjson::Value>& prefab, Entity* parent);
 
 	template <typename T>
 	T* AddComponent();
@@ -64,13 +64,18 @@ public:
 	Component* GetComponent(const std::string& type) const;
 	std::string Name() const { return name; }
 	void SetName(const std::string& name);
-	Entity* Parent() const { return parent; }
-	void SetParent(Entity* parent);
-	Entity* GetChild(const std::string& name);
-	
-	const std::vector<Entity*>& Children() const { return children; };
+	std::shared_ptr<Entity> Parent() const { return parent.lock(); }
+	std::shared_ptr<Entity> Find(const std::string& path) const;
+	std::shared_ptr<Entity> GetChild(const std::string& name) const;
+	void AddChild(const std::shared_ptr<Entity>& child);
+	void RemoveChild(const std::shared_ptr<Entity> child);
+	std::shared_ptr<Entity> CreateChild(const std::string& name);
+	std::string GetValidChildName(std::string name);
+	std::shared_ptr<Entity> Root() const { return root.lock(); }
+	bool IsRoot() const { return root.lock() == self.lock(); }
+	const std::vector<std::shared_ptr<Entity>>& Children() const { return children; }
 
-	void Initialize() const;
+	void Initialize();
 	void SendMessageDown(Message* message);
 	void SendMessageUp(Message* message);
 	void SendMessageToSelf(Message* message);
@@ -80,13 +85,16 @@ public:
 private:
 	std::unordered_map<std::type_index, Component*> componentsByType;
 	std::vector<Component*> components;
-	Entity* parent{};
-	std::vector<Entity*> children;
-	std::unordered_map<std::string, Entity*> childrenByName;
+	std::weak_ptr<Entity> parent{};
+	std::vector<std::shared_ptr<Entity>> children;
+	std::unordered_map<std::string, std::shared_ptr<Entity>> childrenByName;
 	std::string name;
+	std::weak_ptr<Entity> self;
+	std::weak_ptr<Entity> root;
 
-	void AddChild(Entity* child);
-	void RemoveChild(Entity* child);
+	int initCount{};
+
+	void SetRoot(const std::shared_ptr<Entity> root);
 	void ReceiveMessageFromAbove(Entity* origin, Message* message);
 	void ReceiveMessageFromBelow(Entity* origin, Message* message);
 	static void DeserializeComponents(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target);
@@ -121,8 +129,12 @@ T* Entity::GetComponentInAncestors()
 	T* here = GetComponent<T>();
 	if (here)
 		return here;
-	else if (parent)
-		return parent->GetComponentInAncestors<T>();
+	else
+	{
+		auto parentPtr = parent.lock();
+		if (parentPtr)
+			return parentPtr->GetComponentInAncestors<T>();
+	}
 	return here;
 }
 

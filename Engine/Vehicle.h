@@ -39,5 +39,7 @@ private:
 	void PostProcessPhysics() override;
 	void BeforeVehicleUpdate(float deltaTime);
 	void AfterVehicleUpdate(const physx::PxVehicleWheelQueryResult& queryResult);
+	static physx::PxConvexMesh* CreateWheelMesh(float radius, float width);
+	static physx::PxConvexMesh* CreateWheelMesh2(float radius, float width);
 };
 

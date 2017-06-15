@@ -19,11 +19,13 @@ Entity::~Entity()
 	{
 		delete *it;
 	}
+}
 
-	for (auto it = children.rbegin(); it != children.rend(); ++it)
-	{
-		delete *it;
-	}
+void Entity::SetRoot(const std::shared_ptr<Entity> root)
+{
+	this->root = root;
+	for (auto& child : children)
+		child->SetRoot(root);
 }
 
 void Entity::DeserializeComponents(const rapidjson::GenericObject<true, rapidjson::Value>& json, Entity* target)
@@ -68,16 +70,16 @@ void Entity::SetFlags(const rapidjson::GenericObject<true, rapidjson::Value>& js
 	}
 }
 
-Entity* Entity::Instantiate(const std::shared_ptr<Prefab>& prefab, Entity* parent)
+std::shared_ptr<Entity> Entity::Instantiate(const std::shared_ptr<Prefab>& prefab, Entity* parent)
 {
 	SDL_assert(prefab->IsObject());
 	const Prefab* constPrefab = prefab.get();
 	return Instantiate(constPrefab->GetObject(), parent);
 }
 
-Entity* Entity::Instantiate(const rapidjson::GenericObject<true, rapidjson::Value>& prefab, Entity* parent)
+std::shared_ptr<Entity> Entity::Instantiate(const rapidjson::GenericObject<true, rapidjson::Value>& prefab, Entity* parent)
 {
-	Entity* base = nullptr;
+	std::shared_ptr<Entity> base;
 	if (prefab.HasMember("base"))
 	{
 		std::string basePath{prefab["base"].GetString()};
@@ -94,16 +96,26 @@ Entity* Entity::Instantiate(const rapidjson::GenericObject<true, rapidjson::Valu
 			base = parent->GetChild(basePath);
 	}
 	if (!base)
-		base = new Entity;
+		base = std::make_shared<Entity>();
 
 	if (prefab.HasMember("name"))
 		base->name = prefab["name"].GetString();
 
-	SetFlags(prefab, base);
-	DeserializeComponents(prefab, base);
-	DeserializeChildren(prefab, base);
+	if (!base->Parent())
+	{
+		if (parent)
+			parent->AddChild(base);
+		else
+		{
+			base->self = base;
+			base->root = base;
+		}
+	}
 
-	base->SetParent(parent);
+	SetFlags(prefab, base.get());
+	DeserializeComponents(prefab, base.get());
+	DeserializeChildren(prefab, base.get());
+
 	return base;
 }
 
@@ -147,19 +159,24 @@ Component* Entity::GetComponent(const std::string& type) const
 
 void Entity::SetName(const std::string& name)
 {
-	this->name = name;
+	auto parentPtr = parent.lock();
+	if (parentPtr)
+		this->name = parentPtr->GetValidChildName(name);
+	else
+		this->name = name;
 }
 
-void Entity::SetParent(Entity* parent)
+std::shared_ptr<Entity> Entity::Find(const std::string& path) const
 {
-	if (this->parent)
-		this->parent->RemoveChild(this);
-	this->parent = parent;
-	if (parent)
-		parent->AddChild(this);
+	auto delimiter = path.find_first_of('/');
+	std::string name = path.substr(0, delimiter);
+	if (delimiter == std::string::npos)
+		return GetChild(name);
+	else
+		return GetChild(name)->Find(path.substr(delimiter + 1));
 }
 
-Entity* Entity::GetChild(const std::string& name)
+std::shared_ptr<Entity> Entity::GetChild(const std::string& name) const
 {
 	const auto& found = childrenByName.find(name);
 	if (found != childrenByName.end())
@@ -168,65 +185,87 @@ Entity* Entity::GetChild(const std::string& name)
 		return nullptr;
 }
 
-void Entity::AddChild(Entity* child)
+void Entity::AddChild(const std::shared_ptr<Entity>& child)
 {
 	SDL_assert(child);
-	auto found = childrenByName.find(child->name);
-	if(found == childrenByName.end())
-	{
-		childrenByName.insert(found, std::make_pair(child->name, child));
-		children.push_back(child);
-	}
-	else
-	{
-		std::string newName = child->name;
-		auto underscore = newName.find_last_of('_');
-		int number;
-		if(underscore != std::string::npos && underscore < newName.size() - 1 /*&& underscore > 0*/)
-		{
-			std::string prefix{ newName.substr(0, underscore) };
-			if (TryParseInt(newName.substr(underscore + 1), number))
-			{
-				int highestExisting = std::max(0, number);
-				for (const auto& pair : childrenByName)
-				{
-					const auto& name = pair.first;
-					if (name.find(prefix) == 0 && name.find_last_of('_') == prefix.size())
-					{
-						int existingNumber;
-						if (TryParseInt(name.substr(prefix.size() + 1), existingNumber))
-							highestExisting = std::max(highestExisting, existingNumber);
-					}
-				}
-				number = highestExisting + 1;
-			}
-			else
-				number = 1;
-			newName.replace(underscore + 1, newName.size() - underscore - 1, std::to_string(number));
-		}
-		else
-		{
-			number = 1;
-			if (newName.size() != 0 && newName[newName.size() - 1] != '_' || newName.size() == 0)
-				newName += '_';
-			newName += std::to_string(number);
-		}
-		child->name = newName;
-		AddChild(child);
-	}
+	auto otherParent = child->Parent();
+	if (otherParent)
+		otherParent->RemoveChild(child);
+
+	child->name = GetValidChildName(child->name);
+	child->parent = self;
+	child->self = child;
+	child->SetRoot(root.lock());
+	children.push_back(child);
+	childrenByName[child->name] = child;
 }
 
-void Entity::RemoveChild(Entity* child)
+void Entity::RemoveChild(const std::shared_ptr<Entity> child)
 {
 	if (child)
 	{
-		children.erase(find(children.begin(), children.end(), child));
-		childrenByName.erase(child->name);
+		const auto& found = find(children.begin(), children.end(), child);
+		if(found != children.end())
+		{
+			child->parent = std::weak_ptr<Entity>{};
+			child->self = std::weak_ptr<Entity>{};
+			childrenByName.erase(child->name);
+			children.erase(found);
+		}
 	}
 }
 
-void Entity::Initialize() const
+std::shared_ptr<Entity> Entity::CreateChild(const std::string& name)
 {
+	std::shared_ptr<Entity> child(new Entity);
+	child->SetName(name);
+	AddChild(child);
+	return child;
+}
+
+std::string Entity::GetValidChildName(std::string name)
+{
+	if (childrenByName.find(name) == childrenByName.end())
+		return name;
+
+	auto underscore = name.find_last_of('_');
+	int number;
+	if (underscore != std::string::npos && underscore < name.size() - 1)
+	{
+		std::string prefix{ name.substr(0, underscore) };
+		if (TryParseInt(name.substr(underscore + 1), number))
+		{
+			int highestExisting = std::max(0, number);
+			for (const auto& pair : childrenByName)
+			{
+				const auto& childName = pair.first;
+				if (childName.find(prefix) == 0 && childName.find_last_of('_') == prefix.size())
+				{
+					int existingNumber;
+					if (TryParseInt(childName.substr(prefix.size() + 1), existingNumber))
+						highestExisting = std::max(highestExisting, existingNumber);
+				}
+			}
+			number = highestExisting + 1;
+		}
+		else
+			number = 1;
+		name.replace(underscore + 1, name.size() - underscore - 1, std::to_string(number));
+	}
+	else
+	{
+		number = 1;
+		if (name.size() != 0 && name[name.size() - 1] != '_' || name.size() == 0)
+			name += '_';
+		name += std::to_string(number);
+	}
+
+	return GetValidChildName(name);
+}
+
+void Entity::Initialize()
+{
+	SDL_assert(0 == initCount++);
 	for (auto& child : children)
 	{
 		child->Initialize();
@@ -238,14 +277,15 @@ void Entity::Initialize() const
 
 void Entity::SendMessageDown(Message* message)
 {
-	for (Entity* child : children)
+	for (auto& child : children)
 		child->ReceiveMessageFromAbove(this, message);
 }
 
 void Entity::SendMessageUp(Message* message)
 {
-	if (parent)
-		parent->ReceiveMessageFromBelow(this, message);
+	auto parentPtr = parent.lock();
+	if (parentPtr)
+		parentPtr->ReceiveMessageFromBelow(this, message);
 }
 
 void Entity::SendMessageToSelf(Message* message)
@@ -260,7 +300,7 @@ void Entity::ReceiveMessageFromAbove(Entity* origin, Message* message)
 		component->OnMessageReceived(origin, message);
 
 	if(!message->suppressed)
-		for (Entity* child : children)
+		for (auto& child : children)
 			child->ReceiveMessageFromAbove(origin, message);
 }
 
@@ -269,8 +309,9 @@ void Entity::ReceiveMessageFromBelow(Entity* origin, Message* message)
 	for (Component* component : components)
 		component->OnMessageReceived(origin, message);
 
-	if (!message->suppressed && parent)
-		parent->ReceiveMessageFromBelow(origin, message);
+	auto parentPtr = parent.lock();
+	if (!message->suppressed && parentPtr)
+		parentPtr->ReceiveMessageFromBelow(origin, message);
 }
 
 static std::unordered_map<std::string, EntityFlags::Type> stringToFlags

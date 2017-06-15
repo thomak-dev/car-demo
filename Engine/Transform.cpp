@@ -5,7 +5,7 @@
 
 glm::mat4 Transform::ParentWorldMatrix() const
 {
-	Entity* parent = entity->Parent();
+	auto parent = entity->Parent();
 	if (parent)
 	{
 		Transform* parentTrans = parent->GetComponentInAncestors<Transform>();
@@ -17,7 +17,7 @@ glm::mat4 Transform::ParentWorldMatrix() const
 
 glm::mat4 Transform::ParentInverseWorldMatrix() const
 {
-	Entity* parent = entity->Parent();
+	auto parent = entity->Parent();
 	if (parent)
 	{
 		Transform* parentTrans = parent->GetComponentInAncestors<Transform>();
