@@ -150,7 +150,9 @@ Physics::Physics(int maxVehicles)
 	scnDesc.filterShader = FilterShader;
 	scnDesc.gravity = PxVec3{0, -9.81f, 0};
 	scene = backend->createScene(scnDesc);
+#if _DEBUG
 	scene->getScenePvdClient()->setScenePvdFlags(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS | PxPvdSceneFlag::eTRANSMIT_CONTACTS | PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES);
+#endif
 	scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 	scene->setFlag(PxSceneFlag::eEXCLUDE_KINEMATICS_FROM_ACTIVE_ACTORS, true);
 
@@ -171,8 +173,6 @@ Physics::Physics(int maxVehicles)
 	wantedCollisionsOf[EntityFlags::ChassisPos] = EntityFlags::Prop | EntityFlags::Chassis;
 	wantedCollisionsOf[EntityFlags::WheelPos] = EntityFlags::Prop;
 	wantedCollisionsOf[EntityFlags::GroundPos] = EntityFlags::Prop | EntityFlags::Chassis;
-
-
 
 	surfaceToFriction = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Tire::Highest, materials.size());
 	PxMaterial** surfaceMaterials = new PxMaterial*[materials.size()];

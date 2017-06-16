@@ -1,6 +1,8 @@
 #include "Vehicle.h"
 #include <vehicle/PxVehicleSDK.h>
 #include <vehicle/PxVehicleUtil.h>
+#include <PxPhysicsAPI.h>
+#include <iostream>
 #include "input.h"
 #include "Entity.h"
 #include "Transform.h"
@@ -21,6 +23,12 @@ static std::unordered_map<std::string, Tire::Type> stringToType
 Tire::Type Tire::FromString(const std::string& str)
 {
 	return stringToType[str];
+}
+
+Vehicle::Vehicle(Entity& entity)
+	: RigidBody{entity}, NumWheels{4}
+{
+	filterData.word0 |= EntityFlags::Chassis;
 }
 
 Vehicle::~Vehicle()
@@ -123,17 +131,48 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 	return mesh;
 }
 
-void Vehicle::Initialize()
+void Vehicle::ConfigureDifferential(PxVehicleDriveSimData4W& simData)
 {
-	Component::Initialize();
-	const PxU32 numWheels = 4;
+	PxVehicleDifferential4WData diff;
+	diff.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_FRONTWD;
+	simData.setDiffData(diff);
+}
 
-	transform = entity.GetComponent<Transform>();
-	PxTransform pTrans{ ToPxMat44(transform->WorldMatrix()) };
-	PxRigidDynamic* dynamicActor = physics->backend->createRigidDynamic(pTrans.getNormalized());
-	rigidActor = dynamicActor;
+void Vehicle::ConfigureEngine(PxVehicleDriveSimData4W& simData)
+{
+	PxVehicleEngineData engine;
+	engine.mPeakTorque = 1200.0f;
+	engine.mMaxOmega = 300.0f;
+	simData.setEngineData(engine);
+}
 
-	PxVec3 wheelOffsets[numWheels];
+void Vehicle::ConfigureGears(PxVehicleDriveSimData4W& simData)
+{
+	PxVehicleGearsData gears;
+	gears.mSwitchTime = 0.5f;
+	simData.setGearsData(gears);
+}
+
+void Vehicle::ConfigureClutch(PxVehicleDriveSimData4W& simData)
+{
+	PxVehicleClutchData clutch;
+	clutch.mStrength = 10.0f;
+	simData.setClutchData(clutch);
+}
+
+void Vehicle::ConfigureAckermannCorrection(PxVehicleDriveSimData4W& simData, const PxVehicleWheelsSimData& wheelsSimData)
+{
+	PxVehicleAckermannGeometryData ackermann;
+	ackermann.mAccuracy = 1.0f;
+	ackermann.mAxleSeparation = wheelsSimData.getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).z - wheelsSimData.getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).z;
+	ackermann.mFrontWidth = wheelsSimData.getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_RIGHT).x - wheelsSimData.getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).x;
+	ackermann.mRearWidth = wheelsSimData.getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_RIGHT).x - wheelsSimData.getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).x;
+	simData.setAckermannGeometryData(ackermann);
+}
+
+void Vehicle::SetUpEachWheel(PxVehicleWheelsSimData& simData, int numWheels)
+{
+	PxVec3 wheelOffsets[PX_MAX_NB_WHEELS];
 	std::vector<Wheel*> wheelComponents;
 	entity.GetComponentsInDescendants<Wheel>(std::back_inserter(wheelComponents));
 	SDL_assert(wheelComponents.size() >= 4);
@@ -146,47 +185,16 @@ void Vehicle::Initialize()
 		wheelOffsets[i] = ToPxVec3(wheelTransforms[i]->Position());
 	}
 
-	PxFilterData wheelFilterData;
-	physics->SetUpFilterData(wheelFilterData, EntityFlags::Wheel);
+	PxVehicleWheelData wheelsData[PX_MAX_NB_WHEELS];
+	PxVehicleTireData tires[PX_MAX_NB_WHEELS];
+	PxVehicleSuspensionData suspensions[PX_MAX_NB_WHEELS];
+	PxVec3 suspTravelDirections[PX_MAX_NB_WHEELS];
+	PxVec3 wheelCentreCMOffsets[PX_MAX_NB_WHEELS];
+	PxVec3 suspForceAppCMOffsets[PX_MAX_NB_WHEELS];
+	PxVec3 tireForceAppCMOffsets[PX_MAX_NB_WHEELS];
+	PxF32 suspSprungMasses[PX_MAX_NB_WHEELS];
 
-	PxConvexMesh* convexMesh = CreateWheelMesh(wheelRadius, wheelWidth);
-
-	for (PxU32 i = 0; i < numWheels; i++)
-	{
-		PxConvexMeshGeometry geom{ convexMesh };		
-		PxShape* wheelShape = PxRigidActorExt::createExclusiveShape(*dynamicActor, geom, *material);
-		wheelShape->setQueryFilterData(wheelFilterData);
-		wheelShape->setSimulationFilterData(wheelFilterData);
-		wheelShape->setLocalPose(PxTransform(PxIdentity));
-	}
-	convexMesh->release();
-
-	filterData.word0 |= EntityFlags::Chassis;
-	SetShapeInternal(shapeType);
-	
-	float mass = density * 2 * halfSize.x * 2 * halfSize.y * 2 * halfSize.z;
-	dynamicActor->setMass(mass);
-	dynamicActor->setMassSpaceInertiaTensor(PxVec3(
-		(halfSize.y * halfSize.y + halfSize.z * halfSize.z) * mass / 12,
-		(halfSize.x * halfSize.x + halfSize.z * halfSize.z) * mass / 12,
-		(halfSize.x * halfSize.x + halfSize.y * halfSize.y) * mass / 12
-	));
-	dynamicActor->setCMassLocalPose(PxTransform(ToPxVec3(offset)));
-	
-
-
-	PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(numWheels);
-	//wheelsSimData->setSubStepCount(5, 3, 2);
-	PxVehicleWheelData wheelsData[numWheels];
-	PxVehicleTireData tires[numWheels];
-	PxVehicleSuspensionData suspensions[numWheels];
-	PxVec3 suspTravelDirections[numWheels];
-	PxVec3 wheelCentreCMOffsets[numWheels];
-	PxVec3 suspForceAppCMOffsets[numWheels];
-	PxVec3 tireForceAppCMOffsets[numWheels];
-
-	PxF32 suspSprungMasses[numWheels];
-	PxVehicleComputeSprungMasses(numWheels, wheelOffsets, dynamicActor->getCMassLocalPose().p, dynamicActor->getMass(), 1, suspSprungMasses);
+	PxVehicleComputeSprungMasses(numWheels, wheelOffsets, rigidDynamic->getCMassLocalPose().p, rigidDynamic->getMass(), 1, suspSprungMasses);
 
 	PxFilterData qryFilterData;
 	qryFilterData.word1 = EntityFlags::Ground;
@@ -205,16 +213,17 @@ void Vehicle::Initialize()
 
 		tires[i].mType = tireType;
 		const float natFreq = 5; // 5 - 10 maybe
-		const float dampingRatio = 1.1f; // 0.8 underdamped .. 1.2 overdamped
+		const float dampingRatio = 1.2f; // 0.8 underdamped .. 1.2 overdamped
 		suspensions[i].mMaxCompression = 0.22f;
 		suspensions[i].mSpringStrength = natFreq * natFreq * suspSprungMasses[i];
 		suspensions[i].mSpringDamperRate = dampingRatio * 2 * sqrt(suspensions[i].mSpringStrength * suspSprungMasses[i]);
 		suspensions[i].mSprungMass = suspSprungMasses[i];
 		suspensions[i].mMaxDroop = suspSprungMasses[i] * 9.81f / suspensions[i].mSpringStrength;
+		std::cout << "Suspension frequency (180hz) alpha: " << sqrt(suspSprungMasses[i] / suspensions[i].mSpringStrength) * 60 * 3 << std::endl;
 
 		const PxF32 camberAngleAtRest = 0.0;
-		const PxF32 camberAngleAtMaxDroop = -0.05f;
-		const PxF32 camberAngleAtMaxCompression = 0.05f;
+		const PxF32 camberAngleAtMaxDroop = 0.1f;
+		const PxF32 camberAngleAtMaxCompression = -0.1f;
 
 		suspensions[i + 0].mCamberAtRest = camberAngleAtRest * (1 - (i % 2) * 2);
 		suspensions[i + 0].mCamberAtMaxDroop = camberAngleAtMaxDroop * (1 - (i % 2) * 2);
@@ -222,56 +231,67 @@ void Vehicle::Initialize()
 
 		suspTravelDirections[i] = PxVec3(0, -1, 0);
 
-		wheelCentreCMOffsets[i] = wheelOffsets[i] - dynamicActor->getCMassLocalPose().p;
+		wheelCentreCMOffsets[i] = wheelOffsets[i] - rigidDynamic->getCMassLocalPose().p;
 
 		suspForceAppCMOffsets[i] = PxVec3(wheelCentreCMOffsets[i].x, -0.1f, wheelCentreCMOffsets[i].z);
 		tireForceAppCMOffsets[i] = PxVec3(wheelCentreCMOffsets[i].x, -0.1f, wheelCentreCMOffsets[i].z);
 
-		wheelsSimData->setWheelData(i, wheelsData[i]);
-		wheelsSimData->setTireData(i, tires[i]);
-		wheelsSimData->setSuspensionData(i, suspensions[i]);
-		wheelsSimData->setSuspTravelDirection(i, suspTravelDirections[i]);
-		wheelsSimData->setWheelCentreOffset(i, wheelCentreCMOffsets[i]);
-		wheelsSimData->setSuspForceAppPointOffset(i, suspForceAppCMOffsets[i]);
-		wheelsSimData->setTireForceAppPointOffset(i, tireForceAppCMOffsets[i]);
-		wheelsSimData->setSceneQueryFilterData(i, qryFilterData);
-		wheelsSimData->setWheelShapeMapping(i, i);
+		simData.setWheelData(i, wheelsData[i]);
+		simData.setTireData(i, tires[i]);
+		simData.setSuspensionData(i, suspensions[i]);
+		simData.setSuspTravelDirection(i, suspTravelDirections[i]);
+		simData.setWheelCentreOffset(i, wheelCentreCMOffsets[i]);
+		simData.setSuspForceAppPointOffset(i, suspForceAppCMOffsets[i]);
+		simData.setTireForceAppPointOffset(i, tireForceAppCMOffsets[i]);
+		simData.setSceneQueryFilterData(i, qryFilterData);
+		simData.setWheelShapeMapping(i, i);
 	}
+}
 
+void Vehicle::SetWheelShapes(int numWheels)
+{
+	PxFilterData wheelFilterData;
+	physics->SetUpFilterData(wheelFilterData, EntityFlags::Wheel);
 
+	PxConvexMesh* convexMesh = CreateWheelMesh(wheelRadius, wheelWidth);
+
+	for (PxU32 i = 0; i < numWheels; i++)
+	{
+		PxConvexMeshGeometry geom{ convexMesh };
+		PxShape* wheelShape = PxRigidActorExt::createExclusiveShape(*rigidDynamic, geom, *material);
+		wheelShape->setQueryFilterData(wheelFilterData);
+		wheelShape->setSimulationFilterData(wheelFilterData);
+		wheelShape->setLocalPose(PxTransform(PxIdentity));
+	}
+	convexMesh->release();
+}
+
+void Vehicle::Initialize()
+{
+	Component::Initialize();
+
+	transform = entity.GetComponent<Transform>();
+	PxTransform pTrans{ ToPxMat44(transform->WorldMatrix()) };
+	rigidDynamic = physics->backend->createRigidDynamic(pTrans.getNormalized());
+	rigidActor = rigidDynamic;
+
+	SetWheelShapes(NumWheels);	
+	SetShapeInternal(shapeType);
+	UpdateMassAndInertia();
 	
+	PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(NumWheels);
+	wheelsSimData->setSubStepCount(5, 3, 3);
+	SetUpEachWheel(*wheelsSimData, NumWheels);
 
 	PxVehicleDriveSimData4W driveSimData;
-	PxVehicleDifferential4WData diff;
-	diff.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_FRONTWD;
-	driveSimData.setDiffData(diff);
+	ConfigureDifferential(driveSimData);
+	ConfigureEngine(driveSimData);
+	ConfigureGears(driveSimData);
+	ConfigureClutch(driveSimData);
+	ConfigureAckermannCorrection(driveSimData, *wheelsSimData);	
 
-	PxVehicleEngineData engine;
-	engine.mPeakTorque = 1200.0f;
-	engine.mMaxOmega = 300.0f;
-	driveSimData.setEngineData(engine);
-
-	PxVehicleGearsData gears;
-	gears.mSwitchTime = 0.5f;
-	driveSimData.setGearsData(gears);
-	
-
-	PxVehicleClutchData clutch;
-	clutch.mStrength = 10.0f;
-	driveSimData.setClutchData(clutch);
-
-	PxVehicleAckermannGeometryData ackermann;
-	ackermann.mAccuracy = 1.0f;
-	ackermann.mAxleSeparation = wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).z - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).z;
-	ackermann.mFrontWidth =	wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_RIGHT).x - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eFRONT_LEFT).x;
-	ackermann.mRearWidth = wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_RIGHT).x - wheelsSimData->getWheelCentreOffset(PxVehicleDrive4WWheelOrder::eREAR_LEFT).x;
-
-	driveSimData.setAckermannGeometryData(ackermann);
-
-
-
-	wheels = PxVehicleDrive4W::allocate(numWheels);
-	wheels->setup(physics->backend, dynamicActor, *wheelsSimData, driveSimData, numWheels - 4);
+	wheels = PxVehicleDrive4W::allocate(NumWheels);
+	wheels->setup(physics->backend, rigidDynamic, *wheelsSimData, driveSimData, NumWheels - 4);
 	wheelsSimData->free();
 	wheels->mDriveDynData.setToRestState();
 	wheels->mDriveDynData.setUseAutoGears(true);
@@ -293,12 +313,28 @@ void Vehicle::Update()
 	wheelTransforms[3]->SetPosition(ToVec3(lastKnownWheelTransforms[3].p));
 	wheelTransforms[3]->SetRotation(ToQuat(lastKnownWheelTransforms[3].q));
 
-	if (KeyIsDown(SDLK_w))
+	if(rigidDynamic->getLinearVelocity().magnitude() < 0.3)
+	{
+		if(KeyIsDown(SDLK_s) && forward)
+		{
+			forward = false;
+			wheels->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
+			std::cout << "set to backward" << std::endl;
+		}
+		else if (KeyIsDown(SDLK_w) && !forward)
+		{
+			forward = true;
+			wheels->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
+			std::cout << "set to forward" << std::endl;
+		}
+	}
+
+	if (KeyIsDown(forward ? SDLK_w : SDLK_s))
 		vehicleInputData.setDigitalAccel(true);
 	else
 		vehicleInputData.setDigitalAccel(false);
 
-	if (KeyIsDown(SDLK_s))
+	if (KeyIsDown(forward ? SDLK_s : SDLK_w))
 		vehicleInputData.setDigitalBrake(true);
 	else
 		vehicleInputData.setDigitalBrake(false);
@@ -317,6 +353,12 @@ void Vehicle::Update()
 		vehicleInputData.setDigitalHandbrake(true);
 	else
 		vehicleInputData.setDigitalHandbrake(false);
+
+	if (KeyWentDown(SDLK_r) && rigidActor->getGlobalPose().q.getBasisVector1().dot(PxVec3(0, 1, 0)) < 0.5f && abs(rigidDynamic->getLinearVelocity().y) < 0.1f)
+	{
+		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
+		rigidDynamic->addTorque(rigidActor->getGlobalPose().transform(PxVec3(0, 0, rigidDynamic->getMassSpaceInertiaTensor().z * 2.5f)), PxForceMode::eIMPULSE);
+	}
 }
 
 void Vehicle::UpdateTransform()
@@ -330,12 +372,23 @@ void Vehicle::UpdateTransform()
 	lastKnownWheelTransforms[3] = shapes[3]->getLocalPose();
 }
 
+void Vehicle::UpdateMassAndInertia()
+{
+	float densities[PX_MAX_NB_WHEELS + 1];
+	float wheelDensity = wheelMass / (Float::Pi * wheelRadius * wheelRadius * wheelWidth);
+	for (int i = 0; i < NumWheels; ++i)
+	{
+		densities[i] = wheelDensity;
+	}
+	densities[NumWheels] = density;
+
+	PxRigidBodyExt::updateMassAndInertia(*rigidDynamic, densities, NumWheels + 1);
+}
+
 void Vehicle::PostProcessPhysics()
 {
 	
 }
-
-
 
 void Vehicle::BeforeVehicleUpdate(float deltaTime)
 {

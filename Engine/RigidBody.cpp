@@ -88,7 +88,10 @@ void RigidBody::SetShape(Shape shape)
 void RigidBody::SetDensity(float density)
 {
 	if (this->density != density)
-		SetDensityInternal(density);
+	{
+		this->density = density;
+		UpdateMassAndInertia();
+	}
 }
 
 void RigidBody::UpdateTransform()
@@ -109,7 +112,7 @@ void RigidBody::Update()
 void RigidBody::InitCommonProps()
 {
 	SetShapeInternal(shapeType);
-	SetDensityInternal(density);
+	UpdateMassAndInertia();
 	rigidActor->userData = this;
 	lastPhysicsPosition = transform->WorldPosition();
 	lastPhysicsRotation = transform->WorldRotation();
@@ -164,9 +167,8 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 	shape->setSimulationFilterData(filterData);
 }
 
-void RigidBody::SetDensityInternal(float density)
+void RigidBody::UpdateMassAndInertia()
 {
-	this->density = density;
 	PxRigidDynamic* dynamic = rigidActor->is<PxRigidDynamic>();
 	if (dynamic)
 		PxRigidBodyExt::updateMassAndInertia(*dynamic, &density, 1);

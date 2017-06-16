@@ -52,7 +52,7 @@ protected:
 	static std::unordered_map<std::string, Shape> stringToShape;
 	virtual void PostProcessPhysics();
 	void SetShapeInternal(Shape shape);
-	void SetDensityInternal(float density);
+	virtual void UpdateMassAndInertia();
 	virtual void UpdateTransform();
 	void InitCommonProps();
 };

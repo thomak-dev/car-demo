@@ -148,7 +148,8 @@
 					"wheel_width": 0.297,
 					"wheel_mass": 100,
 					"material": "Steel",
-					"tire_type": "Normal"
+					"tire_type": "Normal",
+					"steer": 45
 				}
 			],
 			"children":

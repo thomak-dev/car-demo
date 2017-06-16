@@ -24,13 +24,22 @@ void OrbitingCam::Update(float deltaTime)
 	if(targetPtr)
 		center = targetPtr->GetComponent<Transform>()->WorldPosition();
 
-	glm::vec3 offset{ 0, 0, -radius };
+	glm::vec3 offset{ 0, 0, -smoothRadius };
 	//rotation = glm::rotate(rotation, mouseDelta.x * deltaTime, transform->Up());
 	//rotation = glm::rotate(rotation, mouseDelta.y * deltaTime, Vector3::Left);
 	
+	float radiusDir = radius - smoothRadius;
+	float step = deltaTime * 10;
+	if (std::abs(radiusDir) <= step)
+		smoothRadius = radius;
+	else
+		smoothRadius += step * glm::sign(radiusDir);
+
+	radius -= GetMouseWheelDelta().y * wheelSensivity;
+	radius = glm::clamp(radius, 2.f, 20.f);
 	
-	transform->RotateGlobally(-mouseDelta.x * deltaTime, Vector3::Up);
-	transform->RotateLocally(mouseDelta.y * deltaTime, Vector3::Left);
+	transform->RotateGlobally(-mouseDelta.x * deltaTime * sensivity, Vector3::Up);
+	transform->RotateLocally(mouseDelta.y * deltaTime * sensivity, Vector3::Left);
 	offset = transform->Rotation() * offset;
 	transform->SetWorldPosition(center + offset);
 	

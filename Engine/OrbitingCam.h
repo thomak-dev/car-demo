@@ -22,7 +22,10 @@ private:
 	Transform* transform;
 	void Update(float deltaTime);
 	float radius{10};
+	float smoothRadius{ radius };
 	glm::quat rotation;
 	glm::vec3 center;
+	float sensivity{ 0.5f };
+	float wheelSensivity{ 0.5f };
 };
 

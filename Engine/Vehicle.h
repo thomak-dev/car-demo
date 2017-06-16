@@ -16,7 +16,7 @@ class Vehicle :	public RigidBody
 {
 	friend class Physics;
 public:
-	using RigidBody::RigidBody;
+	explicit Vehicle(Entity& entity);
 	virtual ~Vehicle();
 
 	void Deserialize(const Json& json) override;
@@ -25,8 +25,10 @@ public:
 protected:
 	void Update() override;
 	void UpdateTransform() override;
+	void UpdateMassAndInertia() override;
 
 private:
+	const int NumWheels;
 	physx::PxVehicleDrive4W* wheels{};
 	float wheelMass{ 10 };
 	float wheelRadius{ .5f };
@@ -37,10 +39,21 @@ private:
 	std::vector<physx::PxTransform> lastKnownWheelTransforms;
 	bool airborne{};
 	physx::PxVehicleDrive4WRawInputData vehicleInputData;
+	bool forward{ true };
+	physx::PxRigidDynamic* rigidDynamic{};
 
 	void PostProcessPhysics() override;
 	void BeforeVehicleUpdate(float deltaTime);
 	void AfterVehicleUpdate(const physx::PxVehicleWheelQueryResult& queryResult);
 	static physx::PxConvexMesh* CreateWheelMesh(float radius, float width);
+
+	void ConfigureDifferential(physx::PxVehicleDriveSimData4W& simData);
+	void ConfigureEngine(physx::PxVehicleDriveSimData4W& simData);
+	void ConfigureGears(physx::PxVehicleDriveSimData4W& simData);
+	void ConfigureClutch(physx::PxVehicleDriveSimData4W& simData);
+	void ConfigureAckermannCorrection(physx::PxVehicleDriveSimData4W& simData, const physx::PxVehicleWheelsSimData& wheelsSimData);
+	void SetUpEachWheel(physx::PxVehicleWheelsSimData& simData, int numWheels);
+	void SetWheelShapes(int numWheels);
+
 };
 
