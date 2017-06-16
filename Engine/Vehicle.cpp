@@ -46,10 +46,10 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 		float y = sin(angle) * radius;
 
 		PxVec3 normal{ 0, sin(angle + Float::Pi / NumCirclePoints), cos(angle + Float::Pi / NumCirclePoints) };
-		polys[i].mPlane[0] = normal.x;
-		polys[i].mPlane[1] = normal.y;
-		polys[i].mPlane[2] = normal.z;
-		polys[i].mPlane[3] = normal.y * y + normal.z * z;
+		polys[i].mPlane[0] = -normal.x;
+		polys[i].mPlane[1] = -normal.y;
+		polys[i].mPlane[2] = -normal.z;
+		polys[i].mPlane[3] = -normal.y * y + -normal.z * z;
 		polys[i].mNbVerts = 4;
 		polys[i].mIndexBase = i * 4;
 		verts[i * 2].x = xLeft;
@@ -59,29 +59,30 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 		verts[i * 2 + 1].y = y;
 		verts[i * 2 + 1].z = z;
 		uint32_t index = i * 2;
-		indices[i * 4] = index;
-		indices[i * 4 + 1] = index + 1;
-		indices[i * 4 + 2] = (index + 3) % (NumCirclePoints * 2);
-		indices[i * 4 + 3] = (index + 2) % (NumCirclePoints * 2);
+		
+		indices[i * 4] = (index + 2) % (NumCirclePoints * 2);
+		indices[i * 4 + 1] = (index + 3) % (NumCirclePoints * 2);
+		indices[i * 4 + 2] = index + 1;
+		indices[i * 4 + 3] = index;
 
 		angle += 2 * Float::Pi / NumCirclePoints;
 	}
 	for (int i = 0; i < NumCirclePoints; ++i)
-		indices[NumCirclePoints * 4 + i] = i * 2;
+		indices[NumCirclePoints * 4 + i] = (NumCirclePoints - i - 1) * 2;
 	for (int i = 0; i < NumCirclePoints; ++i)
-		indices[NumCirclePoints * 5 + i] = (NumCirclePoints - i - 1) * 2 + 1;
+		indices[NumCirclePoints * 5 + i] = i * 2 + 1;
 
-	polys[NumCirclePoints].mPlane[0] = 1;
+	polys[NumCirclePoints].mPlane[0] = -1;
 	polys[NumCirclePoints].mPlane[1] = 0;
 	polys[NumCirclePoints].mPlane[2] = 0;
-	polys[NumCirclePoints].mPlane[3] = xLeft;
+	polys[NumCirclePoints].mPlane[3] = -xLeft;
 	polys[NumCirclePoints].mNbVerts = 32;
 	polys[NumCirclePoints].mIndexBase = IndexCount - 2 * NumCirclePoints;
 
-	polys[NumCirclePoints + 1].mPlane[0] = -1;
+	polys[NumCirclePoints + 1].mPlane[0] = 1;
 	polys[NumCirclePoints + 1].mPlane[1] = 0;
 	polys[NumCirclePoints + 1].mPlane[2] = 0;
-	polys[NumCirclePoints + 1].mPlane[3] = -xRight;
+	polys[NumCirclePoints + 1].mPlane[3] = xRight;
 	polys[NumCirclePoints + 1].mNbVerts = 32;
 	polys[NumCirclePoints + 1].mIndexBase = IndexCount - NumCirclePoints;
 
@@ -170,9 +171,9 @@ void Vehicle::Initialize()
 	}
 
 	PxFilterData wheelFilterData;
-	wheelFilterData.word0 = EntityFlags::Wheel;
+	physics->SetUpFilterData(wheelFilterData, EntityFlags::Wheel);
 
-	PxConvexMesh* convexMesh = CreateWheelMesh2(wheelRadius, wheelWidth);
+	PxConvexMesh* convexMesh = CreateWheelMesh(wheelRadius, wheelWidth);
 
 	for (PxU32 i = 0; i < numWheels; i++)
 	{
@@ -212,7 +213,7 @@ void Vehicle::Initialize()
 	PxVehicleComputeSprungMasses(numWheels, wheelOffsets, dynamicActor->getCMassLocalPose().p, dynamicActor->getMass(), 1, suspSprungMasses);
 
 	PxFilterData qryFilterData;
-	qryFilterData.word1 = EntityFlags::Default;
+	qryFilterData.word1 = EntityFlags::Ground;
 
 	wheelsData[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = steer;
 	wheelsData[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = steer;

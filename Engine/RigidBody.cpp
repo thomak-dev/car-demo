@@ -20,12 +20,7 @@ std::unordered_map<std::string, RigidBody::Shape> RigidBody::stringToShape
 RigidBody::RigidBody(Entity& entity)
 	: Component{entity}
 {
-	filterData.word0 = entity.flags;
-	for (int i = 0; i <= EntityFlags::HighestPos; ++i)
-	{
-		if(entity.flags & 1u << i)
-			filterData.word1 |= physics->wantedCollisionsOf[i];
-	}
+	physics->SetUpFilterData(filterData, entity.flags);
 }
 
 

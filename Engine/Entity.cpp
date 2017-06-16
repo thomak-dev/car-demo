@@ -336,7 +336,10 @@ static std::unordered_map<std::string, EntityFlags::Type> stringToFlags
 	{ "UI", EntityFlags::Type::UI },
 	{ "Chassis", EntityFlags::Type::Chassis },
 	{ "Wheel", EntityFlags::Type::Wheel },
-	{ "Highest", EntityFlags::Type::Highest }
+	{ "Prop", EntityFlags::Type::Prop },
+	{ "Ground", EntityFlags::Type::Ground },
+	{ "Highest", EntityFlags::Type::Highest },
+	{ "All", EntityFlags::Type::All }
 };
 
 EntityFlags::Type EntityFlags::FromString(const std::string& str)

@@ -157,8 +157,11 @@ Physics::Physics(int maxVehicles)
 	queryDesc.preFilterShader = VehicleRaycastFilterShader;
 	vehicleQuery = scene->createBatchQuery(queryDesc);
 
-	wantedCollisionsOf[EntityFlags::DefaultPos] = EntityFlags::Default;
-	wantedCollisionsOf[EntityFlags::ChassisPos] = EntityFlags::Default;
+	wantedCollisionsOf[EntityFlags::DefaultPos] = EntityFlags::All;
+	wantedCollisionsOf[EntityFlags::PropPos] = EntityFlags::Prop;
+	wantedCollisionsOf[EntityFlags::ChassisPos] = EntityFlags::Prop | EntityFlags::Chassis;
+	wantedCollisionsOf[EntityFlags::WheelPos] = EntityFlags::Prop;
+	wantedCollisionsOf[EntityFlags::GroundPos] = EntityFlags::Prop | EntityFlags::Chassis;
 
 	surfaceToFriction = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Tire::Highest, 1);
 	PxMaterial* surfaceMaterials[1];
@@ -382,4 +385,14 @@ const Physics::Terrain* Physics::GetTerrain(const std::shared_ptr<Mesh>& mesh)
 	}
 
 	return found->second;
+}
+
+void Physics::SetUpFilterData(physx::PxFilterData& filterData, EntityFlags::Type entityType)
+{
+	filterData.word0 = entityType;
+	for (int i = 0; i <= EntityFlags::HighestPos; ++i)
+	{
+		if (entityType & (1u << i))
+			filterData.word1 |= wantedCollisionsOf[i];
+	}
 }

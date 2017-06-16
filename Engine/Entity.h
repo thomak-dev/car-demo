@@ -17,6 +17,8 @@ namespace EntityFlags
 		UIPos,
 		ChassisPos,
 		WheelPos,
+		PropPos,
+		GroundPos,
 		HighestPos = 31
 	};
 	enum Type : uint32_t
@@ -26,15 +28,22 @@ namespace EntityFlags
 		UI = 1u << UIPos,
 		Chassis = 1u << ChassisPos,
 		Wheel = 1u << WheelPos,
+		Prop = 1u << PropPos,
+		Ground = 1u << GroundPos,
 		Highest = 1u << HighestPos,
 		All = 0xFFFFFFFFu
 	};
 
 	Type FromString(const std::string& str);
 
+	inline Type operator|(Type first, Type second)
+	{
+		return static_cast<Type>(static_cast<std::underlying_type<Type>::type>(first) | static_cast<std::underlying_type<Type>::type>(second));
+	}
+
 	inline Type& operator|=(Type& first, Type second)
 	{
-		first = static_cast<Type>(first | second);
+		first = first | second;
 		return first;
 	}
 }

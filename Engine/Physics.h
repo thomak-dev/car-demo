@@ -73,5 +73,6 @@ private:
 
 	physx::PxTriangleMesh* GetMesh(const std::shared_ptr<Mesh>& mesh);
 	const Terrain* GetTerrain(const std::shared_ptr<Mesh>& mesh);
+	void SetUpFilterData(physx::PxFilterData& filterData, EntityFlags::Type entityType);
 };
 

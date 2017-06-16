@@ -38,6 +38,7 @@
 			]
 		},
 		{
+			"flags": ["Ground"],
 			"components":
 			[
 				{
@@ -196,7 +197,7 @@
 			]
 		},
 		{
-			"flags": [ "Default", "Chassis", "Wheel" ],
+			"flags": [ "Default", "Ground", "Prop", "Chassis", "Wheel" ],
 			"components":
 			[
 				{
