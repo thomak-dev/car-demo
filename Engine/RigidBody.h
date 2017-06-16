@@ -18,7 +18,7 @@ class RigidBody : public Component
 public:
 	enum class Shape
 	{
-		Box, Sphere, Mesh, Terrain
+		Box, Sphere, Mesh, Convex, Terrain
 	};
 
 	explicit RigidBody(Entity& entity);

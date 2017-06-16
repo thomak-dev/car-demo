@@ -362,6 +362,43 @@ PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
 	return found->second;
 }
 
+physx::PxConvexMesh* Physics::GetConvexMesh(const std::shared_ptr<Mesh>& mesh)
+{
+	auto found = physicsConvexMeshes.find(mesh);
+	if (found == physicsConvexMeshes.end())
+	{
+		PxConvexMeshDesc convexMeshDesc;
+		convexMeshDesc.setToDefault();
+		convexMeshDesc.points.count = mesh->vertices.size();
+		convexMeshDesc.points.data = mesh->vertices.data();
+		convexMeshDesc.points.stride = sizeof(decltype(mesh->vertices)::value_type);
+		convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eDISABLE_MESH_VALIDATION | PxConvexFlag::eFAST_INERTIA_COMPUTATION | PxConvexFlag::eSHIFT_VERTICES;
+		convexMeshDesc.vertexLimit = 64;
+
+		SDL_assert(convexMeshDesc.isValid());
+
+	//#ifdef _DEBUG
+	//	// mesh should be validated before cooking without the mesh cleaning
+	//	bool res = cooking->validateConvexMesh(convexMeshDesc);
+	//	SDL_assert(res);
+	//#endif
+
+	//	PxConvexMesh* convexMesh = cooking->createConvexMesh(convexMeshDesc, backend->getPhysicsInsertionCallback());
+		PxDefaultMemoryOutputStream outStream;
+		PxConvexMeshCookingResult::Enum result;
+		bool success = cooking->cookConvexMesh(convexMeshDesc, outStream, &result);
+		SDL_assert(success);
+
+		PxDefaultMemoryInputData inStream{ outStream.getData(), outStream.getSize() };
+		PxConvexMesh* convexMesh = backend->createConvexMesh(inStream);
+
+		physicsConvexMeshes.insert(found, make_pair(mesh, convexMesh));
+		return convexMesh;
+	}
+
+	return found->second;
+}
+
 const Physics::Terrain* Physics::GetTerrain(const std::shared_ptr<Mesh>& mesh)
 {
 	auto found = terrains.find(mesh);

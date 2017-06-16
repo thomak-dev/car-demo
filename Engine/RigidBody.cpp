@@ -14,7 +14,8 @@ std::unordered_map<std::string, RigidBody::Shape> RigidBody::stringToShape
 	{"Box", Shape::Box},
 	{"Sphere", Shape::Sphere},
 	{"Mesh", Shape::Mesh},
-	{"Terrain", Shape::Terrain}
+	{"Terrain", Shape::Terrain},
+	{"Convex", Shape::Convex}
 };
 
 RigidBody::RigidBody(Entity& entity)
@@ -160,6 +161,11 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 			rigidActor->attachShape(*shape);
 			break;
 		}
+	case Shape::Convex:
+		shape = physics->backend->createShape(PxConvexMeshGeometry{ physics->GetConvexMesh(mesh), PxMeshScale{ ToPxVec3(transform->WorldScale()) } }, *material, true);
+		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
+		rigidActor->attachShape(*shape);
+		break;
 	default: SDL_assert(false);
 	}
 

@@ -277,7 +277,9 @@ void Vehicle::Initialize()
 
 	SetWheelShapes(NumWheels);	
 	SetShapeInternal(shapeType);
-	UpdateMassAndInertia();
+	PxRigidBodyExt::updateMassAndInertia(*rigidDynamic, density);
+	auto cm = rigidDynamic->getCMassLocalPose();
+	rigidDynamic->setCMassLocalPose(PxTransform(cm.p));
 	
 	PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(NumWheels);
 	wheelsSimData->setSubStepCount(5, 3, 3);
@@ -357,7 +359,7 @@ void Vehicle::Update()
 	if (KeyWentDown(SDLK_r) && rigidActor->getGlobalPose().q.getBasisVector1().dot(PxVec3(0, 1, 0)) < 0.5f && abs(rigidDynamic->getLinearVelocity().y) < 0.1f)
 	{
 		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
-		rigidDynamic->addTorque(rigidActor->getGlobalPose().transform(PxVec3(0, 0, rigidDynamic->getMassSpaceInertiaTensor().z * 2.5f)), PxForceMode::eIMPULSE);
+		rigidDynamic->addTorque(rigidActor->getGlobalPose().transform(PxVec3(0, 0, rigidDynamic->getMassSpaceInertiaTensor().z * 2.f)), PxForceMode::eIMPULSE);
 	}
 }
 

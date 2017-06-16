@@ -68,10 +68,12 @@ private:
 	physx::PxVehicleDrivableSurfaceToTireFrictionPairs* surfaceToFriction;
 	
 	std::unordered_map<std::shared_ptr<Mesh>, physx::PxTriangleMesh*> physicsMeshes;
+	std::unordered_map<std::shared_ptr<Mesh>, physx::PxConvexMesh*> physicsConvexMeshes;
 	std::unordered_map<std::shared_ptr<Mesh>, Terrain*> terrains;
 	EntityFlags::Type wantedCollisionsOf[EntityFlags::HighestPos]{};
 
 	physx::PxTriangleMesh* GetMesh(const std::shared_ptr<Mesh>& mesh);
+	physx::PxConvexMesh* GetConvexMesh(const std::shared_ptr<Mesh>& mesh);
 	const Terrain* GetTerrain(const std::shared_ptr<Mesh>& mesh);
 	void SetUpFilterData(physx::PxFilterData& filterData, EntityFlags::Type entityType);
 };
