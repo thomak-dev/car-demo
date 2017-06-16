@@ -63,10 +63,10 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 		float y = sin(angle) * radius;
 
 		PxVec3 normal{ 0, sin(angle + Float::Pi / NumCirclePoints), cos(angle + Float::Pi / NumCirclePoints) };
-		polys[i].mPlane[0] = -normal.x;
-		polys[i].mPlane[1] = -normal.y;
-		polys[i].mPlane[2] = -normal.z;
-		polys[i].mPlane[3] = -normal.y * y + -normal.z * z;
+		polys[i].mPlane[0] = normal.x;
+		polys[i].mPlane[1] = normal.y;
+		polys[i].mPlane[2] = normal.z;
+		polys[i].mPlane[3] = -(normal.y * y + normal.z * z);
 		polys[i].mNbVerts = 4;
 		polys[i].mIndexBase = i * 4;
 		verts[i * 2].x = xLeft;
@@ -75,8 +75,8 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 		verts[i * 2 + 1].x = xRight;
 		verts[i * 2 + 1].y = y;
 		verts[i * 2 + 1].z = z;
-		uint32_t index = i * 2;		
-		
+		uint32_t index = i * 2;			
+
 		indices[i * 4] = (index + 2) % (NumCirclePoints * 2);
 		indices[i * 4 + 1] = (index + 3) % (NumCirclePoints * 2);
 		indices[i * 4 + 2] = index + 1;
@@ -89,14 +89,14 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 	for (int i = 0; i < NumCirclePoints; ++i)
 		indices[NumCirclePoints * 5 + i] = i * 2 + 1;
 
-	polys[NumCirclePoints].mPlane[0] = -1;
+	polys[NumCirclePoints].mPlane[0] = 1;
 	polys[NumCirclePoints].mPlane[1] = 0;
 	polys[NumCirclePoints].mPlane[2] = 0;
 	polys[NumCirclePoints].mPlane[3] = -xLeft;
 	polys[NumCirclePoints].mNbVerts = 32;
 	polys[NumCirclePoints].mIndexBase = IndexCount - 2 * NumCirclePoints;
 
-	polys[NumCirclePoints + 1].mPlane[0] = 1;
+	polys[NumCirclePoints + 1].mPlane[0] = -1;
 	polys[NumCirclePoints + 1].mPlane[1] = 0;
 	polys[NumCirclePoints + 1].mPlane[2] = 0;
 	polys[NumCirclePoints + 1].mPlane[3] = xRight;
