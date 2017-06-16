@@ -57,7 +57,7 @@ public:
 	Entity() = default;
 	~Entity();
 
-	static std::shared_ptr<Entity> Instantiate(const std::shared_ptr<Prefab>& prefab, Entity* parent);
+	static std::shared_ptr<Entity> Instantiate(const std::shared_ptr<Json>& prefab, Entity* parent);
 	static std::shared_ptr<Entity> Instantiate(const rapidjson::GenericObject<true, rapidjson::Value>& prefab, Entity* parent);
 
 	template <typename T>

@@ -8,6 +8,8 @@ namespace Tire
 	{
 		Normal, Slick, Winter, Spikes, Highest
 	};
+
+	Type FromString(const std::string& str);
 }
 
 class Vehicle :	public RigidBody
@@ -30,7 +32,7 @@ private:
 	float wheelRadius{ .5f };
 	float wheelWidth{ .3f };
 	float steer{ Float::Pi / 4 };
-	Tire::Type type{ Tire::Normal };
+	Tire::Type tireType{ Tire::Normal };
 	std::vector<Transform*> wheelTransforms;
 	std::vector<physx::PxTransform> lastKnownWheelTransforms;
 	bool airborne{};
@@ -40,6 +42,5 @@ private:
 	void BeforeVehicleUpdate(float deltaTime);
 	void AfterVehicleUpdate(const physx::PxVehicleWheelQueryResult& queryResult);
 	static physx::PxConvexMesh* CreateWheelMesh(float radius, float width);
-	static physx::PxConvexMesh* CreateWheelMesh2(float radius, float width);
 };
 

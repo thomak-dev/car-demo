@@ -53,7 +53,6 @@ private:
 	physx::PxDefaultAllocator allocator;
 	PhysxErrorCallback errorCallback;
 	physx::PxPhysics* backend;
-	physx::PxMaterial* defaultMaterial;
 	physx::PxScene* scene;
 	physx::PxCpuDispatcher* cpuDispatcher;
 	physx::PxCooking* cooking;
@@ -61,6 +60,7 @@ private:
 	physx::PxRaycastHit* vehQueryHitBuffer;
 	physx::PxBatchQuery* vehicleQuery;
 	physx::PxVehicleWheelQueryResult* vehWheelQueryResultBuffer;
+	std::unordered_map<std::string, physx::PxMaterial*> materials;
 
 	std::vector<RigidBody*> rigidBodies;
 	std::vector<physx::PxVehicleWheels*> wheels;

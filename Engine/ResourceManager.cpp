@@ -166,16 +166,16 @@ std::shared_ptr<Entity> ResourceManager::ProcessNode(aiNode* node, Entity* paren
 	return entity;
 }
 
-rapidjson::Document* LoadJson(const std::string& path)
+rapidjson::Document* LoadJsonFile(const std::string& path)
 {
 	rapidjson::Document* jsonDoc = new rapidjson::Document;
 	jsonDoc->Parse(ReadTextFile(path));
 	return jsonDoc;
 }
 
-std::shared_ptr<Prefab> ResourceManager::LoadPrefab(const std::string& shortPath)
+std::shared_ptr<Json> ResourceManager::LoadJson(const std::string& shortPath)
 {
-	return ExistingOrLoad(shortPath, LoadJson);
+	return ExistingOrLoad(shortPath, LoadJsonFile);
 }
 
 std::shared_ptr<Entity> ResourceManager::LoadEntity(const std::string& shortPath, Entity* parent)

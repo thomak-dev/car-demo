@@ -16,7 +16,7 @@ class Material;
 class Entity;
 class Font;
 
-using Prefab = rapidjson::Document;
+using Json = rapidjson::Document;
 
 class ResourceManager : public virtual Singleton<ResourceManager>
 {
@@ -26,7 +26,7 @@ public:
 	ResourceManager();
 	virtual ~ResourceManager();
 	
-	std::shared_ptr<Prefab> LoadPrefab(const std::string& shortPath);
+	std::shared_ptr<Json> LoadJson(const std::string& shortPath);
 	std::shared_ptr<Entity> LoadEntity(const std::string& shortPath, Entity* parent);
 	std::shared_ptr<std::string> LoadText(const std::string& shortPath);
 	std::shared_ptr<Mesh> LoadMesh(const std::string& shortPath, bool ignoreRootTransform = false);

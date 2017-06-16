@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
 	Time time{ 200, 60 };
 	
-	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadPrefab("root.prefab"), nullptr) };
+	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadJson("root.prefab"), nullptr) };
 	root->Initialize();
 
 	std::cout << "Max framerate: " << time.GetMaxRate() << '\n';

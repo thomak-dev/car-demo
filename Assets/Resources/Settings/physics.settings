@@ -1,0 +1,73 @@
+{
+	"materials":
+	[
+		{
+			"name": "Default",
+			"static_friction": 0.5,
+			"dynamic_friction": 0.5,
+			"restitution": 0.1
+		},
+		{
+			"name": "Concrete",
+			"static_friction": 0.75,
+			"dynamic_friction": 0.75,
+			"restitution": 0.001
+		},
+		{
+			"name": "Tarmac",
+			"static_friction": 0.85,
+			"dynamic_friction": 0.85,
+			"restitution": 0.01
+		},
+		{
+			"name": "Rubber",
+			"static_friction": 0.99,
+			"dynamic_friction": 0.99,
+			"restitution": 0.99			
+		},
+		{
+			"name": "Ice",
+			"static_friction": 0.01,
+			"dynamic_friction": 0.01,
+			"restitution": 0.01
+		},
+		{
+			"name": "Steel",
+			"static_friction": 0.7,
+			"dynamic_friction": 0.7,
+			"restitution": 0.001
+		}
+	],
+
+	"tire_friction":
+	[
+		{
+			"tire_type": "Normal",
+			"materials":
+			[
+				{
+					"name": "Concrete",
+					"friction": 0.85
+				},
+				{
+					"name": "Tarmac",
+					"friction": 0.95
+				},
+				{
+					"name": "Ice",
+					"friction": 0.1
+				}
+			]
+		},
+		{
+			"tire_type": "Spikes",
+			"materials":
+			[
+				{
+					"name": "Ice",
+					"friction": 0.8
+				}
+			]
+		}
+	]
+}

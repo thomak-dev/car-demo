@@ -46,6 +46,7 @@ protected:
 	bool isStatic{};
 	physx::PxFilterData filterData;
 	glm::vec3 offset;
+	physx::PxMaterial* material{};
 
 	virtual void Update();
 	static std::unordered_map<std::string, Shape> stringToShape;

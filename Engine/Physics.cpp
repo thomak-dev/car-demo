@@ -6,6 +6,7 @@
 #include "ResourceManager.h"
 #include "Mesh.h"
 #include "Vehicle.h";
+#include "json.h"
 
 using namespace physx;
 
@@ -134,7 +135,15 @@ Physics::Physics(int maxVehicles)
 	success = PxInitVehicleSDK(*backend);
 	SDL_assert(success);
 
-	defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.1f);
+	//defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.1f);
+	auto json = ResourceManager::Instance().LoadJson("Settings/physics.settings");
+	SDL_assert(json->IsObject());
+	for(auto& mat : (*json)["materials"].GetArray())
+	{
+		auto material = backend->createMaterial(mat["static_friction"].GetFloat(), mat["dynamic_friction"].GetFloat(), mat["restitution"].GetFloat());
+		materials[mat["name"].GetString()] = material;
+	}
+
 	PxSceneDesc scnDesc{tolerance};
 	cpuDispatcher = PxDefaultCpuDispatcherCreate(4);
 	scnDesc.cpuDispatcher = cpuDispatcher;
@@ -163,16 +172,57 @@ Physics::Physics(int maxVehicles)
 	wantedCollisionsOf[EntityFlags::WheelPos] = EntityFlags::Prop;
 	wantedCollisionsOf[EntityFlags::GroundPos] = EntityFlags::Prop | EntityFlags::Chassis;
 
-	surfaceToFriction = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Tire::Highest, 1);
-	PxMaterial* surfaceMaterials[1];
-	surfaceMaterials[0] = defaultMaterial;
-	PxVehicleDrivableSurfaceType surfaceTypes[1];
-	surfaceTypes[0].mType = 0;
-	surfaceToFriction->setup(Tire::Highest, 1, const_cast<const PxMaterial**>(surfaceMaterials), surfaceTypes);
-	surfaceToFriction->setTypePairFriction(0, 0, 0.9f);
-	surfaceToFriction->setTypePairFriction(0, 1, 0.9f);
-	surfaceToFriction->setTypePairFriction(0, 2, 0.9f);
-	surfaceToFriction->setTypePairFriction(0, 3, 0.9f);
+
+
+	surfaceToFriction = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(Tire::Highest, materials.size());
+	PxMaterial** surfaceMaterials = new PxMaterial*[materials.size()];
+	int matIdx = 0;
+	std::unordered_map<std::string, int> matIndices;
+	for (auto& material : materials)
+	{
+		matIndices[material.first] = matIdx;
+		surfaceMaterials[matIdx] = material.second;
+		++matIdx;
+	}
+
+	float* tireMatFriction[Tire::Highest];
+	for (int i = 0; i < Tire::Highest; ++i)
+	{
+		tireMatFriction[i] = new float[materials.size()];
+		for (int j = 0; j < materials.size(); ++j)
+		{
+			tireMatFriction[i][j] = 0.5f;
+		}
+	}
+	for (auto& element : (*json)["tire_friction"].GetArray())
+	{
+		int tire = Tire::FromString(element["tire_type"].GetString());
+		for (auto& mat : element["materials"].GetArray())
+		{
+			tireMatFriction[tire][matIndices[mat["name"].GetString()]] = mat["friction"].GetFloat();
+		}
+	}
+
+	PxVehicleDrivableSurfaceType* surfaceTypes = new PxVehicleDrivableSurfaceType[materials.size()];
+	for (int i = 0; i < materials.size(); ++i)
+	{
+		surfaceTypes[i].mType = i;
+	}
+	surfaceToFriction->setup(Tire::Highest, materials.size(), const_cast<const PxMaterial**>(surfaceMaterials), surfaceTypes);
+	for (int i = 0; i < materials.size(); ++i)
+	{
+		for (int j = 0; j < Tire::Highest; ++j)
+		{
+			surfaceToFriction->setTypePairFriction(i, j, tireMatFriction[j][i]);
+		}
+	}
+
+	delete[] surfaceMaterials;
+	delete[] surfaceTypes;
+	for (int i = 0; i < Tire::Highest; ++i)
+	{
+		delete[] tireMatFriction[i];
+	}
 
 	vehWheelQueryResultBuffer = new PxVehicleWheelQueryResult[MaxVehicles];
 	for (int i = 0; i < MaxVehicles; ++i)
@@ -205,7 +255,10 @@ Physics::~Physics()
 	delete[] vehQueryHitBuffer;
 	delete[] vehQueryResults;
 	scene->release();
-	defaultMaterial->release();
+	for (auto& element : materials)
+	{
+		element.second->release();
+	}
 	PxCloseVehicleSDK();
 	PxCloseExtensions();
 	cooking->release();

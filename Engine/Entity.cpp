@@ -71,10 +71,10 @@ void Entity::SetFlags(const rapidjson::GenericObject<true, rapidjson::Value>& js
 	}
 }
 
-std::shared_ptr<Entity> Entity::Instantiate(const std::shared_ptr<Prefab>& prefab, Entity* parent)
+std::shared_ptr<Entity> Entity::Instantiate(const std::shared_ptr<Json>& prefab, Entity* parent)
 {
 	SDL_assert(prefab->IsObject());
-	const Prefab* constPrefab = prefab.get();
+	const Json* constPrefab = prefab.get();
 	return Instantiate(constPrefab->GetObject(), parent);
 }
 
@@ -89,7 +89,7 @@ std::shared_ptr<Entity> Entity::Instantiate(const rapidjson::GenericObject<true,
 		{
 			std::string ending{ basePath.substr(dotPos) };
 			if (ending == ".prefab")
-				base = Instantiate(ResourceManager::Instance().LoadPrefab(basePath), parent);
+				base = Instantiate(ResourceManager::Instance().LoadJson(basePath), parent);
 			else
 				base = ResourceManager::Instance().LoadEntity(basePath, parent);
 		}

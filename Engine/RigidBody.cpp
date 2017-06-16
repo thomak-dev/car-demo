@@ -47,6 +47,10 @@ void RigidBody::Deserialize(const Json& json)
 		isStatic = json["static"].GetBool();
 	if (json.HasMember("offset"))
 		offset = ToVec3(json["offset"]);
+	if (json.HasMember("material"))
+		material = physics->materials[json["material"].GetString()];
+	if (!material)
+		material = physics->materials["Default"];
 }
 
 void RigidBody::Initialize()
@@ -128,18 +132,18 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 	switch (shapeType)
 	{
 	case Shape::Box:
-		shape = physics->backend->createShape(PxBoxGeometry{ToPxVec3(halfSize * transform->WorldScale())}, *physics->defaultMaterial, true);
+		shape = physics->backend->createShape(PxBoxGeometry{ToPxVec3(halfSize * transform->WorldScale())}, *material, true);
 		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Sphere:
-		shape = physics->backend->createShape(PxSphereGeometry{halfSize.x * transform->WorldScale().x}, *physics->defaultMaterial, true);
+		shape = physics->backend->createShape(PxSphereGeometry{halfSize.x * transform->WorldScale().x}, *material, true);
 		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Mesh:
 		SDL_assert(isStatic);
-		shape = physics->backend->createShape(PxTriangleMeshGeometry{physics->GetMesh(mesh), PxMeshScale{ToPxVec3(transform->WorldScale())}}, *physics->defaultMaterial, true);
+		shape = physics->backend->createShape(PxTriangleMeshGeometry{physics->GetMesh(mesh), PxMeshScale{ToPxVec3(transform->WorldScale())}}, *material, true);
 		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
@@ -147,7 +151,7 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 		{
 			SDL_assert(isStatic);
 			const Physics::Terrain& terrain = *physics->GetTerrain(mesh);
-			shape = physics->backend->createShape(PxHeightFieldGeometry(terrain.heightField, PxMeshGeometryFlags{}, terrain.height / (1 << 16), 1, 1), *physics->defaultMaterial, true);
+			shape = physics->backend->createShape(PxHeightFieldGeometry(terrain.heightField, PxMeshGeometryFlags{}, terrain.height / (1 << 16), 1, 1), *material, true);
 			PxTransform pose{PxVec3{terrain.minX, terrain.minHeight + terrain.height / 2, terrain.minZ} + ToPxVec3(offset * transform->WorldScale()) };
 			shape->setLocalPose(pose);
 			rigidActor->attachShape(*shape);

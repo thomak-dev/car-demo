@@ -10,6 +10,19 @@
 
 using namespace physx;
 
+static std::unordered_map<std::string, Tire::Type> stringToType
+{
+	{ "Normal", Tire::Type::Normal },
+	{ "Slick", Tire::Type::Slick },
+	{ "Winter", Tire::Type::Winter },
+	{ "Spikes", Tire::Type::Spikes }
+};
+
+Tire::Type Tire::FromString(const std::string& str)
+{
+	return stringToType[str];
+}
+
 Vehicle::~Vehicle()
 {
 	wheels->free();
@@ -24,6 +37,10 @@ void Vehicle::Deserialize(const Json& json)
 		wheelWidth = json["wheel_width"].GetFloat();
 	if (json.HasMember("wheel_mass"))
 		wheelMass = json["wheel_mass"].GetFloat();
+	if (json.HasMember("steer"))
+		steer = glm::radians(json["steer"].GetFloat());
+	if (json.HasMember("tire_type"))
+		tireType = Tire::FromString(json["tire_type"].GetString());
 }
 
 PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
@@ -58,7 +75,7 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 		verts[i * 2 + 1].x = xRight;
 		verts[i * 2 + 1].y = y;
 		verts[i * 2 + 1].z = z;
-		uint32_t index = i * 2;
+		uint32_t index = i * 2;		
 		
 		indices[i * 4] = (index + 2) % (NumCirclePoints * 2);
 		indices[i * 4 + 1] = (index + 3) % (NumCirclePoints * 2);
@@ -102,49 +119,8 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 	bool res = physics->cooking->validateConvexMesh(convexMeshDesc);
 	SDL_assert(res);
 #endif
-
-	return physics->cooking->createConvexMesh(convexMeshDesc, physics->backend->getPhysicsInsertionCallback());
-}
-
-PxConvexMesh* Vehicle::CreateWheelMesh2(float radius, float width)
-{
-	const int VertexCount = 64;
-	PxVec3 verts[VertexCount];
-
-	const int NumCirclePoints = 32;
-	const float xLeft = width / 2; // x coord of left lid
-	const float xRight = -xLeft; // x coord of right lid
-
-	float angle = 0;
-	for (int i = 0; i < NumCirclePoints; ++i)
-	{
-		float z = cos(angle) * radius;
-		float y = sin(angle) * radius;
-
-		verts[i * 2].x = xLeft;
-		verts[i * 2].y = y;
-		verts[i * 2].z = z;
-		verts[i * 2 + 1].x = xRight;
-		verts[i * 2 + 1].y = y;
-		verts[i * 2 + 1].z = z;
-
-		angle += 2 * Float::Pi / NumCirclePoints;
-	}
-
-	PxConvexMeshDesc convexMeshDesc;
-	convexMeshDesc.vertexLimit = 64;
-	convexMeshDesc.points.count = VertexCount;
-	convexMeshDesc.points.data = verts;
-	convexMeshDesc.points.stride = sizeof(PxVec3);
-	convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eDISABLE_MESH_VALIDATION | PxConvexFlag::eFAST_INERTIA_COMPUTATION;
-
-	//PxDefaultMemoryOutputStream outStream;
-	//PxConvexMeshCookingResult::Enum result;
-	//bool success = physics->cooking->cookConvexMesh(convexMeshDesc, outStream, &result);
-	//PxDefaultMemoryInputData inStream{ outStream.getData(), outStream.getSize() };
-	//return physics->backend->createConvexMesh(inStream);
-
-	return physics->cooking->createConvexMesh(convexMeshDesc, physics->backend->getPhysicsInsertionCallback());
+	PxConvexMesh* mesh = physics->cooking->createConvexMesh(convexMeshDesc, physics->backend->getPhysicsInsertionCallback());
+	return mesh;
 }
 
 void Vehicle::Initialize()
@@ -177,8 +153,8 @@ void Vehicle::Initialize()
 
 	for (PxU32 i = 0; i < numWheels; i++)
 	{
-		PxConvexMeshGeometry geom{ convexMesh };
-		PxShape* wheelShape = PxRigidActorExt::createExclusiveShape(*dynamicActor, geom, *physics->defaultMaterial);
+		PxConvexMeshGeometry geom{ convexMesh };		
+		PxShape* wheelShape = PxRigidActorExt::createExclusiveShape(*dynamicActor, geom, *material);
 		wheelShape->setQueryFilterData(wheelFilterData);
 		wheelShape->setSimulationFilterData(wheelFilterData);
 		wheelShape->setLocalPose(PxTransform(PxIdentity));
@@ -227,7 +203,7 @@ void Vehicle::Initialize()
 		wheelsData[i].mWidth = wheelWidth;
 		wheelsData[i].mRadius = wheelRadius;
 
-		tires[i].mType = type;
+		tires[i].mType = tireType;
 		const float natFreq = 5; // 5 - 10 maybe
 		const float dampingRatio = 1.1f; // 0.8 underdamped .. 1.2 overdamped
 		suspensions[i].mMaxCompression = 0.22f;
