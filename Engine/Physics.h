@@ -3,6 +3,7 @@
 #include <PxPhysicsAPI.h>
 #include <memory>
 #include <unordered_map>
+#include <glm/vec3.hpp>
 #include "Singleton.h"
 #include "Entity.h"
 
@@ -46,6 +47,7 @@ private:
 	const int MaxVehicles;
 	const int MaxWheels;
 
+	glm::vec3 gravity{ 0, -9.81f, 0 };
 	bool visualize{};
 	physx::PxFoundation* foundation;
 	physx::PxPvd* pvd;

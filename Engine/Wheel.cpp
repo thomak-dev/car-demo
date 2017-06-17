@@ -1,7 +1,10 @@
 #include "Wheel.h"
 
-void Wheel::Deserialize(const Json& json)
+int Wheel::Deserialize(const Json& json)
 {
-	if (json.HasMember("index"))
+	int count = 0;
+	if (json.HasMember("index") && ++count)
 		index = json["index"].GetInt();
+
+	return count;
 }

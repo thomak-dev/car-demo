@@ -25,15 +25,17 @@ void MeshInstance::Initialize()
 	transform = entity.GetComponent<Transform>();
 }
 
-void MeshInstance::Deserialize(const Json& json)
+int MeshInstance::Deserialize(const Json& json)
 {
+	int count = 0;
 	std::shared_ptr<Mesh> mesh;
 	std::shared_ptr<Material> material;
-	if (json.HasMember("mesh"))
+	if (json.HasMember("mesh") && ++count)
 		mesh = ResourceManager::Instance().LoadMesh(json["mesh"].GetString());
-	if (json.HasMember("material"))
+	if (json.HasMember("material") && ++count)
 		material = ResourceManager::Instance().LoadMaterial(json["material"].GetString());
 	SetMeshAndMaterial(mesh, material);
+	return count;
 }
 
 MeshInstance::~MeshInstance()

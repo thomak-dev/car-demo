@@ -59,22 +59,25 @@ void Camera::Initialize()
 	transform = entity.GetComponent<Transform>();
 }
 
-void Camera::Deserialize(const Json& json)
+int Camera::Deserialize(const Json& json)
 {
-	if (json.HasMember("vertical_param"))
+	int count = 0;
+	if (json.HasMember("vertical_param") && ++count)
 		verticalParam = json["vertical_param"].GetFloat();
-	if (json.HasMember("projection"))
+	if (json.HasMember("projection") && ++count)
 		projection = stringToProjection[json["projection"].GetString()];
-	if (json.HasMember("near"))
+	if (json.HasMember("near") && ++count)
 		nearPlane = json["near"].GetFloat();
-	if (json.HasMember("far"))
+	if (json.HasMember("far") && ++count)
 		farPlane = json["far"].GetFloat();
-	if (json.HasMember("clear_depth"))
+	if (json.HasMember("clear_depth") && ++count)
 		clearDepth = json["clear_depth"].GetBool();
-	if (json.HasMember("clear_color"))
+	if (json.HasMember("clear_color") && ++count)
 		clearColor = json["clear_color"].GetBool();
-	if (json.HasMember("background"))
+	if (json.HasMember("background") && ++count)
 		background = ToVec4(json["background"]);
-	if (json.HasMember("main"))
+	if (json.HasMember("main") && ++count)
 		isMain = json["main"].GetBool();
+
+	return count;
 }

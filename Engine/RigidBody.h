@@ -24,7 +24,7 @@ public:
 	explicit RigidBody(Entity& entity);
 	virtual ~RigidBody();
 	
-	void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 	void Initialize() override;
 	void OnMessageReceived(Entity* origin, Message* message) override;
 	void SetShape(Shape shape);

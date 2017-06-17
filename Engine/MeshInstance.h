@@ -18,7 +18,7 @@ public:
 
 	void Draw() override;
 	void Initialize() override;
-	void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 	void SetMeshAndMaterial(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Material>& material);
 	void SetMaterial(const std::shared_ptr<Material>& material);
 	std::shared_ptr<Material> GetMaterial() const override { return material; }

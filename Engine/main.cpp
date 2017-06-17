@@ -25,9 +25,6 @@ int main(int argc, char* argv[])
 	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadJson("root.prefab"), nullptr) };
 	root->Initialize();
 
-	std::cout << "Max framerate: " << time.GetMaxRate() << '\n';
-	std::cout << "Physics rate: " << time.GetFixedRate() << std::endl;
-
 	SDL_Event event;
 	SDL_GetRelativeMouseState(nullptr, nullptr);
 

@@ -47,7 +47,7 @@
 			[
 				{
 					"name": "Concrete",
-					"friction": 0.85
+					"friction": 0.9
 				},
 				{
 					"name": "Tarmac",

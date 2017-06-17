@@ -14,7 +14,7 @@ public:
 	Component() = delete;
 	Component(Entity& entity);
 	Entity& GetEntity() const { return entity; }
-	virtual void Deserialize(const Json& json) {}
+	virtual int Deserialize(const Json& json) { return 0; }
 	virtual void Initialize() { SDL_assert(++initCount <= 1); };
 	virtual void OnMessageReceived(Entity* origin, Message* message) {}
 

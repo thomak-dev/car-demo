@@ -8,7 +8,7 @@ public:
 	using Component::Component;
 	virtual ~Wheel() = default;
 
-	void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 	int GetIndex() const { return index; }
 
 private:

@@ -141,16 +141,23 @@
 				{
 					"type": "Vehicle",
 					"shape": "Convex",
-					"half_size": [0.75, 0.42, 1.4],
 					"offset": [0, 0.70015, 0],
-					"density": 400,
+					"density": 450,
 					"wheel_radius": 0.306,
 					"wheel_width": 0.297,
-					"wheel_mass": 100,
+					"wheel_mass": 50,
 					"material": "Steel",
 					"tire_type": "Normal",
 					"steer": 45,
-					"mesh": "Meshes/car_chassis.dae"
+					"mesh": "Meshes/car_chassis.dae",
+					"spring_frequency": 6,
+					"damping_ratio": 1.2,
+					"max_droop": 0.2,
+					"max_compression": 0.17,
+					"max_rpm": 4000,
+					"auto_box_latency": 1.5,
+					"force_point_offset": -0.12,
+					"peak_torque": 1500
 				}
 			],
 			"children":

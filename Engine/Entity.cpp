@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include <iostream>
 #include "Transform.h"
 #include "Light.h"
 #include "CamControls.h"
@@ -35,13 +36,21 @@ void Entity::DeserializeComponents(const rapidjson::GenericObject<true, rapidjso
 	{
 		for (const auto& componentJson : json["components"].GetArray())
 		{
+			int numDeserializedProps;
 			Component* component;
 			if ((component = target->GetComponent(componentJson["type"].GetString())))
-				component->Deserialize(componentJson.GetObject());
+				numDeserializedProps = component->Deserialize(componentJson.GetObject());
 			else
 			{
 				component = target->AddComponent(componentJson["type"].GetString());
-				component->Deserialize(componentJson.GetObject());
+				numDeserializedProps = component->Deserialize(componentJson.GetObject());
+			}
+
+			int unserialized = componentJson.MemberCount() - numDeserializedProps;
+			if (unserialized > 1)
+			{
+				std::cout << "Warning: " << unserialized << " unserialized properties (" << componentJson["type"].GetString() << ')' << std::endl;
+				SDL_assert(false);
 			}
 		}
 	}

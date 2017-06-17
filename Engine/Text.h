@@ -15,7 +15,7 @@ public:
 	virtual ~Text() = default;
 
 	void Initialize() override;
-	void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 	void Draw() override;
 	std::shared_ptr<Material> GetMaterial() const override { return material; }
 

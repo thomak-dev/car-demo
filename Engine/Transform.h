@@ -44,7 +44,7 @@ public:
 	void RotateGlobally(float angle, const glm::vec3& axis);
 	void TranslateGlobally(const glm::vec3& translation);
 	void TranslateLocally(const glm::vec3& translation);
-	void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 private:
 	glm::vec3 position;
 	glm::quat rotation;

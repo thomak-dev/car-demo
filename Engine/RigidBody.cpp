@@ -34,24 +34,27 @@ RigidBody::~RigidBody()
 		shape->release();
 }
 
-void RigidBody::Deserialize(const Json& json)
+int RigidBody::Deserialize(const Json& json)
 {
-	if (json.HasMember("half_size"))
+	int count = 0;
+	if (json.HasMember("half_size") && ++count)
 		halfSize = ToVec3(json["half_size"]);
-	if (json.HasMember("mesh"))
+	if (json.HasMember("mesh") && ++count)
 		mesh = ResourceManager::Instance().LoadMesh(json["mesh"].GetString());
-	if (json.HasMember("shape"))
+	if (json.HasMember("shape") && ++count)
 		shapeType = stringToShape[json["shape"].GetString()];
-	if (json.HasMember("density"))
+	if (json.HasMember("density") && ++count)
 		density = json["density"].GetFloat();
-	if (json.HasMember("static"))
+	if (json.HasMember("static") && ++count)
 		isStatic = json["static"].GetBool();
-	if (json.HasMember("offset"))
+	if (json.HasMember("offset") && ++count)
 		offset = ToVec3(json["offset"]);
-	if (json.HasMember("material"))
+	if (json.HasMember("material") && ++count)
 		material = physics->materials[json["material"].GetString()];
 	if (!material)
 		material = physics->materials["Default"];
+
+	return count;
 }
 
 void RigidBody::Initialize()

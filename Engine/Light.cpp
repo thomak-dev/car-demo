@@ -41,18 +41,20 @@ void Light::SetCutoff(float cutoff)
 	RecomputeAttenuation();
 }
 
-void Light::Deserialize(const Json& json)
+int Light::Deserialize(const Json& json)
 {
-	if (json.HasMember("range"))
+	int count = 0;
+	if (json.HasMember("range") && ++count)
 		SetRange(json["range"].GetFloat());
-	if (json.HasMember("pointedness"))
+	if (json.HasMember("pointedness") && ++count)
 		SetPointedness(json["pointedness"].GetFloat());
-	if (json.HasMember("cutoff"))
+	if (json.HasMember("cutoff") && ++count)
 		SetCutoff(json["cutoff"].GetFloat());
-	if (json.HasMember("color"))
+	if (json.HasMember("color") && ++count)
 		color = ToVec4(json["color"]);
-	if (json.HasMember("light_type"))
+	if (json.HasMember("light_type") && ++count)
 		type = stringToType[json["light_type"].GetString()];
+	return count;
 }
 
 //float Attenuation(float x, float lin, float sq, float cut)

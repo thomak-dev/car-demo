@@ -189,12 +189,14 @@ void Transform::TranslateLocally(const glm::vec3& translation)
 	position += rotation * translation;
 }
 
-void Transform::Deserialize(const Json& json)
+int Transform::Deserialize(const Json& json)
 {
-	if (json.HasMember("position"))
+	int count = 0;
+	if (json.HasMember("position") && ++count)
 		SetPosition(ToVec3(json["position"]));
-	if (json.HasMember("rotation"))
+	if (json.HasMember("rotation") && ++count)
 		SetRotation(radians(ToVec3(json["rotation"])));
-	if (json.HasMember("scale"))
+	if (json.HasMember("scale") && ++count)
 		SetScale(ToVec3(json["scale"]));
+	return count;
 }

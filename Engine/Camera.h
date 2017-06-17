@@ -34,7 +34,7 @@ public:
 	bool clearDepth{ true };
 	bool clearColor{ true };
 	glm::vec4 background{ 1, 0, 1, 1 };
-	void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 	bool IsMain() const	{ return isMain; }
 	void SetIsMain(bool isMain) { this->isMain = isMain; }
 

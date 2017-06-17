@@ -26,7 +26,7 @@ public:
 	float LinearAttenuation() const { return linearAttenuation; }
 	float SquareAttenuation() const { return squareAttenuation; }
 	float Cutoff() const { return cutoff; }
-	virtual void Deserialize(const Json& json) override;
+	int Deserialize(const Json& json) override;
 
 	glm::vec4 color{ 1, 1, 1, 1 };
 	Type type {Type::Directional};

@@ -138,6 +138,10 @@ Physics::Physics(int maxVehicles)
 	//defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.1f);
 	auto json = ResourceManager::Instance().LoadJson("Settings/physics.settings");
 	SDL_assert(json->IsObject());
+
+	if (json->HasMember("gravity"))
+		gravity = ToVec3((*json)["gravity"]);
+
 	for(auto& mat : (*json)["materials"].GetArray())
 	{
 		auto material = backend->createMaterial(mat["static_friction"].GetFloat(), mat["dynamic_friction"].GetFloat(), mat["restitution"].GetFloat());
@@ -148,7 +152,7 @@ Physics::Physics(int maxVehicles)
 	cpuDispatcher = PxDefaultCpuDispatcherCreate(4);
 	scnDesc.cpuDispatcher = cpuDispatcher;
 	scnDesc.filterShader = FilterShader;
-	scnDesc.gravity = PxVec3{0, -9.81f, 0};
+	scnDesc.gravity = ToPxVec3(gravity);
 	scene = backend->createScene(scnDesc);
 #if _DEBUG
 	scene->getScenePvdClient()->setScenePvdFlags(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS | PxPvdSceneFlag::eTRANSMIT_CONTACTS | PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES);

@@ -14,33 +14,35 @@ void Text::Initialize()
 	transform = entity.GetComponent<Transform>();
 }
 
-void Text::Deserialize(const Json& json)
+int Text::Deserialize(const Json& json)
 {
-	if (json.HasMember("point_size"))
+	int count = 0;
+	if (json.HasMember("point_size") && ++count)
 		pointSize = json["point_size"].GetUint();
-	if (json.HasMember("content"))
+	if (json.HasMember("content") && ++count)
 		content = json["content"].GetString();
-	if (json.HasMember("material"))
+	if (json.HasMember("material") && ++count)
 		material = ResourceManager::Instance().LoadMaterial(json["material"].GetString());
 	else
 		material = ResourceManager::Instance().LoadMaterial("");
-	if(json.HasMember("alignment"))
+	if(json.HasMember("alignment") && ++count)
 	{
 		alignment = json["alignment"].GetInt();
 	}
-	if (json.HasMember("anchor"))
+	if (json.HasMember("anchor") && ++count)
 	{
 		const auto& arr = json["anchor"].GetArray();
 		anchor[0] = arr[0].GetInt();
 		anchor[1] = arr[1].GetInt();
 	}
-	if(json.HasMember("font"))
+	if(json.HasMember("font") && ++count)
 	{
 		font = ResourceManager::Instance().LoadFont(json["font"].GetString());
 	}
 	else
 		font = ResourceManager::Instance().LoadFont("Fonts/consola.ttf");
 
+	return count;
 }
 
 void Text::Draw()

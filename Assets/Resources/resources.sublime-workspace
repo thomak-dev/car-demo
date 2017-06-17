@@ -55,7 +55,7 @@
 			"file": "root.prefab",
 			"settings":
 			{
-				"buffer_size": 3428,
+				"buffer_size": 3489,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -83,67 +83,6 @@
 			"settings":
 			{
 				"buffer_size": 296,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Shaders/simple_lit.vert.glsl",
-			"settings":
-			{
-				"buffer_size": 393,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Shaders/simple_lambert.frag.glsl",
-			"settings":
-			{
-				"buffer_size": 239,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Shaders/lit_tangent.vert",
-			"settings":
-			{
-				"buffer_size": 621,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Shaders/normal_lambert.frag",
-			"settings":
-			{
-				"buffer_size": 458,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Shaders/utility.inc.glsl",
-			"settings":
-			{
-				"buffer_size": 1063,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Shaders/normal_lambert.shader",
-			"settings":
-			{
-				"buffer_size": 157,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Materials/concrete_slabs.mat",
-			"settings":
-			{
-				"buffer_size": 182,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -305,6 +244,15 @@
 	],
 	"file_history":
 	[
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Materials/concrete_slabs.mat",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Shaders/normal_lambert.shader",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Shaders/simple_lit.vert.glsl",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Shaders/simple_lambert.frag.glsl",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Shaders/lit_tangent.vert",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Shaders/normal_lambert.frag",
+		"/C/Users/thomak/dev/Engine/Assets/Resources/Shaders/utility.inc.glsl",
+		"/C/Users/thomak/OneDrive/Öffentlich/test.txt",
+		"/C/Users/thomak/dev/Engine/copy_assets.bat",
 		"/X/Dropbox/Passwords.txt",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Prefabs/box_staple_test.prefab",
 		"/C/Users/thomak/dev/Engine/Assets/Resources/Prefabs/robot.prefab",
@@ -327,8 +275,6 @@
 		"/C/Users/thomak/dev/Engine/External/assimp/CMakeLists.txt",
 		"/C/Users/thomak/dev/Engine/copy_libs_release.bat",
 		"/C/Users/thomak/dev/Engine/copy_libs_debug.bat",
-		"/C/Users/thomak/OneDrive/Öffentlich/test.txt",
-		"/C/Users/thomak/dev/Engine/copy_assets.bat",
 		"/C/Users/thomak/dev/Engine/copy_assets_release.bat",
 		"/C/Users/thomak/dev/Engine/copy_assets_debug.bat",
 		"/C/Users/thomak/dev/Engine/copy_libs.bat",
@@ -425,14 +371,7 @@
 		"/D/dev/Engine/Assets/Resources/Materials/default_blue.mat",
 		"/D/dev/Engine/Assets/Resources/Materials/default_red.mat",
 		"/D/dev/Engine/Assets/Resources/resources.sublime-workspace",
-		"/D/dev/Engine/Assets/Shaders/vertex.glsl",
-		"/D/dev/Engine/Assets/Shaders/shaders.sublime-project",
-		"/D/dev/Engine/Assets/vertex.glsl",
-		"/C/Program Files/Assimp/readme_installer.txt",
-		"/D/lib/SDL2-2.0.5/WhatsNew.txt",
-		"/D/lib/SDL2-2.0.5/README-SDL.txt",
-		"/D/lib/SDL2-2.0.5/README.txt",
-		"/D/Dropbox/Good code.txt"
+		"/D/dev/Engine/Assets/Shaders/vertex.glsl"
 	],
 	"find":
 	{
@@ -511,7 +450,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -520,15 +459,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3428,
+						"buffer_size": 3489,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								900,
-								900
+								2228,
+								2228
 							]
 						],
 						"settings":
@@ -537,10 +476,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2070.0,
+						"translation.y": 1890.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -565,10 +504,10 @@
 							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 225.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -631,205 +570,6 @@
 				},
 				{
 					"buffer": 4,
-					"file": "Shaders/simple_lit.vert.glsl",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 393,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "Shaders/simple_lambert.frag.glsl",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 239,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "Shaders/lit_tangent.vert",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 621,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								259,
-								259
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "Shaders/normal_lambert.frag",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 458,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								72,
-								72
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "Shaders/utility.inc.glsl",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1063,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1017,
-								1017
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "Shaders/normal_lambert.shader",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 157,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								117,
-								117
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "Materials/concrete_slabs.mat",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 182,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								169,
-								169
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
 					"file": "Prefabs/camera.prefab",
 					"semi_transient": false,
 					"settings":
@@ -854,7 +594,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
