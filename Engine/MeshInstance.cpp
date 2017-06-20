@@ -31,9 +31,9 @@ int MeshInstance::Deserialize(const Json& json)
 	std::shared_ptr<Mesh> mesh;
 	std::shared_ptr<Material> material;
 	if (json.HasMember("mesh") && ++count)
-		mesh = ResourceManager::Instance().LoadMesh(json["mesh"].GetString());
+		mesh = LOAD(Mesh, json["mesh"].GetString());
 	if (json.HasMember("material") && ++count)
-		material = ResourceManager::Instance().LoadMaterial(json["material"].GetString());
+		material = LOAD(Material, json["material"].GetString());
 	SetMeshAndMaterial(mesh, material);
 	return count;
 }
@@ -56,7 +56,7 @@ void MeshInstance::Draw()
 void MeshInstance::SetMaterial(const std::shared_ptr<Material>& material)
 {
 	if (!material)
-		this->material = ResourceManager::Instance().LoadMaterial("");
+		this->material = LOAD(Material, "");
 	else
 		this->material = material;
 
@@ -81,7 +81,7 @@ void MeshInstance::SetMeshAndMaterial(const std::shared_ptr<Mesh>& mesh, const s
 		this->mesh = mesh;
 
 	if (!material)
-		this->material = ResourceManager::Instance().LoadMaterial("");
+		this->material = LOAD(Material, "");
 	else
 		this->material = material;
 

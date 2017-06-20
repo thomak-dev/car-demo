@@ -152,7 +152,7 @@
 					"mesh": "Meshes/car_chassis.dae",
 					"spring_frequency": 6,
 					"damping_ratio": 1.2,
-					"max_droop": 0.2,
+					"max_droop": 0.11,
 					"max_compression": 0.17,
 					"max_rpm": 4000,
 					"auto_box_latency": 1.5,

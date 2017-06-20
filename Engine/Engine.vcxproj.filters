@@ -114,6 +114,12 @@
     <ClCompile Include="Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.h">
@@ -219,6 +225,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OrbitingCam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

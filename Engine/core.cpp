@@ -4,12 +4,22 @@
 #include <sstream>
 #include <SDL.h>
 #include <glm/glm.hpp>
+#include <thread>
+#include <mutex>
 
-
+std::thread::id mainThreadId;
 std::ios formatBackup{ nullptr };
+
+bool IsThisTheMainThread()
+{
+	static std::mutex mutex;
+	std::lock_guard<std::mutex> lock{ mutex };
+	return mainThreadId == std::this_thread::get_id();
+}
 
 void Initialize()
 {
+	mainThreadId = std::this_thread::get_id();
 	formatBackup.copyfmt(std::cout);
 }
 

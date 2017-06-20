@@ -31,6 +31,16 @@ ResourceManager::~ResourceManager()
 	IMG_Quit();
 }
 
+//Audio::Sound* LoadSoundFromFile(const std::string& fullPath)
+//{
+//	return new Audio::Sound{fullPath};
+//}
+//
+//std::shared_ptr<Audio::Sound> ResourceManager::LoadSound(const std::string& shortPath)
+//{
+//	return ExistingOrLoad(shortPath, LoadSoundFromFile);
+//}
+
 std::string* LoadTextFromFile(const std::string& fullPath)
 {
 	return new std::string{ ReadTextFile(fullPath) };

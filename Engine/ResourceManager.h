@@ -8,6 +8,9 @@
 #include "core.h"
 #include "Singleton.h"
 #include "ShaderElement.h"
+#include "Audio.h"
+
+#define LOAD(Type, path) ResourceManager::Instance().Load<Type>(path)
 
 class Mesh;
 class Texture2D;
@@ -18,9 +21,8 @@ class Font;
 
 using Json = rapidjson::Document;
 
-class ResourceManager : public virtual Singleton<ResourceManager>
+class ResourceManager : public Singleton<ResourceManager>
 {
-	friend class ResourceManagerTest;
 	DELETE_COPY_MOVE(ResourceManager)
 public:
 	ResourceManager();
@@ -35,6 +37,10 @@ public:
 	std::shared_ptr<Shader> LoadShader(const std::string& shortPath);
 	std::shared_ptr<Material> LoadMaterial(const std::string& shortPath);
 	std::shared_ptr<Font> LoadFont(const std::string& shortPath);
+//	std::shared_ptr<Audio::Sound> LoadSound(const std::string& shortPath);
+
+	template<typename T>
+	std::shared_ptr<T> Load(const std::string& shortPath);
 
 	void CleanUp();
 	
@@ -52,7 +58,34 @@ private:
 		const std::vector<std::shared_ptr<Material>>& materials,
 		const std::string& shortPath,
 		bool bakeTransform = false);
+
+	template<typename T>
+	static T* LoadGeneric(const std::string& fullPath) { return new T{ fullPath }; }
 };
+
+template <typename T>
+std::shared_ptr<T> ResourceManager::Load(const std::string& shortPath)
+{
+	return ExistingOrLoad<T>(shortPath, LoadGeneric<T>);
+}
+
+template <>
+inline std::shared_ptr<Json> ResourceManager::Load<Json>(const std::string& shortPath)
+{
+	return LoadJson(shortPath);
+}
+
+template <>
+inline std::shared_ptr<Mesh> ResourceManager::Load<Mesh>(const std::string& shortPath)
+{
+	return LoadMesh(shortPath);
+}
+
+template <>
+inline std::shared_ptr<Material> ResourceManager::Load<Material>(const std::string& shortPath)
+{
+	return LoadMaterial(shortPath);
+}
 
 template<typename T, typename... Targs>
 std::shared_ptr<T> ResourceManager::ExistingOrLoad(const std::string& shortPath, T*loadFunction(const std::string&, Targs...), Targs... args)

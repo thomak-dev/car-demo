@@ -31,6 +31,7 @@ void ResetConsoleFormatting();
 std::string ReadTextFile(const std::string& path);
 std::string GetGLErrorString(GLenum error);
 void CatchGlError(const char* file, int line);
+bool IsThisTheMainThread();
 
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vec);
 const std::string& GetExecutablePath();

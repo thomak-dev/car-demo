@@ -15,3 +15,10 @@ XCOPY %~dp0"External\SDL_image\VisualC\Win32\Debug\SDL2_image.dll" %~dp0"Debug\"
 XCOPY %~dp0"External\SDL_ttf\VisualC\Win32\Debug\SDL2_ttf.dll" %~dp0"Debug\" /Y /Q
 XCOPY %~dp0"External\SDL_ttf\VisualC\Win32\Debug\libfreetype-6.dll" %~dp0"Debug\" /Y /Q
 XCOPY %~dp0"External\assimp\bin\code\Debug\assimp-vc140-mt.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\SDL2_mixer.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libFLAC-8.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libmodplug-1.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libogg-0.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libvorbis-0.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libvorbisfile-3.dll" %~dp0"Debug\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\smpeg2.dll" %~dp0"Debug\" /Y /Q

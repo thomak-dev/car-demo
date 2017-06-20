@@ -15,3 +15,10 @@ XCOPY %~dp0"External\SDL_image\VisualC\Win32\Release\SDL2_image.dll" %~dp0"Relea
 XCOPY %~dp0"External\SDL_ttf\VisualC\Win32\Release\SDL2_ttf.dll" %~dp0"Release\" /Y /Q
 XCOPY %~dp0"External\SDL_ttf\VisualC\Win32\Release\libfreetype-6.dll" %~dp0"Release\" /Y /Q
 XCOPY %~dp0"External\assimp\bin\code\Release\assimp-vc140-mt.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\SDL2_mixer.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\libFLAC-8.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\libmodplug-1.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\libogg-0.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\libvorbis-0.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\libvorbisfile-3.dll" %~dp0"Release\" /Y /Q
+XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Release\smpeg2.dll" %~dp0"Release\" /Y /Q

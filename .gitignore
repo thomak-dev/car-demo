@@ -29,6 +29,17 @@
 *.out
 *.app
 
+## End of GitHub C++ template
+
+# Debug
+*.pdb
+
+# Linker
+*.ilk
+
+# Transaction log?
+*.tlog
+
 ## Project specific
 
 # .obj files beneath Assets are meshes
@@ -43,3 +54,4 @@
 *.sdf
 .vs/
 .hg/
+/External/SDL_mixer/

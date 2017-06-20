@@ -392,6 +392,14 @@ void Vehicle::Update()
 		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
 		rigidDynamic->addTorque(rigidActor->getGlobalPose().transform(PxVec3(0, 0, rigidDynamic->getMassSpaceInertiaTensor().z * 2.f)), PxForceMode::eIMPULSE);
 	}
+
+	//static std::shared_ptr<Audio::Sound> sound{ LOAD(Audio::Sound, "Audio/jump.wav") };
+	if (KeyWentDown(SDLK_j))
+	{
+		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
+		//Audio::Instance().Play(*sound);
+	}
+		
 }
 
 void Vehicle::UpdateTransform()

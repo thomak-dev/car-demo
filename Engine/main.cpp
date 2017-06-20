@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <SDL.h>
+#include <chrono>
+#include <objbase.h>
 #include "core.h"
 #include "GameWindow.h"
 #include "Renderer.h"
@@ -10,19 +12,21 @@
 #include "input.h"
 #include "Physics.h"
 #include "messages.h"
-#include <chrono>
+#include "Audio.h"
 
 int main(int argc, char* argv[])
-{
+{	
+	CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 	Initialize();
 	GameWindow gameWindow{"Engine", 1280, 720};
 	ResourceManager resourceManager;
 	Renderer renderer;
 	Physics physics;
+	Audio audio;
 
 	Time time{ 200, 60 };
 	
-	std::shared_ptr<Entity> root{ Entity::Instantiate(resourceManager.LoadJson("root.prefab"), nullptr) };
+	std::shared_ptr<Entity> root{ Entity::Instantiate(LOAD(Json, "root.prefab"), nullptr) };
 	root->Initialize();
 
 	SDL_Event event;
@@ -65,6 +69,7 @@ int main(int argc, char* argv[])
 			float deltaTime = time.GetDeltaTime();
 			UpdateMessage update{ deltaTime, false };
 			root->SendMessageDown(&update);
+			audio.Update();
 			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, RenderDebugId::Frame, -1, "New Frame");
 			renderer.Render();
 			gameWindow.Swap();
@@ -72,6 +77,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	CoUninitialize();
 	return 0;
 }
 
