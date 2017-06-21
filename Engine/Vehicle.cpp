@@ -399,7 +399,7 @@ void Vehicle::Update()
 		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
 		//Audio::Instance().Play(*sound);
 	}
-		
+
 }
 
 void Vehicle::UpdateTransform()

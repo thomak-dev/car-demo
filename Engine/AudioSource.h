@@ -17,12 +17,17 @@ public:
 	int Deserialize(const Json& json) override;
 	void Initialize() override;
 	void OnMessageReceived(Entity* origin, Message* message) override;
+	void SetParameter(const std::string& name, float value);
+
 private:
 	static Audio* audio;
+	using Parameter = std::pair<const std::string, std::pair<float, bool>>;
 	std::unordered_multimap<std::string, FMOD::Studio::EventInstance*> events;
-	std::unordered_map<std::string, float> parameters;
+	
+	std::unordered_map<std::string, std::pair<float, bool>> parameters;
 	float volume{ 1 };
 
 	void Update(float deltaTime);
+	void ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event);
 };
 

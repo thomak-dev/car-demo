@@ -22,6 +22,7 @@ public:
 	int Deserialize(const Json& json) override;
 	
 	void Initialize() override;
+	float GetRpm() const { return wheels->mDriveDynData.getEngineRotationSpeed() * 60 / (Float::Pi * 2); }
 
 protected:
 	void Update() override;

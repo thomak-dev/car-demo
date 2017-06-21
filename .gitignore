@@ -55,3 +55,6 @@
 .vs/
 .hg/
 /External/SDL_mixer/
+
+#sublime
+*.sublime-workspace

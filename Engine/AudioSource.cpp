@@ -34,7 +34,7 @@ int AudioSource::Deserialize(const Json& json)
 	if(json.HasMember("parameters") && ++count)
 	{
 		for (auto& param : json["parameters"].GetObject())
-			parameters[param.name.GetString()] = param.value.GetFloat();
+			SetParameter(param.name.GetString(), param.value.GetFloat());
 	}
 	return count;
 }
@@ -44,13 +44,20 @@ void AudioSource::Initialize()
 	for(auto& event : events)
 	{
 		for (auto& param : parameters)
-			event.second->setParameterValue(param.first.c_str(), param.second);
+			ApplyParam(param, *event.second);
 	}
 }
 
 void AudioSource::OnMessageReceived(Entity* origin, Message* message)
 {
 	HandleUpdate(message, UpdateFunctionDt{ std::bind(&AudioSource::Update, this, std::placeholders::_1) });
+}
+
+void AudioSource::SetParameter(const std::string& name, float value)
+{
+	auto& elem = parameters[name];
+	elem.first = value;
+	elem.second = true;
 }
 
 void AudioSource::Update(float deltaTime)
@@ -65,6 +72,17 @@ void AudioSource::Update(float deltaTime)
 			it = events.erase(it);
 		}
 		else
+		{
+			for (auto& param : parameters)
+				if (param.second.second)
+					ApplyParam(param, *it->second);
 			++it;
+		}
 	}
+}
+
+void AudioSource::ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event)
+{
+	event.setParameterValue(param.first.c_str(), param.second.first);
+	param.second.second = false;
 }

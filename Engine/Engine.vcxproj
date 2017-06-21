@@ -194,7 +194,9 @@
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Updatable.cpp" />
     <ClCompile Include="Vehicle.cpp" />
+    <ClCompile Include="VehicleController.cpp" />
     <ClCompile Include="Wheel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -233,7 +235,9 @@
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Updatable.h" />
     <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="VehicleController.h" />
     <ClInclude Include="Wheel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
