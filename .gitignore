@@ -56,6 +56,7 @@
 .hg/
 /External/SDL_mixer/
 VisualC/Win32/
+*.bank
 
 #sublime
 *.sublime-workspace

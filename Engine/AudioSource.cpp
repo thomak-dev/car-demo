@@ -1,4 +1,6 @@
 #include "AudioSource.h"
+#include <iostream>
+#include <fmod_errors.h>
 #include "Audio.h"
 #include "messages.h"
 
@@ -12,13 +14,15 @@ AudioSource::~AudioSource()
 
 void AudioSource::Play(const std::string& eventName, float volume)
 {
-	FMOD::Studio::EventDescription* desc;
-	audio->system->getEvent(eventName.c_str(), &desc);
-	FMOD::Studio::EventInstance* instance;
-	desc->createInstance(&instance);
-	instance->setVolume(this->volume * volume);
-	instance->start();
-	events.insert(std::make_pair(eventName, instance));
+	FMOD::Studio::EventInstance* instance = audio->LoadEvent(eventName);
+	Play(eventName, instance, volume);
+}
+
+void AudioSource::Play(const std::string& eventName, FMOD::Studio::EventInstance* eventInstance, float volume)
+{
+	FMOD_CHECK(eventInstance->setVolume(this->volume * volume));
+	FMOD_CHECK(eventInstance->start());
+	events.insert(std::make_pair(eventName, eventInstance));
 }
 
 int AudioSource::Deserialize(const Json& json)
@@ -29,7 +33,9 @@ int AudioSource::Deserialize(const Json& json)
 	if(json.HasMember("events") && ++count)
 	{
 		for (auto& event : json["events"].GetArray())
+		{
 			Play(event.GetString());
+		}
 	}
 	if(json.HasMember("parameters") && ++count)
 	{
@@ -76,6 +82,10 @@ void AudioSource::Update(float deltaTime)
 			for (auto& param : parameters)
 				if (param.second.second)
 					ApplyParam(param, *it->second);
+
+			FMOD_3D_ATTRIBUTES attribs;
+			Audio::Get3DAttributesOfEntity(entity, attribs);
+			FMOD_CHECK(it->second->set3DAttributes(&attribs))
 			++it;
 		}
 	}
@@ -83,6 +93,6 @@ void AudioSource::Update(float deltaTime)
 
 void AudioSource::ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event)
 {
-	event.setParameterValue(param.first.c_str(), param.second.first);
+	FMOD_CHECK(event.setParameterValue(param.first.c_str(), param.second.first))
 	param.second.second = false;
 }

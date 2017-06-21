@@ -22,3 +22,5 @@ XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libogg-0.dll" %~dp0"Debug\" /
 XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libvorbis-0.dll" %~dp0"Debug\" /Y /Q
 XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\libvorbisfile-3.dll" %~dp0"Debug\" /Y /Q
 XCOPY %~dp0"External\SDL_mixer\VisualC\Win32\Debug\smpeg2.dll" %~dp0"Debug\" /Y /Q
+XCOPY "%ProgramFiles(x86)%\FMOD SoundSystem\FMOD Studio API Windows\api\studio\lib\fmodstudioL.dll" %~dp0"Debug\" /Y /Q
+XCOPY "%ProgramFiles(x86)%\FMOD SoundSystem\FMOD Studio API Windows\api\lowlevel\lib\fmodL.dll" %~dp0"Debug\" /Y /Q

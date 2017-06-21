@@ -54,7 +54,7 @@ class Entity
 {
 	DELETE_COPY_MOVE(Entity)
 public:
-	Entity() = default;
+	Entity();
 	~Entity();
 
 	static std::shared_ptr<Entity> Instantiate(const std::shared_ptr<Json>& prefab, Entity* parent);
@@ -66,6 +66,8 @@ public:
 
 	template <typename T>
 	T* GetComponent() const;
+	template <typename T>
+	T* GetComponentDerivedFrom() const;
 	template<typename T>
 	T* GetComponentInAncestors();
 	template<typename T, typename OutputIt>
@@ -101,6 +103,8 @@ private:
 	std::string name;
 	std::weak_ptr<Entity> self;
 	std::weak_ptr<Entity> root;
+	static std::unordered_map<std::string, std::pair<std::function<Component*(Entity*)>, std::function<Component*(const Entity*)>>> componentAccessors;
+	static int StaticInit();
 
 	int initCount{};
 
@@ -131,6 +135,18 @@ inline T* Entity::GetComponent() const
 		return dynamic_cast<T*>(result->second);
 	else
 		return nullptr;
+}
+
+template <typename T>
+T* Entity::GetComponentDerivedFrom() const
+{
+	for(Component* comp : components)
+	{
+		T* derived = dynamic_cast<T*>(comp);
+		if (derived)
+			return derived;
+	}
+	return nullptr;
 }
 
 template<typename T>

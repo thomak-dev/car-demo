@@ -154,10 +154,20 @@
 					"damping_ratio": 1.2,
 					"max_droop": 0.11,
 					"max_compression": 0.17,
-					"max_rpm": 4000,
+					"max_rpm": 6000,
 					"auto_box_latency": 1.5,
 					"force_point_offset": -0.12,
 					"peak_torque": 1500
+				},
+				{
+					"type": "AudioSource",
+					"events":
+					[
+						"event:/Vehicles/Car Engine"
+					]
+				},
+				{
+					"type": "VehicleController"
 				}
 			],
 			"children":
@@ -224,6 +234,9 @@
 				},
 				{
 					"type": "OrbitingCam"
+				},
+				{
+					"type": "AudioListener"
 				}
 			]
 		},

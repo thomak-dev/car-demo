@@ -14,6 +14,44 @@
 #include "Vehicle.h"
 #include "Wheel.h"
 #include "OrbitingCam.h"
+#include "AudioSource.h"
+#include "AudioListener.h"
+#include "VehicleController.h"
+
+std::unordered_map<std::string, std::pair<std::function<Component*(Entity*)>, std::function<Component*(const Entity*)>>> Entity::componentAccessors;
+
+#define DECLARE_COMPONENT(T) componentAccessors[#T] = std::make_pair(std::function<Component*(Entity*)>([](Entity* e) { return e->AddComponent<T>(); }), std::function<Component*(const Entity*)>([](const Entity* e) { return e->GetComponent<T>(); }))
+
+int Entity::StaticInit()
+{
+	static int numberOfCalls = 0;
+	++numberOfCalls;
+	SDL_assert(numberOfCalls == 1);
+
+	DECLARE_COMPONENT(Transform);
+	DECLARE_COMPONENT(Light);
+	DECLARE_COMPONENT(CamControls);
+	DECLARE_COMPONENT(Camera);
+	DECLARE_COMPONENT(ForwardSpinner);
+	DECLARE_COMPONENT(MeshInstance);
+	DECLARE_COMPONENT(Text);
+	DECLARE_COMPONENT(FpsCounter);
+	DECLARE_COMPONENT(RigidBody);
+	DECLARE_COMPONENT(RandomColor);
+	DECLARE_COMPONENT(Vehicle);
+	DECLARE_COMPONENT(VehicleController);
+	DECLARE_COMPONENT(Wheel);
+	DECLARE_COMPONENT(OrbitingCam);
+	DECLARE_COMPONENT(AudioSource);
+	DECLARE_COMPONENT(AudioListener);
+
+	return 0;
+}
+
+Entity::Entity()
+{
+	static int staticInit = StaticInit();
+}
 
 Entity::~Entity()
 {
@@ -129,9 +167,9 @@ std::shared_ptr<Entity> Entity::Instantiate(const rapidjson::GenericObject<true,
 	return base;
 }
 
-#define ELSE_COMPONENT(T, AddOrGet) else if (type == #T) return AddOrGet##Component<T>()
+//#define ELSE_COMPONENT(T, AddOrGet) else if (type == #T) return AddOrGet##Component<T>()
 
-Component* Entity::AddComponent(const std::string& type)
+/*Component* Entity::AddComponent(const std::string& type)
 {
 	if (type == "Transform")
 		return AddComponent<Transform>();
@@ -147,6 +185,8 @@ Component* Entity::AddComponent(const std::string& type)
 	ELSE_COMPONENT(Vehicle, Add);
 	ELSE_COMPONENT(Wheel, Add);
 	ELSE_COMPONENT(OrbitingCam, Add);
+	ELSE_COMPONENT(AudioSource, Add);
+	ELSE_COMPONENT(AudioListener, Add);
 	return nullptr;
 }
 
@@ -166,7 +206,19 @@ Component* Entity::GetComponent(const std::string& type) const
 	ELSE_COMPONENT(Vehicle, Get);
 	ELSE_COMPONENT(Wheel, Get);
 	ELSE_COMPONENT(OrbitingCam, Get);
+	ELSE_COMPONENT(AudioSource, Get);
+	ELSE_COMPONENT(AudioListener, Get);
 	return nullptr;
+}*/
+
+Component* Entity::AddComponent(const std::string& type)
+{
+	return componentAccessors[type].first(this);
+}
+
+Component* Entity::GetComponent(const std::string& type) const
+{
+	return componentAccessors[type].second(this);
 }
 
 void Entity::SetName(const std::string& name)

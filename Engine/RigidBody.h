@@ -30,7 +30,8 @@ public:
 	void SetShape(Shape shape);
 	Shape GetShape() const { return shapeType; }
 	void SetDensity(float mass);
-	float Density() const { return density; }	
+	float Density() const { return density; }
+	glm::vec3 GetVelocity() const;
 
 protected:
 	Transform* transform{};

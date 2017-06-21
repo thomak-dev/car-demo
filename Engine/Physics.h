@@ -49,6 +49,7 @@ private:
 
 	glm::vec3 gravity{ 0, -9.81f, 0 };
 	bool visualize{};
+	bool simulationInProgress{};
 	physx::PxFoundation* foundation;
 	physx::PxPvd* pvd;
 	physx::PxPvdTransport* pvdTransport;

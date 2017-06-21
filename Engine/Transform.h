@@ -2,16 +2,18 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "Component.h"
+#include "Updatable.h"
 
-class Transform : public Component
+class Transform : public Updatable
 {
 	DELETE_COPY_MOVE(Transform)
 public:
-	using Component::Component;
+	using Updatable::Updatable;
 	Transform() = delete;
 	virtual ~Transform() = default;
 
+
+	void Initialize() override;
 	glm::mat4 ParentWorldMatrix() const;
 	glm::mat4 ParentInverseWorldMatrix() const;
 	glm::mat4 WorldMatrix() const;
@@ -45,9 +47,16 @@ public:
 	void TranslateGlobally(const glm::vec3& translation);
 	void TranslateLocally(const glm::vec3& translation);
 	int Deserialize(const Json& json) override;
+	glm::vec3 GetVelocity() const { return velocity; }
+
+protected:
+	void Update(float deltaTime) override;
+
 private:
 	glm::vec3 position;
 	glm::quat rotation;
 	glm::vec3 scale {1, 1, 1};
+	glm::vec3 lastPos;
+	glm::vec3 velocity;
 };
 

@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="AudioListener.cpp" />
     <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="CamControls.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -201,6 +202,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="AudioListener.h" />
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="CamControls.h" />
     <ClInclude Include="Camera.h" />

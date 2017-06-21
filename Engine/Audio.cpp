@@ -1,10 +1,16 @@
 #include "Audio.h"
 //#include <SDL_mixer.h>
 #include <iostream>
+#include <sstream>
 #include <fmod_studio.hpp>
 #include <fmod_errors.h>
 #include "AudioSource.h"
 #include "core.h"
+#include "AudioListener.h"
+#include "Transform.h"
+#include "Entity.h"
+#include "RigidBody.h"
+#include <mutex>
 
 Audio* Audio::Bank::audio;
 
@@ -21,42 +27,44 @@ Audio* Audio::Bank::audio;
 
 FMOD_RESULT F_CALLBACK OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata)
 {
-	SDL_assert(IsThisTheMainThread());
+	std::stringstream sstrm;
 	switch (type)
 	{
 	case FMOD_SYSTEM_CALLBACK_MEMORYALLOCATIONFAILED:
-		std::cout 
+		sstrm
 			<< "FMOD error: FMOD_SYSTEM_CALLBACK_MEMORYALLOCATIONFAILED. Size: "
 			<< reinterpret_cast<int>(commanddata2) 
 			<< ". File: "
 			<< static_cast<char*>(commanddata1)
-			<< std::endl;
+			<< '\n';
 		break;
 	case FMOD_SYSTEM_CALLBACK_BADDSPCONNECTION:
 		{
 			FMOD::DSP* source = static_cast<FMOD::DSP*>(commanddata1);
 			FMOD::DSP* dest = static_cast<FMOD::DSP*>(commanddata2);
 
-			std::cout << "FMOD error: FMOD_SYSTEM_CALLBACK_BADDSPCONNECTION. ";
+			sstrm << "FMOD error: FMOD_SYSTEM_CALLBACK_BADDSPCONNECTION. ";
 			if (source)
 			{
 				char name[256];
 				source->getInfo(name, nullptr, nullptr, nullptr, nullptr);
-				std::cout << "Source: " << name << ". ";
+				sstrm << "Source: " << name << ". ";
 			}
 			if (dest)
 			{
 				char name[256];
 				dest->getInfo(name, nullptr, nullptr, nullptr, nullptr);
-				std::cout << "Dest: " << name;
+				sstrm << "Dest: " << name;
 			}
-			std::cout << std::endl;
+			sstrm << '\n';
 			break;
 		}
 	case FMOD_SYSTEM_CALLBACK_ERROR:
 		{
 			FMOD_ERRORCALLBACK_INFO* info = static_cast<FMOD_ERRORCALLBACK_INFO*>(commanddata1);
-			std::cout
+			if(info->instancetype == FMOD_ERRORCALLBACK_INSTANCETYPE_DSP)
+				return FMOD_OK;
+			sstrm
 				<< "FMOD error: FMOD_SYSTEM_CALLBACK_ERROR. "
 				<< FMOD_ErrorString(info->result)
 				<< '\n' << "Function name: "
@@ -67,16 +75,23 @@ FMOD_RESULT F_CALLBACK OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYP
 				<< info->instance
 				<< " Type: "
 				<< info->instancetype
-				<< std::endl;
-			SDL_assert(false);
+				<< '\n';
 			break;
 		}
 	case FMOD_SYSTEM_CALLBACK_DEVICELOST:
-		std::cout << "FMOD error: FMOD_SYSTEM_CALLBACK_DEVICELOST" << std::endl;
+		sstrm << "FMOD error: FMOD_SYSTEM_CALLBACK_DEVICELOST\n";
 		break;
 	default:
 		return FMOD_OK;
 	}
+
+	static std::mutex mutex;
+	{
+		std::lock_guard<std::mutex>{mutex};
+		std::cout << sstrm.str();
+		std::cout.flush();
+	}
+
 	SDL_assert(false);
 	return FMOD_OK;
 }
@@ -84,12 +99,12 @@ FMOD_RESULT F_CALLBACK OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYP
 
 Audio::Bank::Bank(const std::string& path)
 {
-	audio->system->loadBankFile(path.c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &studioBank);
+	FMOD_CHECK(audio->system->loadBankFile(path.c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &studioBank));
 }
 
 Audio::Bank::~Bank()
 {
-	studioBank->unload();
+	FMOD_CHECK(studioBank->unload());
 }
 
 Audio::Audio()
@@ -99,38 +114,136 @@ Audio::Audio()
 	//SDL_assert(success);
 	//Mix_AllocateChannels(32);
 
-	FMOD_RESULT result;
-	if((result = FMOD::Studio::System::create(&system)) != FMOD_OK)
-		std::cout << FMOD_ErrorString(result) << std::endl;
-	SDL_assert(result == FMOD_OK);
+	FMOD_CHECK(FMOD::Studio::System::create(&system));
 
 	FMOD::System* lowSystem;
-	if ((result = system->getLowLevelSystem(&lowSystem)) != FMOD_OK)
-		std::cout << FMOD_ErrorString(result) << std::endl;
-	SDL_assert(result == FMOD_OK);
-	lowSystem->setCallback(OnFmodError);
+	FMOD_CHECK(system->getLowLevelSystem(&lowSystem));
+	//lowSystem->setCallback(OnFmodError);
 	FMOD_ADVANCEDSETTINGS advSettings{};
 	advSettings.vol0virtualvol = 0.001f;
-	lowSystem->setAdvancedSettings(&advSettings);
-	if((result = system->initialize(512, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL | FMOD_INIT_VOL0_BECOMES_VIRTUAL | FMOD_INIT_3D_RIGHTHANDED, nullptr)) != FMOD_OK)
-		std::cout << FMOD_ErrorString(result) << std::endl;
-	SDL_assert(result == FMOD_OK);
+	advSettings.cbSize = sizeof(FMOD_ADVANCEDSETTINGS);
+	FMOD_CHECK(lowSystem->setAdvancedSettings(&advSettings));
+	FMOD_CHECK(system->initialize(512, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL | FMOD_INIT_VOL0_BECOMES_VIRTUAL | FMOD_INIT_3D_RIGHTHANDED, nullptr));
 
 	Bank::audio = this;
 	AudioSource::audio = this;
+	
+	stringsBank = LOAD(Bank, "Audio/Master Bank.strings.bank");
+	int stringCount;
+	FMOD_CHECK(stringsBank->studioBank->getStringCount(&stringCount));
+	std::vector<std::string> paths;
+	for (int i = 0; i < stringCount; ++i)
+	{
+		int pathLength;
+		FMOD_CHECK(stringsBank->studioBank->getStringInfo(i, nullptr, nullptr, 0, &pathLength));
+		char* path = new char[pathLength];
+		FMOD_CHECK(stringsBank->studioBank->getStringInfo(i, nullptr, path, pathLength, nullptr));
+		paths.emplace_back(path);
+	}
+
+	for (auto& path : paths)
+	{
+		auto dotPos = path.find_last_of('.');
+		if (path.substr(0, 6) == "bank:/" && (dotPos == std::string::npos || path.substr(dotPos) != ".strings"))
+		{
+			banks.push_back(LOAD(Bank, "Audio/" + path.substr(6) + ".bank"));
+			FMOD_CHECK(banks[banks.size() - 1]->studioBank->loadSampleData());
+		}
+	}
 }
 
 
 Audio::~Audio()
 {
-	system->release();
+	stringsBank = nullptr;
+	banks.clear();
+	ResourceManager::Instance().CleanUp();
+	FMOD_CHECK(system->release());
 	//Mix_CloseAudio();
 	//Mix_Quit();
 }
 
 void Audio::Update()
 {
-	system->update();
+	for (int i = 0; i < listeners.size(); ++i)
+	{
+		UpdateListener(i, listeners[i]);
+	}
+	FMOD_CHECK(system->update());
+}
+
+void Audio::RegisterListener(AudioListener* listener)
+{
+	listeners.push_back(listener);
+	int sz = listeners.size();
+	if(sz > 1)
+		FMOD_CHECK(system->setNumListeners(sz));
+}
+
+void Audio::UnregisterListener(AudioListener* listener)
+{
+	auto found = find(listeners.begin(), listeners.end(), listener);
+	if(found != listeners.end())
+	{
+		listeners.erase(found);
+		int sz = listeners.size();
+		if(sz >= 1)
+			FMOD_CHECK(system->setNumListeners(sz));
+	}
+}
+
+FMOD::Studio::EventInstance* Audio::LoadEvent(const std::string& name)
+{
+	auto found = eventDescriptions.find(name);
+	FMOD::Studio::EventInstance* instance;
+	FMOD::Studio::EventDescription* desc;
+	if(found != eventDescriptions.end())
+	{
+		desc = found->second;
+	}
+	else
+	{
+		FMOD_CHECK(system->getEvent(name.c_str(), &desc));
+		FMOD_CHECK(desc->loadSampleData());
+		eventDescriptions.insert(found, std::make_pair(name, desc));
+	}
+	FMOD_CHECK(desc->createInstance(&instance));
+	return instance;
+}
+
+void Audio::UpdateListener(int index, AudioListener* listener)
+{
+	FMOD_3D_ATTRIBUTES attribs;
+	Entity& entity = listener->GetEntity();
+	Get3DAttributesOfEntity(entity, attribs);
+
+	FMOD_CHECK(system->setListenerAttributes(index, &attribs));
+}
+
+void Audio::Get3DAttributesOfEntity(const Entity& entity, FMOD_3D_ATTRIBUTES& attribs)
+{
+	Transform* transform = entity.GetComponent<Transform>();
+	auto pos = transform->WorldPosition();
+	auto forward = transform->Forward();
+	auto up = transform->Up();
+	attribs.position.x = pos.x;
+	attribs.position.y = pos.y;
+	attribs.position.z = pos.z;
+	attribs.forward.x = forward.x;
+	attribs.forward.y = forward.y;
+	attribs.forward.z = forward.z;
+	attribs.up.x = up.x;
+	attribs.up.y = up.y;
+	attribs.up.z = up.z;
+	RigidBody* rigidBody;
+	glm::vec3 velocity{ glm::uninitialize };
+	if ((rigidBody = entity.GetComponentDerivedFrom<RigidBody>()))
+		velocity = rigidBody->GetVelocity();
+	else
+		velocity = transform->GetVelocity();
+	attribs.velocity.x = velocity.x;
+	attribs.velocity.y = velocity.y;
+	attribs.velocity.z = velocity.z;
 }
 
 //void Audio::Play(const Sound& sound)

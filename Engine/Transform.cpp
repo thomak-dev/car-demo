@@ -3,6 +3,11 @@
 #include "Entity.h"
 #include "math_utility.h"
 
+void Transform::Initialize()
+{
+	lastPos = WorldPosition();
+}
+
 glm::mat4 Transform::ParentWorldMatrix() const
 {
 	auto parent = entity.Parent();
@@ -199,4 +204,11 @@ int Transform::Deserialize(const Json& json)
 	if (json.HasMember("scale") && ++count)
 		SetScale(ToVec3(json["scale"]));
 	return count;
+}
+
+void Transform::Update(float deltaTime)
+{
+	glm::vec3 posNow = WorldPosition();
+	velocity = (posNow - lastPos) / deltaTime;
+	lastPos = posNow;
 }

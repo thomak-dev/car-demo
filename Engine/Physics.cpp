@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Mesh.h"
-#include "Vehicle.h";
+#include "Vehicle.h"
 #include "json.h"
 
 using namespace physx;
@@ -239,6 +239,8 @@ Physics::Physics(int maxVehicles)
 
 Physics::~Physics()
 {
+	if (simulationInProgress)
+		scene->fetchResults();
 	for (auto& pair : physicsMeshes)
 	{
 		pair.second->release();
@@ -318,11 +320,13 @@ void Physics::Step(float deltaTime)
 	}
 
 	scene->simulate(deltaTime);
+	simulationInProgress = true;
 }
 
 void Physics::Await()
 {
 	scene->fetchResults(true);
+	simulationInProgress = false;
 	PxU32 activeActorsCount;
 	PxActor** activeActors = scene->getActiveActors(activeActorsCount);
 	for (int i = 0; i < activeActorsCount; ++i)

@@ -98,6 +98,15 @@ void RigidBody::SetDensity(float density)
 	}
 }
 
+glm::vec3 RigidBody::GetVelocity() const
+{
+	PxRigidBody* rb = rigidActor->is<PxRigidBody>();
+	if (rb)
+		return ToVec3(rb->getLinearVelocity());
+	else
+		return glm::vec3{};
+}
+
 void RigidBody::UpdateTransform()
 {
 	auto pTrans = rigidActor->getGlobalPose();

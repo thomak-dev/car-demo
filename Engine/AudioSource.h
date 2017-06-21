@@ -27,6 +27,7 @@ private:
 	std::unordered_map<std::string, std::pair<float, bool>> parameters;
 	float volume{ 1 };
 
+	void Play(const std::string& eventName, FMOD::Studio::EventInstance* eventInstance, float volume);
 	void Update(float deltaTime);
 	void ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event);
 };
