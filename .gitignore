@@ -55,6 +55,7 @@
 .vs/
 .hg/
 /External/SDL_mixer/
+VisualC/Win32/
 
 #sublime
 *.sublime-workspace
