@@ -191,7 +191,7 @@ void Renderer::Render()
 	{
 		currentCamera = camera;
 		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, RenderDebugId::Camera, -1, "Camera");
-		glViewport(0, 0, GameWindow::Instance().Width(), GameWindow::Instance().Height());
+		glViewport(0, 0, RoundToInt(GameWindow::Instance().Width()), RoundToInt(GameWindow::Instance().Height()));
 		GLbitfield clearFlags = 0;
 		if(camera->clearDepth)
 		{
@@ -252,9 +252,6 @@ void Renderer::Render()
 			}
 		}
 
-		if (camera->IsMain() && Physics::Instance().Visualize())
-			Physics::Instance().DebugDraw();
-
 		glPopDebugGroup();
 	}
 }
@@ -288,7 +285,7 @@ void Renderer::SetMaterial(const std::shared_ptr<Material>& material)
 			else if (property.type == Material::Property::Type::Texture2D)
 			{
 				int currentTextureUnit = textureUnitStart + textureUnitOffset;
-				SDL_assert(currentTextureUnit < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+				PRO_ASSERT(currentTextureUnit < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 				glActiveTexture(currentTextureUnit);
 				property.GetTexture2D()->Bind();
 				++textureUnitOffset;
@@ -316,7 +313,7 @@ void Renderer::DrawText(const std::string& text, Font& font, int pointSize, int 
 	textVertices.clear();
 	lines.clear(); 
 
-	float totalWidth = text.length() * metrics.advance;
+	//float totalWidth = NarrowCast<float>(text.length() * metrics.advance);
 	int line = 0;
 	lines.emplace_back();
 	float maxWidth = 0;
@@ -334,25 +331,25 @@ void Renderer::DrawText(const std::string& text, Font& font, int pointSize, int 
 		else if (std::isspace(ch))
 			ch = ' ';
 
-		unsigned charIndex = ch - ' ';
+		int charIndex = ch - ' ';
 
 		lines[line].quads.emplace_back(
-			lines[line].quads.size() * metrics.advance,
-			0,
-			metrics.advance,
-			metrics.height,
+			NarrowCast<float>(lines[line].quads.size() * metrics.advance),
+			0.f,
+			NarrowCast<float>(metrics.advance),
+			NarrowCast<float>(metrics.height),
 			static_cast<float>(((charIndex % metrics.columns) * metrics.tileWidth)) / texture->Width(),
 			static_cast<float>((texture->Height() - (charIndex / metrics.columns) * metrics.tileHeight - 1)) / texture->Height()
 		);
 		lines[line].width += metrics.advance;
 	}
 
-	float totalHeight = lines.size() * metrics.lineSkip;
-	float padding = metrics.lineSkip - metrics.height;
+	float totalHeight = NarrowCast<float>(lines.size() * metrics.lineSkip);
+	float padding = NarrowCast<float>(metrics.lineSkip - metrics.height);
 
-	for (int i = 0; i < lines.size(); ++i)
+	for (size_t i = 0; i < lines.size(); ++i)
 	{
-		for (int j = 0; j < lines[i].quads.size(); ++j)
+		for (size_t j = 0; j < lines[i].quads.size(); ++j)
 		{
 			const TextQuad& quad = lines[i].quads[j];
 			float horizontalOffset = -lines[i].width / 2 + alignment * (maxWidth - lines[i].width) / 2 - horizontalAnchor * (maxWidth / 2);
@@ -360,32 +357,32 @@ void Renderer::DrawText(const std::string& text, Font& font, int pointSize, int 
 			// TL
 			textVertices.emplace_back( 
 				quad.x + horizontalOffset, quad.y + verticalOffset,
-				0, quad.u, quad.v 
+				0.f, quad.u, quad.v 
 			);
 			// BL
 			textVertices.emplace_back(
 				quad.x + horizontalOffset, quad.y - metrics.height + verticalOffset,
-				0, quad.u, quad.v - metrics.height / static_cast<float>(texture->Height())
+				0.f, quad.u, quad.v - metrics.height / static_cast<float>(texture->Height())
 			);
 			// TR
 			textVertices.emplace_back(
 				quad.x + metrics.advance + horizontalOffset, quad.y + verticalOffset,
-				0, quad.u + metrics.advance / static_cast<float>(texture->Width()), quad.v 
+				0.f, quad.u + metrics.advance / static_cast<float>(texture->Width()), quad.v
 			);
 			// BL
 			textVertices.emplace_back(
 				quad.x + horizontalOffset, quad.y - metrics.height + verticalOffset,
-				0, quad.u, quad.v - metrics.height / static_cast<float>(texture->Height())
+				0.f, quad.u, quad.v - metrics.height / static_cast<float>(texture->Height())
 			);
 			// BR
 			textVertices.emplace_back(
 				quad.x + metrics.advance + horizontalOffset, quad.y - metrics.height + verticalOffset,
-				0, quad.u + metrics.advance / static_cast<float>(texture->Width()), quad.v - metrics.height / static_cast<float>(texture->Height())
+				0.f, quad.u + metrics.advance / static_cast<float>(texture->Width()), quad.v - metrics.height / static_cast<float>(texture->Height())
 			);
 			// TR
 			textVertices.emplace_back(
 				quad.x + metrics.advance + horizontalOffset, quad.y + verticalOffset,
-				0, quad.u + metrics.advance / static_cast<float>(texture->Width()), quad.v
+				0.f, quad.u + metrics.advance / static_cast<float>(texture->Width()), quad.v
 			);
 		}
 	}
@@ -466,14 +463,14 @@ namespace Blend
 	Operation::Type OperationFromString(const std::string& value)
 	{
 		const auto& found = strToOp.find(value);
-		SDL_assert(found != strToOp.end());
+		PRO_ASSERT(found != strToOp.end());
 		return found->second;
 	}
 
 	Coefficient::Type CoefficientFromString(const std::string& value)
 	{
 		const auto& found = strToCoeff.find(value);
-		SDL_assert(found != strToCoeff.end());
+		PRO_ASSERT(found != strToCoeff.end());
 		return found->second;
 	}
 }

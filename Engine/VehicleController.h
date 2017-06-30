@@ -2,6 +2,7 @@
 #include "Updatable.h"
 #include "core.h"
 #include "AudioSource.h"
+#include "Transform.h"
 
 class Vehicle;
 
@@ -17,6 +18,8 @@ public:
 private:
 	Vehicle* vehicle{};
 	AudioSource* audioSource{};
+	Transform* transform{};
+	bool forward{};
 
 	void Update(float deltaTime) override;
 };

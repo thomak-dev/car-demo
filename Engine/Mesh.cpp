@@ -51,8 +51,8 @@ void Mesh::MarkDirty()
 
 void Mesh::Upload()
 {
-	SDL_assert(vertices.size() == normals.size());
-	SDL_assert(indices.size() % 3 == 0);
+	PRO_ASSERT(vertices.size() == normals.size());
+	PRO_ASSERT(indices.size() % 3 == 0);
 
 	size_t sizeVertices = sizeof(decltype(vertices)::value_type) * vertices.size();
 	size_t sizeTangents = sizeof(decltype(tangents)::value_type) * tangents.size();
@@ -72,7 +72,7 @@ void Mesh::CreateBuffersIfNeeded()
 {
 	if (!vbo)
 	{
-		SDL_assert(!ebo);
+		PRO_ASSERT(!ebo);
 		glGenBuffers(1, &vbo);
 		glGenBuffers(1, &ebo);
 	}

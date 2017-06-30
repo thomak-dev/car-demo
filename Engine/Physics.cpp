@@ -119,7 +119,7 @@ Physics::Physics(int maxVehicles)
 {
 	RigidBody::physics = this;
 	foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, allocator, errorCallback);
-	SDL_assert(foundation);
+	PRO_ASSERT(foundation);
 
 	pvdTransport = PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
 	pvd = PxCreatePvd(*foundation);
@@ -131,13 +131,13 @@ Physics::Physics(int maxVehicles)
 	cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, PxCookingParams(tolerance));
 
 	bool success = PxInitExtensions(*backend, pvd);
-	SDL_assert(backend && cooking && success);
+	PRO_ASSERT(backend && cooking && success);
 	success = PxInitVehicleSDK(*backend);
-	SDL_assert(success);
+	PRO_ASSERT(success);
 
 	//defaultMaterial = backend->createMaterial(0.5f, 0.5f, 0.1f);
 	auto json = ResourceManager::Instance().LoadJson("Settings/physics.settings");
-	SDL_assert(json->IsObject());
+	PRO_ASSERT(json->IsObject());
 
 	if (json->HasMember("gravity"))
 		gravity = ToVec3((*json)["gravity"]);
@@ -193,7 +193,7 @@ Physics::Physics(int maxVehicles)
 	for (int i = 0; i < Tire::Highest; ++i)
 	{
 		tireMatFriction[i] = new float[materials.size()];
-		for (int j = 0; j < materials.size(); ++j)
+		for (size_t j = 0; j < materials.size(); ++j)
 		{
 			tireMatFriction[i][j] = 0.5f;
 		}
@@ -208,12 +208,12 @@ Physics::Physics(int maxVehicles)
 	}
 
 	PxVehicleDrivableSurfaceType* surfaceTypes = new PxVehicleDrivableSurfaceType[materials.size()];
-	for (int i = 0; i < materials.size(); ++i)
+	for (size_t i = 0; i < materials.size(); ++i)
 	{
 		surfaceTypes[i].mType = i;
 	}
 	surfaceToFriction->setup(Tire::Highest, materials.size(), const_cast<const PxMaterial**>(surfaceMaterials), surfaceTypes);
-	for (int i = 0; i < materials.size(); ++i)
+	for (size_t i = 0; i < materials.size(); ++i)
 	{
 		for (int j = 0; j < Tire::Highest; ++j)
 		{
@@ -309,12 +309,12 @@ void Physics::UnregisterRigidBody(RigidBody* rigidBody)
 void Physics::Step(float deltaTime)
 {
 	PxVehicleSuspensionRaycasts(vehicleQuery, wheels.size(), wheels.data(), wheels.size() * PX_MAX_NB_WHEELS, vehQueryResults);
-	for (int i = 0; i < vehicles.size(); ++i)
+	for (size_t i = 0; i < vehicles.size(); ++i)
 	{
 		vehicles[i]->BeforeVehicleUpdate(deltaTime);
 	}
 	PxVehicleUpdates(deltaTime, scene->getGravity(), *surfaceToFriction, wheels.size(), wheels.data(), vehWheelQueryResultBuffer);
-	for (int i = 0; i < vehicles.size(); ++i)
+	for (size_t i = 0; i < vehicles.size(); ++i)
 	{
 		vehicles[i]->AfterVehicleUpdate(vehWheelQueryResultBuffer[i]);
 	}
@@ -329,18 +329,14 @@ void Physics::Await()
 	simulationInProgress = false;
 	PxU32 activeActorsCount;
 	PxActor** activeActors = scene->getActiveActors(activeActorsCount);
-	for (int i = 0; i < activeActorsCount; ++i)
+	for (PxU32 i = 0; i < activeActorsCount; ++i)
 	{
 		RigidBody* rigidBody = static_cast<RigidBody*>(activeActors[i]->userData);
-		SDL_assert(rigidBody);
+		PRO_ASSERT(rigidBody);
 		rigidBody->UpdateTransform();
 	}
 	for (RigidBody* body : rigidBodies)
 		body->PostProcessPhysics();
-}
-
-void Physics::DebugDraw()
-{
 }
 
 PxTriangleMesh* Physics::GetMesh(const std::shared_ptr<Mesh>& mesh)
@@ -383,19 +379,19 @@ physx::PxConvexMesh* Physics::GetConvexMesh(const std::shared_ptr<Mesh>& mesh)
 		convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eDISABLE_MESH_VALIDATION | PxConvexFlag::eFAST_INERTIA_COMPUTATION | PxConvexFlag::eSHIFT_VERTICES;
 		convexMeshDesc.vertexLimit = 64;
 
-		SDL_assert(convexMeshDesc.isValid());
+		PRO_ASSERT(convexMeshDesc.isValid());
 
 	//#ifdef _DEBUG
 	//	// mesh should be validated before cooking without the mesh cleaning
 	//	bool res = cooking->validateConvexMesh(convexMeshDesc);
-	//	SDL_assert(res);
+	//	PRO_ASSERT(res);
 	//#endif
 
 	//	PxConvexMesh* convexMesh = cooking->createConvexMesh(convexMeshDesc, backend->getPhysicsInsertionCallback());
 		PxDefaultMemoryOutputStream outStream;
 		PxConvexMeshCookingResult::Enum result;
 		bool success = cooking->cookConvexMesh(convexMeshDesc, outStream, &result);
-		SDL_assert(success);
+		PRO_ASSERT(success);
 
 		PxDefaultMemoryInputData inStream{ outStream.getData(), outStream.getSize() };
 		PxConvexMesh* convexMesh = backend->createConvexMesh(inStream);
@@ -418,10 +414,10 @@ const Physics::Terrain* Physics::GetTerrain(const std::shared_ptr<Mesh>& mesh)
 		int maxZ = std::numeric_limits<int>::lowest();
 		float minY = std::numeric_limits<float>::infinity();
 		float maxY = std::numeric_limits<float>::lowest();
-		for (int i = 0; i < mesh->vertices.size(); ++i)
+		for (size_t i = 0; i < mesh->vertices.size(); ++i)
 		{
-			int x = std::round(mesh->vertices[i].x);
-			int z = std::round(mesh->vertices[i].z);
+			int x = RoundToInt(mesh->vertices[i].x);
+			int z = RoundToInt(mesh->vertices[i].z);
 			float y = mesh->vertices[i].y;
 			if (x < minX)
 				minX = x;
@@ -440,16 +436,16 @@ const Physics::Terrain* Physics::GetTerrain(const std::shared_ptr<Mesh>& mesh)
 		int rows = maxX - minX + 1;
 		int columns = maxZ - minZ + 1;
 		float height = maxY - minY;
-		SDL_assert(rows * columns && rows * columns == mesh->vertices.size());
+		PRO_ASSERT(rows * columns && rows * columns == mesh->vertices.size());
 
 		int8_t* valueAssigned = new int8_t[rows * columns]{};
 		PxHeightFieldSample* heightFieldSamples = new PxHeightFieldSample[rows * columns];
-		for (int i = 0; i < mesh->vertices.size(); ++i)
+		for (size_t i = 0; i < mesh->vertices.size(); ++i)
 		{
-			int row = -minX + std::round(mesh->vertices[i].x);
-			int column = -minZ + std::round(mesh->vertices[i].z);
+			int row = -minX + RoundToInt(mesh->vertices[i].x);
+			int column = -minZ + RoundToInt(mesh->vertices[i].z);
 			int index = row * columns + column;
-			SDL_assert(!valueAssigned[index]);
+			PRO_ASSERT(!valueAssigned[index]);
 			int16_t quantizedHeight = static_cast<int16_t>((mesh->vertices[i].y - minY) / height * ((1 << 16) - 1) + std::numeric_limits<int16_t>::lowest());
 			auto& data = heightFieldSamples[index];
 			data.height = quantizedHeight;
@@ -474,8 +470,8 @@ const Physics::Terrain* Physics::GetTerrain(const std::shared_ptr<Mesh>& mesh)
 		Terrain* terrain = new Terrain;
 		terrain->height = height;
 		terrain->heightField = heightField;
-		terrain->minX = minX;
-		terrain->minZ = minZ;
+		terrain->minX = NarrowCast<float>(minX);
+		terrain->minZ = NarrowCast<float>(minZ);
 		terrain->minHeight = minY;
 
 		terrains.insert(found, make_pair(mesh, terrain));

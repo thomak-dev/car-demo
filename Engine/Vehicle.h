@@ -23,6 +23,13 @@ public:
 	
 	void Initialize() override;
 	float GetRpm() const { return wheels->mDriveDynData.getEngineRotationSpeed() * 60 / (Float::Pi * 2); }
+	void SetGear(physx::PxVehicleGearsData::Enum gear);
+
+	bool accelerate{};
+	bool brake{};
+	bool handbrake{};
+	bool steerRight{};
+	bool steerLeft{};
 
 protected:
 	void Update() override;
@@ -55,7 +62,6 @@ private:
 	bool airborne{};
 	physx::PxVehicleDrive4WRawInputData vehicleInputData;
 	bool forward{ true };
-	physx::PxRigidDynamic* rigidDynamic{};
 
 	void PostProcessPhysics() override;
 	void BeforeVehicleUpdate(float deltaTime);

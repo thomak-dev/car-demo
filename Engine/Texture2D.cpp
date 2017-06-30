@@ -25,7 +25,7 @@ Texture2D::Texture2D(const Texture2D& other)
 		SDL_SetSurfacePalette(surface, palette);
 }
 
-Texture2D::Texture2D(Texture2D&& other)
+Texture2D::Texture2D(Texture2D&& other) noexcept
 {
 	swap(*this, other);
 }
@@ -39,14 +39,14 @@ Texture2D::~Texture2D()
 Texture2D::Filtering Texture2D::FilteringFromString(const std::string& str)
 {
 	const auto& found = stringToFiltering.find(str);
-	SDL_assert(found != stringToFiltering.end());
+	PRO_ASSERT(found != stringToFiltering.end());
 	return found->second;
 }
 
 Texture2D::Wrapping Texture2D::WrappingFromString(const std::string& str)
 {
 	const auto& found = stringToWrapping.find(str);
-	SDL_assert(found != stringToWrapping.end());
+	PRO_ASSERT(found != stringToWrapping.end());
 	return found->second;
 }
 
@@ -57,7 +57,7 @@ Texture2D& Texture2D::operator=(const Texture2D& other)
 	return *this;
 }
 
-Texture2D& Texture2D::operator=(Texture2D&& other)
+Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
 {
 	swap(*this, other);
 	return *this;
@@ -113,12 +113,12 @@ GLint FilteringForMagnification(Texture2D::Filtering filtering)
 	case Texture2D::Filtering::Trilinear:
 		return GL_LINEAR;
 	default:
-		SDL_assert(false);
+		PRO_ASSERT(false);
 	}
 	return GL_NEAREST;
 }
 
-GLint Texture2D::FilteringForMinification(Texture2D::Filtering filtering)
+GLint Texture2D::FilteringForMinification(Texture2D::Filtering filtering) const
 {
 	switch (filtering)
 	{
@@ -129,7 +129,7 @@ GLint Texture2D::FilteringForMinification(Texture2D::Filtering filtering)
 	case Texture2D::Filtering::Trilinear:
 		return useMipMaps? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
 	default:
-		SDL_assert(false);
+		PRO_ASSERT(false);
 	}
 	return GL_NEAREST;
 }
@@ -146,7 +146,7 @@ void Texture2D::Upload()
 		auto tmp = surface;
 		surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
 		SDL_FreeSurface(tmp);
-		SDL_assert(surface);
+		PRO_ASSERT(surface);
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, nullptr);
@@ -162,7 +162,7 @@ void Texture2D::Upload()
 	dirty = false;
 }
 
-void swap(Texture2D& first, Texture2D& second)
+void swap(Texture2D& first, Texture2D& second) noexcept
 {
 	using std::swap;
 	swap(first.surface, second.surface);

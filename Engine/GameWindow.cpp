@@ -14,7 +14,7 @@ void APIENTRY OnGLError(GLenum source, GLenum type, GLuint id, GLenum severity, 
 	bool filtered = type == GL_DEBUG_TYPE_PUSH_GROUP || type == GL_DEBUG_TYPE_POP_GROUP || (source == GL_DEBUG_SOURCE_API && id == 131185);
 	if(!filtered)
 		std::cout << msgString << std::endl;
-	SDL_assert(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
+	PRO_ASSERT(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
 }
 
 GameWindow::GameWindow(const std::string& title, int width, int height)

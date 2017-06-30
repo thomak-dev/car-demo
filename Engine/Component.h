@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL.h>
 #include "json.h"
 #include "core.h"
 
@@ -15,7 +16,7 @@ public:
 	Component(Entity& entity);
 	Entity& GetEntity() const { return entity; }
 	virtual int Deserialize(const Json& json) { return 0; }
-	virtual void Initialize() { SDL_assert(++initCount <= 1); };
+	virtual void Initialize() { PRO_ASSERT(++initCount <= 1); };
 	virtual void OnMessageReceived(Entity* origin, Message* message) {}
 
 	virtual ~Component() = default;

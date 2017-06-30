@@ -1,6 +1,5 @@
 #pragma once
 #include <functional>
-#include <glm/glm.hpp>
 
 class Transform;
 

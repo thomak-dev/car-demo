@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL.h>
+#include "core.h"
 
 // Non-lazy singleton implementation "mixin"
 template <typename T>
@@ -8,7 +8,7 @@ class Singleton
 public:
 	Singleton()
 	{
-		SDL_assert(instance == nullptr);
+		PRO_ASSERT(instance == nullptr);
 		instance = this;
 	}
 

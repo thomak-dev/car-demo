@@ -28,7 +28,7 @@ public:
 	Texture2D() = delete;
 	Texture2D(SDL_Surface* surface);
 	Texture2D(const Texture2D&);
-	Texture2D(Texture2D&&);
+	Texture2D(Texture2D&&) noexcept;
 	virtual ~Texture2D();
 
 	static Filtering FilteringFromString(const std::string& str);
@@ -36,7 +36,7 @@ public:
 	static int GetBitsPerPixel(PixelFormat format) { return SDL_BITSPERPIXEL(static_cast<std::underlying_type<PixelFormat>::type>(format)); }
 
 	Texture2D& operator=(const Texture2D&);
-	Texture2D& operator=(Texture2D&&);
+	Texture2D& operator=(Texture2D&&) noexcept;
 
 	Filtering GetFiltering() const { return filtering; }
 	void SetFiltering(Filtering filtering);
@@ -51,7 +51,7 @@ public:
 	void Bind();
 	void MarkDirty();
 
-	friend void swap(Texture2D& first, Texture2D& second);
+	friend void swap(Texture2D& first, Texture2D& second) noexcept;
 private:
 	SDL_Surface* surface{};
 	bool dirty{ true };
@@ -64,6 +64,6 @@ private:
 
 	void CreateTextureIfNeeded();
 	void Upload();
-	GLint Texture2D::FilteringForMinification(Texture2D::Filtering filtering);
+	GLint Texture2D::FilteringForMinification(Texture2D::Filtering filtering) const;
 };
 

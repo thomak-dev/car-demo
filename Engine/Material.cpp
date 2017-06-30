@@ -87,17 +87,17 @@ void Material::UpdateUniformLocations()
 }
 
 Material::Property::Property(const std::string& name, float value)
-	:name{ name }, floatValue{ value }, type{ Type::Float }
+	:name{ name }, type{ Type::Float }, floatValue{ value }
 {
 }
 
 Material::Property::Property(const std::string& name, const glm::vec4& value)
-	:name{ name }, vector4Value{value}, type{ Type::Vector4 }
+	:name{ name }, type{ Type::Vector4 }, vector4Value{value}
 {
 }
 
 Material::Property::Property(const std::string& name, const std::shared_ptr<Texture2D>& value)
-	:name{ name }, textureValue{ value }, type{ Type::Texture2D }
+	:name{ name }, type{ Type::Texture2D }, textureValue{ value }
 {
 }
 
@@ -116,7 +116,7 @@ Material::Property::Property(const Property& other)
 		vector4Value = other.vector4Value;
 		break;
 	default:
-		SDL_assert(false);
+		PRO_ASSERT(false);
 		break;
 	}
 }
@@ -154,19 +154,19 @@ void Material::Property::SetValue(const glm::vec4& value)
 
 std::shared_ptr<Texture2D> Material::Property::GetTexture2D() const
 {
-	SDL_assert(type == Type::Texture2D);
+	PRO_ASSERT(type == Type::Texture2D);
 	return textureValue;
 }
 
 float Material::Property::GetFloat() const
 {
-	SDL_assert(type == Type::Float);
+	PRO_ASSERT(type == Type::Float);
 	return floatValue;
 }
 
 glm::vec4 Material::Property::GetVector4() const
 {
-	SDL_assert(type == Type::Vector4);
+	PRO_ASSERT(type == Type::Vector4);
 	return vector4Value;
 }
 

@@ -1,8 +1,6 @@
 #pragma once
 #include <memory>
-#include <vector>
 #include "static_glew.h"
-#include "core.h"
 
 class Shader;
 

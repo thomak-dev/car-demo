@@ -29,6 +29,6 @@ private:
 
 	void Play(const std::string& eventName, FMOD::Studio::EventInstance* eventInstance, float volume);
 	void Update(float deltaTime);
-	void ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event);
+	static void ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event);
 };
 

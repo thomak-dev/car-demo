@@ -121,7 +121,7 @@ inline T* Entity::AddComponent()
 {
 	T* newComp = new T(*this);
 	std::type_index type{typeid(T)};
-	SDL_assert(componentsByType.find(type) == componentsByType.end());
+	PRO_ASSERT(componentsByType.find(type) == componentsByType.end());
 	componentsByType[type] = newComp;
 	components.push_back(newComp);
 	return newComp;

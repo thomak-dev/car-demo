@@ -4,7 +4,6 @@
 #include "math_utility.h"
 #include "Entity.h"
 #include "messages.h"
-#include "CamControls.h"
 
 void ForwardSpinner::Initialize()
 {

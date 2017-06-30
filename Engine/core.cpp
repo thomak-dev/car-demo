@@ -82,7 +82,7 @@ void CatchGlError(const char* file, int line)
 	if (error)
 	{
 		std::cout << file << '(' << line << "): " << GetGLErrorString(error) << std::endl;
-		SDL_assert(false);
+		PRO_ASSERT(false);
 	}
 }
 

@@ -1,6 +1,5 @@
 #include "Font.h"
 #include <SDL_ttf.h>
-#include <SDL_image.h>
 #include <glm/glm.hpp>
 #include "Texture2D.h"
 #include "math_utility.h"
@@ -19,17 +18,17 @@ Font::~Font()
 	SDL_RWclose(fontFile);
 }
 
-std::shared_ptr<Texture2D> Font::GetTexture(unsigned ptSize)
+std::shared_ptr<Texture2D> Font::GetTexture(int ptSize)
 {
 	return GetTextureAndMetrics(ptSize).first;
 }
 
-Font::Metrics Font::GetMetrics(unsigned ptSize)
+Font::Metrics Font::GetMetrics(int ptSize)
 {
 	return GetTextureAndMetrics(ptSize).second;
 }
 
-const std::pair<std::shared_ptr<Texture2D>, Font::Metrics>& Font::GetTextureAndMetrics(unsigned ptSize)
+const std::pair<std::shared_ptr<Texture2D>, Font::Metrics>& Font::GetTextureAndMetrics(int ptSize)
 {
 	const auto& found = cache.find(ptSize);
 	if (found == cache.end())
@@ -51,13 +50,13 @@ const std::pair<std::shared_ptr<Texture2D>, Font::Metrics>& Font::GetTextureAndM
 		}
 
 		struct { int x, y; } padding{ 2, 2 };
-		unsigned tileWidth = maxAdvance + padding.x;
-		unsigned tileHeight = height + padding.y;
-		unsigned tileCount = ('~' - ' ' + 1);
-		float targetWidth = glm::sqrt(tileWidth * tileHeight * tileCount);
-		unsigned columns = glm::ceil(targetWidth / tileWidth);
-		unsigned actualWidth = columns * tileWidth;
-		unsigned actualHeight = glm::ceil(static_cast<float>(tileCount) / columns) * tileHeight;
+		int tileWidth = maxAdvance + padding.x;
+		int tileHeight = height + padding.y;
+		int tileCount = ('~' - ' ' + 1);
+		float targetWidth = glm::sqrt(NarrowCast<float>(tileWidth * tileHeight * tileCount));
+		int columns = CeilToInt(targetWidth / tileWidth);
+		int actualWidth = columns * tileWidth;
+		int actualHeight = CeilToInt(static_cast<float>(tileCount) / columns) * tileHeight;
 
 		SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, actualWidth, actualHeight, 32, SDL_PIXELFORMAT_ARGB32);
 		SDL_FillRect(surface, nullptr, SDL_MapRGBA(surface->format, 255, 255, 255, 0));

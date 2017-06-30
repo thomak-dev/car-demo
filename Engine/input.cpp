@@ -1,6 +1,7 @@
 #include "input.h"
 #include <glm/vec2.hpp>
 #include <unordered_set>
+#include "math_utility.h"
 
 static std::unordered_set<SDL_Keycode> keysWhichWentDown;
 static std::unordered_set<SDL_Keycode> keysWhichWentUp;
@@ -37,8 +38,8 @@ void UpdateInput(const SDL_Event& event)
 	}
 	if (event.type == SDL_MOUSEWHEEL)
 	{
-		mouseWheelDelta.x = event.wheel.x;
-		mouseWheelDelta.y = (event.wheel.type == SDL_MOUSEWHEEL_FLIPPED ? -1 : 1) * event.wheel.y;
+		mouseWheelDelta.x = NarrowCast<float>(event.wheel.x);
+		mouseWheelDelta.y = NarrowCast<float>((event.wheel.type == SDL_MOUSEWHEEL_FLIPPED ? -1 : 1) * event.wheel.y);
 	}
 }
 

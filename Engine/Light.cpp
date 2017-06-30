@@ -1,6 +1,5 @@
 #include "Light.h"
 #include <SDL.h>
-#include <glm/common.hpp>
 #include "Renderer.h"
 
 std::unordered_map<std::string, Light::Type> Light::stringToType
@@ -29,14 +28,14 @@ void Light::SetRange(float range)
 
 void Light::SetPointedness(float linearity)
 {
-	SDL_assert(linearity >= 0 && linearity <= 1);
+	PRO_ASSERT(linearity >= 0 && linearity <= 1);
 	this->pointedness = linearity;
 	RecomputeAttenuation();
 }
 
 void Light::SetCutoff(float cutoff)
 {
-	SDL_assert(cutoff > 0 && cutoff < 1);
+	PRO_ASSERT(cutoff > 0 && cutoff < 1);
 	this->cutoff = cutoff;
 	RecomputeAttenuation();
 }

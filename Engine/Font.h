@@ -10,24 +10,24 @@ class Font
 public:
 	struct Metrics
 	{
-		unsigned tileWidth{};
-		unsigned tileHeight{};
-		unsigned advance{};
-		unsigned height{};
-		unsigned columns{};
-		unsigned lineSkip{};
+		int tileWidth{};
+		int tileHeight{};
+		int advance{};
+		int height{};
+		int columns{};
+		int lineSkip{};
 	};
 
 
 	Font(SDL_RWops* fontFile);
 	~Font();
 
-	std::shared_ptr<Texture2D> GetTexture(unsigned ptSize);
-	Metrics GetMetrics(unsigned ptSize);
-	const std::pair<std::shared_ptr<Texture2D>, Metrics>& GetTextureAndMetrics(unsigned ptSize);
+	std::shared_ptr<Texture2D> GetTexture(int ptSize);
+	Metrics GetMetrics(int ptSize);
+	const std::pair<std::shared_ptr<Texture2D>, Metrics>& GetTextureAndMetrics(int ptSize);
 
 private:
-	std::unordered_map<unsigned, std::pair<std::shared_ptr<Texture2D>, Metrics>> cache;
+	std::unordered_map<int, std::pair<std::shared_ptr<Texture2D>, Metrics>> cache;
 	SDL_RWops* fontFile{};
 };
 

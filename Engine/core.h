@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
-#include <cmath>
 #include <functional>
 #include <glm/fwd.hpp>
-#include <SDL.h>
 #include "static_glew.h"
+
+#define PRO_ASSERT(expr) assert(expr)
 
 #ifdef WIN32
 #define PATH_SEPARATOR_CHAR '\\'

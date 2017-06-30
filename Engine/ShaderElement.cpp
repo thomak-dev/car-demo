@@ -5,10 +5,9 @@
 
 bool DidShaderCompile(GLuint shader, std::string *compileLog)
 {
-	bool result = false;
 	GLint status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	result = status == GL_TRUE;
+	bool result = status == GL_TRUE;
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &status);
 	if (status && compileLog)
 	{
@@ -33,7 +32,7 @@ ShaderElement::ShaderElement(const std::string& source, Type type)
 	std::cout << "Log:\n" << log << std::endl;
 }
 
-ShaderElement::ShaderElement(ShaderElement&& other)
+ShaderElement::ShaderElement(ShaderElement&& other) noexcept
 	:ShaderElement{}
 {
 	swap(*this, other);
@@ -44,18 +43,18 @@ ShaderElement::~ShaderElement()
 	glDeleteShader(shader);
 }
 
-ShaderElement& ShaderElement::operator=(ShaderElement&& other)
+ShaderElement& ShaderElement::operator=(ShaderElement&& other) noexcept
 {
 	swap(*this, other);
 	return *this;
 }
 
-bool ShaderElement::IsValid()
+bool ShaderElement::IsValid() const
 {
 	return shader != 0;
 }
 
-void swap(ShaderElement& first, ShaderElement& second)
+void swap(ShaderElement& first, ShaderElement& second) noexcept
 {
 	using std::swap;
 	swap(first.shader, second.shader);

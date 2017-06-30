@@ -2,7 +2,6 @@
 #include <vehicle/PxVehicleSDK.h>
 #include <vehicle/PxVehicleUtil.h>
 #include <PxPhysicsAPI.h>
-#include <iostream>
 #include "input.h"
 #include "Entity.h"
 #include "Transform.h"
@@ -57,7 +56,7 @@ int Vehicle::Deserialize(const Json& json)
 		switchTime = json["switch_time"].GetFloat();
 	if (json.HasMember("auto_box_latency") && ++count)
 		autoBoxLatency = json["auto_box_latency"].GetFloat();
-	SDL_assert(switchTime < autoBoxLatency);
+	PRO_ASSERT(switchTime < autoBoxLatency);
 	if (json.HasMember("clutch_strength") && ++count)
 		clutchStrength = json["clutch_strength"].GetFloat();
 	if (json.HasMember("spring_frequency") && ++count)
@@ -154,7 +153,7 @@ PxConvexMesh* Vehicle::CreateWheelMesh(float radius, float width)
 #ifdef _DEBUG
 	// mesh should be validated before cooking without the mesh cleaning
 	bool res = physics->cooking->validateConvexMesh(convexMeshDesc);
-	SDL_assert(res);
+	PRO_ASSERT(res);
 #endif
 	PxConvexMesh* mesh = physics->cooking->createConvexMesh(convexMeshDesc, physics->backend->getPhysicsInsertionCallback());
 	return mesh;
@@ -211,7 +210,7 @@ void Vehicle::SetUpEachWheel(PxVehicleWheelsSimData& simData, int numWheels)
 	PxVec3 wheelOffsets[PX_MAX_NB_WHEELS];
 	std::vector<Wheel*> wheelComponents;
 	entity.GetComponentsInDescendants<Wheel>(std::back_inserter(wheelComponents));
-	SDL_assert(wheelComponents.size() >= 4);
+	PRO_ASSERT(wheelComponents.size() >= 4);
 	std::sort(wheelComponents.begin(), wheelComponents.end(), [](Wheel* a, Wheel* b) { return a->GetIndex() < b->GetIndex(); });
 	for (int i = 0; i < numWheels; ++i)
 	{
@@ -284,7 +283,7 @@ void Vehicle::SetWheelShapes(int numWheels)
 
 	PxConvexMesh* convexMesh = CreateWheelMesh(wheelRadius, wheelWidth);
 
-	for (PxU32 i = 0; i < numWheels; i++)
+	for (int i = 0; i < numWheels; i++)
 	{
 		PxConvexMeshGeometry geom{ convexMesh };
 		PxShape* wheelShape = PxRigidActorExt::createExclusiveShape(*rigidDynamic, geom, *material);
@@ -331,6 +330,11 @@ void Vehicle::Initialize()
 	physics->RegisterRigidBody(this);
 }
 
+void Vehicle::SetGear(physx::PxVehicleGearsData::Enum gear)
+{
+	wheels->mDriveDynData.forceGearChange(gear);
+}
+
 void Vehicle::Update()
 {
 	RigidBody::Update();
@@ -343,63 +347,11 @@ void Vehicle::Update()
 	wheelTransforms[3]->SetPosition(ToVec3(lastKnownWheelTransforms[3].p));
 	wheelTransforms[3]->SetRotation(ToQuat(lastKnownWheelTransforms[3].q));
 
-	if(rigidDynamic->getLinearVelocity().magnitude() < 0.3)
-	{
-		if(KeyIsDown(SDLK_s) && forward)
-		{
-			forward = false;
-			wheels->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
-			std::cout << "set to backward" << std::endl;
-		}
-		else if (KeyIsDown(SDLK_w) && !forward)
-		{
-			forward = true;
-			wheels->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
-			std::cout << "set to forward" << std::endl;
-		}
-	}
-
-	if (KeyIsDown(forward ? SDLK_w : SDLK_s))
-		vehicleInputData.setDigitalAccel(true);
-	else
-		vehicleInputData.setDigitalAccel(false);
-
-	if (KeyIsDown(forward ? SDLK_s : SDLK_w))
-		vehicleInputData.setDigitalBrake(true);
-	else
-		vehicleInputData.setDigitalBrake(false);
-
-	if (KeyIsDown(SDLK_a))
-		vehicleInputData.setDigitalSteerRight(true);
-	else
-		vehicleInputData.setDigitalSteerRight(false);
-
-	if (KeyIsDown(SDLK_d))
-		vehicleInputData.setDigitalSteerLeft(true);
-	else
-		vehicleInputData.setDigitalSteerLeft(false);
-
-	if (KeyIsDown(SDLK_SPACE))
-		vehicleInputData.setDigitalHandbrake(true);
-	else
-		vehicleInputData.setDigitalHandbrake(false);
-
-	if (KeyWentDown(SDLK_p))
-		std::cout << ToVec3(rigidDynamic->getCMassLocalPose().p) << std::endl;
-
-	if (KeyWentDown(SDLK_r) && rigidActor->getGlobalPose().q.getBasisVector1().dot(PxVec3(0, 1, 0)) < 0.5f && abs(rigidDynamic->getLinearVelocity().y) < 0.1f)
-	{
-		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
-		rigidDynamic->addTorque(rigidActor->getGlobalPose().transform(PxVec3(0, 0, rigidDynamic->getMassSpaceInertiaTensor().z * 2.f)), PxForceMode::eIMPULSE);
-	}
-
-	//static std::shared_ptr<Audio::Sound> sound{ LOAD(Audio::Sound, "Audio/jump.wav") };
-	if (KeyWentDown(SDLK_j))
-	{
-		rigidDynamic->addForce(PxVec3(0, rigidDynamic->getMass() * 10, 0), PxForceMode::eIMPULSE);
-		//Audio::Instance().Play(*sound);
-	}
-
+	vehicleInputData.setDigitalAccel(accelerate);
+	vehicleInputData.setDigitalBrake(brake);
+	vehicleInputData.setDigitalSteerRight(steerLeft);
+	vehicleInputData.setDigitalSteerLeft(steerRight);
+	vehicleInputData.setDigitalHandbrake(handbrake);
 }
 
 void Vehicle::UpdateTransform()

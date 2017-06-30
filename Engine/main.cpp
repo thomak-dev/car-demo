@@ -16,7 +16,8 @@
 
 int main(int argc, char* argv[])
 {	
-	CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+	HRESULT result = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+	PRO_ASSERT(result == S_OK || result == S_FALSE);
 	Initialize();
 	GameWindow gameWindow{"Engine", 1280, 720};
 	ResourceManager resourceManager;
@@ -51,8 +52,6 @@ int main(int argc, char* argv[])
 			}
 			if (KeyWentDown(SDLK_ESCAPE))
 				quit = true;
-			if (KeyWentDown(SDLK_F1))
-				physics.SetVisualize(!physics.Visualize());
 		}
 
 		if (isFixedTimeStep)

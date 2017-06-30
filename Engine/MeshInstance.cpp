@@ -1,14 +1,11 @@
 #include "MeshInstance.h"
-#include <iostream>
 #include <SDL.h>
-#include <glm/gtc/type_ptr.hpp>
 #include "Renderer.h"
 #include "Transform.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "ShaderProgram.h"
 #include "Texture2D.h"
-#include "Material.h"
 #include "ResourceManager.h"
 #include "Entity.h"
 
@@ -112,7 +109,7 @@ void MeshInstance::EnableVertexAttributes()
 	{
 		enabledAttribs.insert(attrib);
 		glEnableVertexAttribArray(attrib);
-		glVertexAttribPointer(attrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(attrib, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	}
 
 	attrib = glGetAttribLocation(programObject, "normal");
@@ -142,7 +139,7 @@ void MeshInstance::EnableVertexAttributes()
 	attrib = glGetAttribLocation(programObject, "color");
 	if (attrib != -1)
 	{
-		SDL_assert(false);
+		PRO_ASSERT(false);
 		enabledAttribs.insert(attrib);
 		//glEnableVertexAttribArray(uvAttrib);
 		//glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(sizeof(mesh->vertices[0]) * mesh->vertices.size() * 3));

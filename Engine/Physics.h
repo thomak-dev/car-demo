@@ -31,10 +31,6 @@ public:
 	void UnregisterRigidBody(RigidBody* rigidBody);
 	void Step(float deltaTime);
 	void Await();
-	void DebugDraw();
-
-	bool Visualize() const { return visualize; }
-	void SetVisualize(bool visualize) { this->visualize = visualize; }
 
 private:
 	class PhysxErrorCallback : public physx::PxErrorCallback
@@ -48,7 +44,6 @@ private:
 	const int MaxWheels;
 
 	glm::vec3 gravity{ 0, -9.81f, 0 };
-	bool visualize{};
 	bool simulationInProgress{};
 	physx::PxFoundation* foundation;
 	physx::PxPvd* pvd;

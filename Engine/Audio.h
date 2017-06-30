@@ -1,11 +1,8 @@
 #pragma once
-//#include <SDL_mixer.h>
-#include <string>
 #include <vector>
 #include <memory>
 #include <fmod_studio.hpp>
 #include <unordered_map>
-#include "json.h"
 #include "Singleton.h"
 
 class Entity;
@@ -14,24 +11,13 @@ class AudioListener;
 #define FMOD_CHECK(expr){ FMOD_RESULT result;\
 	if((result = expr) != FMOD_OK){\
 		std::cout << FMOD_ErrorString(result) << std::endl;\
-		SDL_assert(false);\
+		PRO_ASSERT(false);\
 	}}
 
 class Audio : public Singleton<Audio>
 {
 	friend class AudioSource;
 public:
-	//class Sound
-	//{
-	//	friend class Audio;
-	//public:
-	//	explicit Sound(const std::string& path);
-	//	~Sound();
-	//private:
-	//	Mix_Chunk* chunk{};
-
-	//	
-	//};
 
 	class Bank
 	{
@@ -54,7 +40,6 @@ public:
 	void UnregisterListener(AudioListener* listener);
 	FMOD::Studio::EventInstance* LoadEvent(const std::string& name);
 
-	//void Play(const Sound& sound);
 private:
 	FMOD::Studio::System* system{};
 	std::shared_ptr<Bank> stringsBank;

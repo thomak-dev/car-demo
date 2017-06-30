@@ -66,8 +66,8 @@ void RigidBody::Initialize()
 		rigidActor = physics->backend->createRigidStatic(pTransform.getNormalized());
 	else
 	{
-		PxRigidDynamic* dyn = physics->backend->createRigidDynamic(pTransform.getNormalized());
-		rigidActor = dyn;
+		rigidDynamic = physics->backend->createRigidDynamic(pTransform.getNormalized());
+		rigidActor = rigidDynamic;
 	}
 	
 	InitCommonProps();
@@ -98,13 +98,25 @@ void RigidBody::SetDensity(float density)
 	}
 }
 
-glm::vec3 RigidBody::GetVelocity() const
+glm::vec3 RigidBody::Velocity() const
 {
 	PxRigidBody* rb = rigidActor->is<PxRigidBody>();
 	if (rb)
 		return ToVec3(rb->getLinearVelocity());
 	else
 		return glm::vec3{};
+}
+
+void RigidBody::AddForce(const glm::vec3 force, PxForceMode::Enum mode)
+{
+	if (rigidDynamic)
+		rigidDynamic->addForce(ToPxVec3(force), mode);
+}
+
+void RigidBody::AddTorque(const glm::vec3 torque, physx::PxForceMode::Enum mode)
+{
+	if (rigidDynamic)
+		rigidDynamic->addTorque(ToPxVec3(torque), mode);
 }
 
 void RigidBody::UpdateTransform()
@@ -158,14 +170,14 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Mesh:
-		SDL_assert(isStatic);
+		PRO_ASSERT(isStatic);
 		shape = physics->backend->createShape(PxTriangleMeshGeometry{physics->GetMesh(mesh), PxMeshScale{ToPxVec3(transform->WorldScale())}}, *material, true);
 		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
 	case Shape::Terrain:
 		{
-			SDL_assert(isStatic);
+			PRO_ASSERT(isStatic);
 			const Physics::Terrain& terrain = *physics->GetTerrain(mesh);
 			shape = physics->backend->createShape(PxHeightFieldGeometry(terrain.heightField, PxMeshGeometryFlags{}, terrain.height / (1 << 16), 1, 1), *material, true);
 			PxTransform pose{PxVec3{terrain.minX, terrain.minHeight + terrain.height / 2, terrain.minZ} + ToPxVec3(offset * transform->WorldScale()) };
@@ -178,7 +190,7 @@ void RigidBody::SetShapeInternal(Shape shapeType)
 		shape->setLocalPose(PxTransform(ToPxVec3(offset * transform->WorldScale())));
 		rigidActor->attachShape(*shape);
 		break;
-	default: SDL_assert(false);
+	default: PRO_ASSERT(false);
 	}
 
 	shape->setQueryFilterData(filterData);

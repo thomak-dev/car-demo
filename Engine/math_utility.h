@@ -2,6 +2,7 @@
 #include <glm/fwd.hpp>
 #include <assimp/types.h>
 #include <PxPhysicsAPI.h>
+#include "core.h"
 
 namespace Vector3
 {
@@ -29,6 +30,20 @@ physx::PxQuat ToPxQuat(const glm::quat& quat);
 physx::PxMat44 ToPxMat44(const glm::mat4& mat);
 glm::vec3 ToVec3(const physx::PxVec3& vec);
 glm::quat ToQuat(const physx::PxQuat& quat);
+
+template<typename To, typename From>
+inline To NarrowCast(From value)
+{
+	To casted = static_cast<To>(value);
+	PRO_ASSERT(value == static_cast<From>(casted));
+	return casted;
+}
+
+inline int RoundToInt(float value) { return NarrowCast<int>(std::round(value)); }
+inline int CeilToInt(float value) { return NarrowCast<int>(std::ceil(value)); }
+inline int FloorToInt(float value) { return NarrowCast<int>(std::floor(value)); }
+
+
 
 int CeilLog2(uint64_t x);
 

@@ -104,7 +104,7 @@ Mesh* LoadMeshFromFile(const std::string& path, bool ignoreRootTransform)
 		path,
 		aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality
 	);
-	SDL_assert(scene->HasMeshes());
+	PRO_ASSERT(scene->HasMeshes());
 	if (ignoreRootTransform)
 		return CreateMesh(scene->mMeshes[0]);
 	else
@@ -193,14 +193,14 @@ std::shared_ptr<Entity> ResourceManager::LoadEntity(const std::string& shortPath
 	Assimp::Importer importer{};
 	std::string nativePath{ MakeNativePath(shortPath) };
 	const aiScene* scene = importer.ReadFile(nativePath, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
-	SDL_assert(scene);
+	PRO_ASSERT(scene);
 	std::string settingsJson{ ReadTextFile(MakeNativePath(shortPath + ".settings")) };
 	std::unordered_map<std::string, std::string> materialMap;
 	if (settingsJson.length() > 0)
 	{
 		rapidjson::Document doc;
 		doc.Parse(settingsJson);
-		SDL_assert(doc.IsObject());
+		PRO_ASSERT(doc.IsObject());
 		if (doc.HasMember("material_map"))
 		{
 			for (auto& mapping : doc["material_map"].GetObject())
@@ -263,7 +263,7 @@ Shader* LoadShaderFromFile(const std::string& path)
 	auto json = ReadTextFile(path);
 	rapidjson::Document doc;
 	doc.Parse(json);
-	SDL_assert(doc.IsObject());
+	PRO_ASSERT(doc.IsObject());
 	if(doc["elements"].HasMember("vertex"))
 		for (auto& elem : doc["elements"]["vertex"].GetArray())
 			result->AddElement(ResourceManager::Instance().LoadShaderElement(elem.GetString(), ShaderElement::Type::Vertex));
@@ -286,7 +286,7 @@ Material* LoadMaterialFromFile(const std::string& path)
 	auto json = ReadTextFile(path);
 	rapidjson::Document doc;
 	doc.Parse(json);
-	SDL_assert(doc.IsObject());
+	PRO_ASSERT(doc.IsObject());
 	Material* mat = new Material{ ShaderProgram{ResourceManager::Instance().LoadShader(doc["shader"].GetString())} };
 
 	if(doc.HasMember("properties"))
@@ -295,7 +295,7 @@ Material* LoadMaterialFromFile(const std::string& path)
 			const auto& entry = prop.GetObject().begin();
 			const auto& name = entry->name;
 			const auto& value = entry->value;
-			SDL_assert(value.IsFloat() || value.IsString() || (value.IsArray() && value.Size() == 4));
+			PRO_ASSERT(value.IsFloat() || value.IsString() || (value.IsArray() && value.Size() == 4));
 			if (value.IsFloat())
 				mat->SetProperty(name.GetString(), value.GetFloat());
 			else if (value.IsString())
@@ -342,7 +342,7 @@ std::shared_ptr<Material> ResourceManager::LoadMaterial(const std::string& short
 Font* LoadFontFromFile(const std::string& fullPath)
 {
 	SDL_RWops* fontFile = SDL_RWFromFile(fullPath.c_str(), "r");
-	SDL_assert(fontFile);
+	PRO_ASSERT(fontFile);
 	Font* font = new Font(fontFile);
 	return font;
 }

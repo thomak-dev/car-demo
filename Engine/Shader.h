@@ -10,15 +10,15 @@ class Shader
 	DELETE_COPY(Shader)
 public:
 	Shader() = default;
-	Shader(Shader&&);
+	Shader(Shader&&) noexcept;
 
-	Shader& operator=(Shader&&);
+	Shader& operator=(Shader&&) noexcept;
 
 	void AddElement(const std::shared_ptr<ShaderElement>& element);
 	auto begin() const { return shaderElements.begin(); }
 	auto end() const { return shaderElements.end(); }
 
-	friend void swap(Shader& first, Shader& second);
+	friend void swap(Shader& first, Shader& second) noexcept;
 private:
 	std::vector<std::shared_ptr<ShaderElement>> shaderElements;
 };

@@ -1,9 +1,7 @@
 #include "math_utility.h"
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <SDL.h>
+
 
 const glm::vec3 Vector3::Up{ 0, 1, 0 };
 const glm::vec3 Vector3::Forward{ 0, 0, 1 };
@@ -90,7 +88,7 @@ int CeilLog2(uint64_t x)
 
 unsigned Pow2(unsigned x)
 {
-	SDL_assert(x <= 31);
+	PRO_ASSERT(x <= 31);
 	return 1u << x;
 }
 

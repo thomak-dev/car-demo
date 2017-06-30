@@ -26,7 +26,7 @@ int Entity::StaticInit()
 {
 	static int numberOfCalls = 0;
 	++numberOfCalls;
-	SDL_assert(numberOfCalls == 1);
+	PRO_ASSERT(numberOfCalls == 1);
 
 	DECLARE_COMPONENT(Transform);
 	DECLARE_COMPONENT(Light);
@@ -51,6 +51,7 @@ int Entity::StaticInit()
 Entity::Entity()
 {
 	static int staticInit = StaticInit();
+	(void)staticInit;
 }
 
 Entity::~Entity()
@@ -88,7 +89,7 @@ void Entity::DeserializeComponents(const rapidjson::GenericObject<true, rapidjso
 			if (unserialized > 1)
 			{
 				std::cout << "Warning: " << unserialized << " unserialized properties (" << componentJson["type"].GetString() << ')' << std::endl;
-				SDL_assert(false);
+				PRO_ASSERT(false);
 			}
 		}
 	}
@@ -120,7 +121,7 @@ void Entity::SetFlags(const rapidjson::GenericObject<true, rapidjson::Value>& js
 
 std::shared_ptr<Entity> Entity::Instantiate(const std::shared_ptr<Json>& prefab, Entity* parent)
 {
-	SDL_assert(prefab->IsObject());
+	PRO_ASSERT(prefab->IsObject());
 	const Json* constPrefab = prefab.get();
 	return Instantiate(constPrefab->GetObject(), parent);
 }
@@ -263,7 +264,7 @@ std::shared_ptr<Entity> Entity::GetChild(const std::string& name) const
 
 void Entity::AddChild(const std::shared_ptr<Entity>& child)
 {
-	SDL_assert(child);
+	PRO_ASSERT(child);
 	auto otherParent = child->Parent();
 	if (otherParent)
 		otherParent->RemoveChild(child);
@@ -341,7 +342,7 @@ std::string Entity::GetValidChildName(std::string name)
 
 void Entity::Initialize()
 {
-	SDL_assert(0 == initCount++);
+	PRO_ASSERT(0 == initCount++);
 	for (auto& child : children)
 	{
 		child->Initialize();

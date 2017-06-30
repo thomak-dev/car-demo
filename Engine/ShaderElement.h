@@ -15,14 +15,14 @@ public:
 	};
 
 	ShaderElement(const std::string& path, Type type);
-	ShaderElement(ShaderElement&& other);
+	ShaderElement(ShaderElement&& other) noexcept;
 	~ShaderElement();
-	ShaderElement& operator=(ShaderElement&& other);
+	ShaderElement& operator=(ShaderElement&& other) noexcept;
 
 	GLuint GetShaderObject() const { return shader; };
-	bool IsValid();
+	bool IsValid() const;
 
-	friend void swap(ShaderElement& first, ShaderElement& second);
+	friend void swap(ShaderElement& first, ShaderElement& second) noexcept;
 	friend std::ostream& operator<<(std::ostream&, Type type);
 private:
 	ShaderElement() = default;

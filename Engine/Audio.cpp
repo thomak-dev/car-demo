@@ -14,17 +14,6 @@
 
 Audio* Audio::Bank::audio;
 
-//Audio::Sound::Sound(const std::string& path)
-//	:chunk{ Mix_LoadWAV(path.c_str()) }
-//{
-//	
-//}
-
-//Audio::Sound::~Sound()
-//{
-//	Mix_FreeChunk(chunk);
-//}
-
 FMOD_RESULT F_CALLBACK OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata)
 {
 	std::stringstream sstrm;
@@ -92,7 +81,7 @@ FMOD_RESULT F_CALLBACK OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYP
 		std::cout.flush();
 	}
 
-	SDL_assert(false);
+	PRO_ASSERT(false);
 	return FMOD_OK;
 }
 
@@ -111,7 +100,7 @@ Audio::Audio()
 {
 	//Mix_Init(MIX_INIT_OGG);
 	//bool success = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) == 0;
-	//SDL_assert(success);
+	//PRO_ASSERT(success);
 	//Mix_AllocateChannels(32);
 
 	FMOD_CHECK(FMOD::Studio::System::create(&system));
@@ -165,7 +154,7 @@ Audio::~Audio()
 
 void Audio::Update()
 {
-	for (int i = 0; i < listeners.size(); ++i)
+	for (size_t i = 0; i < listeners.size(); ++i)
 	{
 		UpdateListener(i, listeners[i]);
 	}
@@ -238,16 +227,10 @@ void Audio::Get3DAttributesOfEntity(const Entity& entity, FMOD_3D_ATTRIBUTES& at
 	RigidBody* rigidBody;
 	glm::vec3 velocity{ glm::uninitialize };
 	if ((rigidBody = entity.GetComponentDerivedFrom<RigidBody>()))
-		velocity = rigidBody->GetVelocity();
+		velocity = rigidBody->Velocity();
 	else
 		velocity = transform->GetVelocity();
 	attribs.velocity.x = velocity.x;
 	attribs.velocity.y = velocity.y;
 	attribs.velocity.z = velocity.z;
 }
-
-//void Audio::Play(const Sound& sound)
-//{
-//	if (Mix_PlayChannel(-1, sound.chunk, 0) == -1)
-//		std::cout << Mix_GetError() << std::endl;
-//}

@@ -6,10 +6,9 @@
 
 bool DidProgramLink(GLuint program, std::string *linkLog)
 {
-	bool result{};
 	GLint status;
 	glGetProgramiv(program, GL_LINK_STATUS, &status);
-	result = status == GL_TRUE;
+	bool result = status == GL_TRUE;
 	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &status);
 	if (status && linkLog)
 	{
