@@ -26,7 +26,7 @@
 				},
 				{
 					"type": "Text",
-					"point_size": 14,
+					"point_size": 18,
 					"material": "Materials/text.mat",
 					"content": "FPS:",
 					"alignment": -1,
@@ -34,6 +34,24 @@
 				},
 				{
 					"type": "FpsCounter"
+				}
+			]
+		},
+		{
+			"flags": [ "UI" ],
+			"components":
+			[
+				{
+					"type": "Transform",
+					"position": [ 0, 720, 1 ]
+				},
+				{
+					"type": "Text",
+					"point_size": 18,
+					"material": "Materials/text.mat",
+					"content": "Controls:\nDriving: W, S, A, D or arrow keys\nHand brake: Space\nFlip car when upside down: R\nCamera: Mouse and mouse wheel",
+					"alignment": -1,
+					"anchor": [-1, 1]
 				}
 			]
 		},
