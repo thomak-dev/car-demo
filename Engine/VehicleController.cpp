@@ -18,23 +18,23 @@ void VehicleController::Update(float deltaTime)
 
 	if (length(vehicle->Velocity()) < 0.3)
 	{
-		if (KeyIsDown(SDLK_s) && forward)
+		if ((KeyIsDown(SDLK_s) || KeyIsDown(SDLK_DOWN)) && forward)
 		{
 			forward = false;
 			vehicle->SetGear(physx::PxVehicleGearsData::eREVERSE);
 		}
-		else if (KeyIsDown(SDLK_w) && !forward)
+		else if ((KeyIsDown(SDLK_w) || KeyIsDown(SDLK_UP)) && !forward)
 		{
 			forward = true;
 			vehicle->SetGear(physx::PxVehicleGearsData::eFIRST);
 		}
 	}
 
-	vehicle->accelerate = KeyIsDown(forward ? SDLK_w : SDLK_s);
-	vehicle->brake = KeyIsDown(forward ? SDLK_s : SDLK_w);
+	vehicle->accelerate = forward ? KeyIsDown(SDLK_w) || KeyIsDown(SDLK_UP) : KeyIsDown(SDLK_s) || KeyIsDown(SDLK_DOWN);
+	vehicle->brake = forward ? KeyIsDown(SDLK_s) || KeyIsDown(SDLK_DOWN) : KeyIsDown(SDLK_w) || KeyIsDown(SDLK_UP);
 	vehicle->handbrake = KeyIsDown(SDLK_SPACE);
-	vehicle->steerRight = KeyIsDown(SDLK_d);
-	vehicle->steerLeft = KeyIsDown(SDLK_a);
+	vehicle->steerRight = KeyIsDown(SDLK_d) || KeyIsDown(SDLK_RIGHT);
+	vehicle->steerLeft = KeyIsDown(SDLK_a) || KeyIsDown(SDLK_LEFT);
 
 	if (KeyWentDown(SDLK_r) && dot(transform->Up(), Vector3::Up) < 0.5f && abs(vehicle->Velocity().y) < 0.1f)
 	{

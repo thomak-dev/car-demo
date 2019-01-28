@@ -57,6 +57,7 @@
 /External/SDL_mixer/
 VisualC/Win32/
 *.bank
+Thumbs.db
 
 #sublime
 *.sublime-workspace

@@ -15,3 +15,5 @@ xcuserdata
 *.xcworkspace
 SDL2_image.pc
 showimage
+
+VisualC/Win32/Release/

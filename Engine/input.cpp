@@ -7,7 +7,7 @@ static std::unordered_set<SDL_Keycode> keysWhichWentDown;
 static std::unordered_set<SDL_Keycode> keysWhichWentUp;
 static std::unordered_set<Uint8> mouseButtonsWhichWentDown;
 static std::unordered_set<Uint8> mouseButtonsWhichWentUp;
-static bool mouseButtonsWhichAreDown[256];
+static bool mouseButtonsThatAreDown[256];
 static glm::vec2 mouseWheelDelta;
 
 void PrepareInput()
@@ -29,12 +29,12 @@ void UpdateInput(const SDL_Event& event)
 	if (event.type == SDL_MOUSEBUTTONDOWN)
 	{
 		mouseButtonsWhichWentDown.insert(event.button.button);
-		mouseButtonsWhichAreDown[event.button.button] = true;
+		mouseButtonsThatAreDown[event.button.button] = true;
 	}
 	if (event.type == SDL_MOUSEBUTTONUP)
 	{
 		mouseButtonsWhichWentUp.insert(event.button.button);
-		mouseButtonsWhichAreDown[event.button.button] = false;
+		mouseButtonsThatAreDown[event.button.button] = false;
 	}
 	if (event.type == SDL_MOUSEWHEEL)
 	{
@@ -65,7 +65,7 @@ bool KeyWentUp(SDL_Keycode key)
 
 bool MouseButtonIsDown(Uint8 button)
 {
-	return mouseButtonsWhichAreDown[button];
+	return mouseButtonsThatAreDown[button];
 }
 
 bool MouseButtonWentDown(Uint8 button)
