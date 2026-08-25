@@ -1,5 +1,7 @@
 # Car Demo
 
+![Hero shot](docs/screenshot.jpg)
+
 Discontinued 3D Engine project. Implements an interactive and physically simulated car-driving demo based on PhysX and with dynamic engine audio based on FMOD. Uses OpenGL 3.2 for rendering, SDL for window/input and AssImp for asset loading. Also has a simple scene-graph with JSON-based authoring.
 
 ## Requirements (Windows x64)
