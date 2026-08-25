@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{4cf6ff92-3ffd-0420-36c9-3db582742a6f}">
+		<property name="name">
+			<value>Pickup</value>
+		</property>
+		<relationship name="folder">
+			<destination>{43290095-b214-45c5-85fc-b1bc221b8b79}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{0cf23932-b777-4727-816a-fe0f70ffe9ce}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{0cf23932-b777-4727-816a-fe0f70ffe9ce}">
+		<property name="isExposedRecursively">
+			<value>false</value>
+		</property>
+	</object>
+</objects>

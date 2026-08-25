@@ -48,6 +48,9 @@
 /Release/
 /Engine/Debug/
 /Engine/Release/
+# CMake build tree
+/build/
+CMakeUserPresets.json
 *.vcxproj.user
 *.ncb
 *.suo
@@ -56,14 +59,14 @@
 .hg/
 /External/SDL_mixer/
 VisualC/Win32/
+VisualC/x64/
 *.bank
 Thumbs.db
-
-#sublime
-*.sublime-workspace
 
 ## FMOD
 /Audio/.cache/
 /Audio/.user/
 /Audio/.unsaved/
+# Exported bank output from FMOD Studio
+/Audio/Build/
 /Engine.sln.DotSettings.user

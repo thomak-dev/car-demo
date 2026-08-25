@@ -93,6 +93,6 @@ void AudioSource::Update(float deltaTime)
 
 void AudioSource::ApplyParam(Parameter& param, FMOD::Studio::EventInstance& event)
 {
-	FMOD_CHECK(event.setParameterValue(param.first.c_str(), param.second.first))
+	FMOD_CHECK(event.setParameterByName(param.first.c_str(), param.second.first))
 	param.second.second = false;
 }

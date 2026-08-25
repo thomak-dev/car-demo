@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 #include <typeinfo>
 #include <typeindex>
 #include <unordered_map>

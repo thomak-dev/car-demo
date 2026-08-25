@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <SDL.h>
 #include "static_glew.h"

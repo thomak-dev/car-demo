@@ -14,7 +14,7 @@
 
 Audio* Audio::Bank::audio;
 
-FMOD_RESULT F_CALLBACK OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata)
+FMOD_RESULT F_CALL OnFmodError(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata)
 {
 	std::stringstream sstrm;
 	switch (type)
@@ -105,13 +105,13 @@ Audio::Audio()
 
 	FMOD_CHECK(FMOD::Studio::System::create(&system));
 
-	FMOD::System* lowSystem;
-	FMOD_CHECK(system->getLowLevelSystem(&lowSystem));
-	//lowSystem->setCallback(OnFmodError);
+	FMOD::System* coreSystem;
+	FMOD_CHECK(system->getCoreSystem(&coreSystem));
+	//coreSystem->setCallback(OnFmodError);
 	FMOD_ADVANCEDSETTINGS advSettings{};
 	advSettings.vol0virtualvol = 0.001f;
 	advSettings.cbSize = sizeof(FMOD_ADVANCEDSETTINGS);
-	FMOD_CHECK(lowSystem->setAdvancedSettings(&advSettings));
+	FMOD_CHECK(coreSystem->setAdvancedSettings(&advSettings));
 	FMOD_CHECK(system->initialize(512, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL | FMOD_INIT_VOL0_BECOMES_VIRTUAL | FMOD_INIT_3D_RIGHTHANDED, nullptr));
 
 	Bank::audio = this;

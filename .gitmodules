@@ -1,6 +1,6 @@
 [submodule "External/PhysX-3.4"]
 	path = External/PhysX-3.4
-	url = https://github.com/NVIDIAGameWorks/PhysX-3.4.git
+	url = https://github.com/thomak-dev/PhysX-3.4.git
 [submodule "External/assimp"]
 	path = External/assimp
 	url = https://github.com/assimp/assimp.git
@@ -9,4 +9,14 @@
 	url = https://github.com/g-truc/glm.git
 [submodule "External/rapidjson"]
 	path = External/rapidjson
-	url = https://github.com/miloyip/rapidjson.git
+	url = https://github.com/Tencent/rapidjson.git
+[submodule "External/SDL"]
+	path = External/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "External/SDL_image"]
+	path = External/SDL_image
+	url = https://github.com/libsdl-org/SDL_image.git
+[submodule "External/SDL_ttf"]
+	path = External/SDL_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
+	ignore = untracked

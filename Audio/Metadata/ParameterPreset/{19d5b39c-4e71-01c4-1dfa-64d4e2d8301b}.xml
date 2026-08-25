@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{19d5b39c-4e71-01c4-1dfa-64d4e2d8301b}">
+		<property name="name">
+			<value>soundselect</value>
+		</property>
+		<relationship name="folder">
+			<destination>{a418e0de-c7d0-05c9-280a-b529dc02e12e}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{59d1753c-c6fb-42c3-aa59-a76e1053f3ba}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{59d1753c-c6fb-42c3-aa59-a76e1053f3ba}">
+		<property name="isExposedRecursively">
+			<value>false</value>
+		</property>
+	</object>
+</objects>

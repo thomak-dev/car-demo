@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPresetFolder" id="{d413b94c-6b48-4e07-b16d-21e178af0aa9}">
+		<property name="name">
+			<value>Situation_Oriental</value>
+		</property>
+		<relationship name="folder">
+			<destination>{786adb9e-6080-433c-822f-b195a3dd98c1}</destination>
+		</relationship>
+	</object>
+</objects>

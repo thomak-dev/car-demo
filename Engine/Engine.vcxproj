@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -21,34 +13,20 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B9CE982D-59F7-485D-87D9-AF539608B132}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
     <RootNamespace>Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -57,12 +35,6 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -70,45 +42,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <CustomBuildAfterTargets>
-    </CustomBuildAfterTargets>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\inc;$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\lowlevel\inc;$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;$(SolutionDir)External\SDL_mixer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\code\Debug;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;$(SolutionDir)External\SDL\VisualC\Win32\Debug;$(SolutionDir)External\SDL_image\VisualC\Win32\Debug;$(SolutionDir)External\SDL_ttf\VisualC\Win32\Debug;$(SolutionDir)External\glew\lib\Debug\Win32;%(AdditionalLibraryDirectories);$(SolutionDir)External\SDL_mixer\VisualC\Win32\Debug;$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\lowlevel\lib;$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;PhysX3DEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x86.lib;glew32sd.lib;%(AdditionalDependencies);PhysX3VehicleDEBUG.lib;fmodL_vc.lib;fmodstudioL_vc.lib</AdditionalDependencies>
-    </Link>
-    <PostBuildEvent>
-      <Command>$(SolutionDir)copy_assets.bat $(OutputPath) $(ConfigurationName)</Command>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>
-      </Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Message>Performing Custom Build Step</Message>
-    </CustomBuildStep>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
@@ -116,33 +59,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\inc;$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image\include;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\lib\Debug;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win64;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win64;$(SolutionDir)External\SDL\VisualC\x64\Debug;$(SolutionDir)External\SDL_image\VisualC\x64\Debug;$(SolutionDir)External\SDL_ttf\VisualC\x64\Debug;$(SolutionDir)External\glew\lib\Debug\x64;$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64;$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc145-mtd.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3DEBUG_x64.lib;PhysX3CommonDEBUG_x64.lib;PxFoundationDEBUG_x64.lib;PxPvdSDKDEBUG_x64.lib;PhysX3ExtensionsDEBUG.lib;PhysX3CookingDEBUG_x64.lib;PhysX3VehicleDEBUG.lib;glew32sd.lib;fmodL_vc.lib;fmodstudioL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\inc;$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\lowlevel\inc;$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;$(SolutionDir)External\SDL_mixer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\code\Release;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win32;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win32;$(SolutionDir)External\SDL\VisualC\Win32\Release;$(SolutionDir)External\SDL_image\VisualC\Win32\Debug;$(SolutionDir)External\SDL_ttf\VisualC\Win32\Debug;$(SolutionDir)External\glew\lib\Release\Win32;%(AdditionalLibraryDirectories);$(SolutionDir)External\SDL_mixer\VisualC\Win32\Release;$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\lowlevel\lib;$(ProgramFiles)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;PhysX3_x86.lib;PhysX3Common_x86.lib;PxFoundation_x86.lib;PxPvdSDK_x86.lib;PhysX3Extensions.lib;PhysX3Cooking_x86.lib;glew32s.lib;%(AdditionalDependencies);PhysX3Vehicle.lib;fmod_vc.lib;fmodstudio_vc.lib</AdditionalDependencies>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <PostBuildEvent>
-      <Command>$(SolutionDir)copy_assets.bat $(OutputPath) $(ConfigurationName)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,11 +77,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\inc;$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(SolutionDir)External\PhysX-3.4\PxShared\include;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Include;$(SolutionDir)External\SDL\include;$(SolutionDir)External\SDL_image\include;$(SolutionDir)External\SDL_ttf;$(SolutionDir)External\assimp\include;$(SolutionDir)External\assimp\bin\include;$(SolutionDir)External\glew\include;$(SolutionDir)External\glm;$(SolutionDir)External\rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\assimp\bin\lib\Release;$(SolutionDir)External\PhysX-3.4\PhysX_3.4\Lib\vc14win64;$(SolutionDir)External\PhysX-3.4\PxShared\lib\vc14win64;$(SolutionDir)External\SDL\VisualC\x64\Release;$(SolutionDir)External\SDL_image\VisualC\x64\Release;$(SolutionDir)External\SDL_ttf\VisualC\x64\Release;$(SolutionDir)External\glew\lib\Release\x64;$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64;$(MSBuildProgramFiles32)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;assimp-vc145-mt.lib;opengl32.lib;SDL2_image.lib;SDL2_ttf.lib;PhysX3_x64.lib;PhysX3Common_x64.lib;PxFoundation_x64.lib;PxPvdSDK_x64.lib;PhysX3Extensions.lib;PhysX3Cooking_x64.lib;PhysX3Vehicle.lib;glew32s.lib;fmod_vc.lib;fmodstudio_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

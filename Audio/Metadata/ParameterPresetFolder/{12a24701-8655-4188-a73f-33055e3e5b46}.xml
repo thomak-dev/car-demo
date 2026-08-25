@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPresetFolder" id="{12a24701-8655-4188-a73f-33055e3e5b46}">
+		<property name="name">
+			<value>Random Layered</value>
+		</property>
+		<relationship name="folder">
+			<destination>{5c9104fe-d24f-4b88-9d8a-e20180c65bc4}</destination>
+		</relationship>
+	</object>
+</objects>

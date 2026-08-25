@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <vector>
 #include <glm/fwd.hpp>
 #include "static_glew.h"
@@ -17,7 +18,7 @@ public:
 	std::vector<glm::vec3> vertices{};
 	std::vector<glm::vec3> normals{};
 	std::vector<glm::vec3> tangents{};
-	std::vector<size_t> indices{};
+	std::vector<uint32_t> indices{};
 	std::vector<glm::vec2> uvs{};
 
 	void Bind();

@@ -18,7 +18,6 @@ public:
 	DELETE_MOVE(Material)
 		struct Property
 	{
-		DELETE_MOVE(Property)
 			enum class Type
 		{
 			Texture2D,
